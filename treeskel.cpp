@@ -19,12 +19,13 @@
 
 #include "treeskel.h"
 
-
+//-------------------------------------------------------------------------------------
 TreeSkeleton::TreeSkeleton(double mindistance)
 {
     joinDistance = mindistance;
 }
 
+//-------------------------------------------------------------------------------------
 bool TreeSkeleton::saveTree(char* fileName, unsigned int format)
 {
     std::ofstream file;
@@ -73,6 +74,8 @@ bool TreeSkeleton::saveTree(char* fileName, unsigned int format)
     return true;
     
 }
+
+//-------------------------------------------------------------------------------------
 bool TreeSkeleton::loadTree(char *fileName)
 {
     std::ifstream file;
@@ -141,6 +144,7 @@ bool TreeSkeleton::loadTree(char *fileName)
     return true;
 }
 
+//-------------------------------------------------------------------------------------
 bool TreeSkeleton::addBranch(std::vector<NodeIn3D> newBranch)
 {
     int n;
@@ -209,12 +213,13 @@ bool TreeSkeleton::addBranch(std::vector<NodeIn3D> newBranch)
     branches.push_back(newBranchI);
 
 // Cut branches
-    for(std::vector<BasicBranch>::iterator b = branches.begin(); b != branches.end(); ++b)
+    bsize = branches.size();
+    for(int b = 0; b < bsize; b++)
     {
-        int bs = b->nodeIndex.size();
+        int bs = branches[b].nodeIndex.size();
         for(n = 1; n < bs-1; n++)
         {
-            if(b->nodeIndex[n] > 2) break;
+            if(nodes[ branches[b].nodeIndex[n] ].connections > 2) break;
         }
         if(n < bs-1)
         {
@@ -222,22 +227,21 @@ bool TreeSkeleton::addBranch(std::vector<NodeIn3D> newBranch)
             BasicBranch b1;
             BasicBranch b2;
 
-            for(i = 0; i <= n; i++) b1.nodeIndex.push_back(b->nodeIndex[i]);
-            for(i = n; i < bs; i++) b2.nodeIndex.push_back(b->nodeIndex[i]);
-            *b = b1;
+            for(i = 0; i <= n; i++) b1.nodeIndex.push_back(branches[b].nodeIndex[i]);
+            for(i = n; i < bs; i++) b2.nodeIndex.push_back(branches[b].nodeIndex[i]);
+            branches[b] = b1;
             branches.push_back(b2);
         }
     }
-
     return true;
 }
 
-
+//-------------------------------------------------------------------------------------
 bool TreeSkeleton::removeBranch(unsigned int index)
 {
     int n;
     int bsize = branches.size();
-    if(index >= bsize) return false;
+    if(index >= (unsigned int)bsize) return false;
 
     int nsize = branches[index].nodeIndex.size();
 
@@ -251,7 +255,7 @@ bool TreeSkeleton::removeBranch(unsigned int index)
 
 //Remove branch
     std::vector<BasicBranch>::iterator ib = branches.begin()+index;
-    branches.erase(ib, ib);
+    branches.erase(ib);
 
 //Remove empty nodes and reindex branch entries
     for(n = nodes.size()-1; n >= 0; n--)
@@ -259,7 +263,7 @@ bool TreeSkeleton::removeBranch(unsigned int index)
         if(nodes[n].connections == 0)
         {
             std::vector<NodeIn3D>::iterator it = nodes.begin()+n;
-            nodes.erase(it, it);
+            nodes.erase(it);
 
             for(std::vector<BasicBranch>::iterator b = branches.begin(); b != branches.end(); ++b)
             {
@@ -270,4 +274,108 @@ bool TreeSkeleton::removeBranch(unsigned int index)
             }
         }
     }
+//  Merge branches
+    bsize = branches.size();
+    for(int b = 0; b < bsize; b++)
+    {
+        int bs = branches[b].nodeIndex.size();
+        if(bs <= 0) continue;
+
+        int index = -1;
+        bool at0 = true;
+        if(nodes[ branches[b].nodeIndex[0] ].connections == 2) index = branches[b].nodeIndex[0];
+        else if(nodes[ branches[b].nodeIndex[bs-1] ].connections == 2)
+        {
+            index = branches[b].nodeIndex[bs-1];
+            at0 = false;
+        }
+
+        if(index >= 0)
+        {
+            for(int p = b+1; p < bsize; p++)
+            {
+                int i;
+                int ps = branches[p].nodeIndex.size();
+                if(ps <= 0) continue;
+                BasicBranch nbranch;
+
+                if(branches[p].nodeIndex[0] == index && at0)
+                {
+                    if(at0)
+                    {
+                        for(i = ps-1; i > 0; i--) nbranch.nodeIndex.push_back(branches[p].nodeIndex[i]);
+                        for(i = 0; i < bs; i++) nbranch.nodeIndex.push_back(branches[b].nodeIndex[i]);
+                    }
+                    else
+                    {
+                        for(i = 0; i < bs; i++) nbranch.nodeIndex.push_back(branches[b].nodeIndex[i]);
+                        for(i = 1; i < ps; i++) nbranch.nodeIndex.push_back(branches[p].nodeIndex[i]);
+                    }
+                    std::vector<BasicBranch>::iterator ib = branches.begin()+p;
+                    branches.erase(ib);
+                    ib = branches.begin()+b;
+                    branches.erase(ib);
+                    branches.push_back(nbranch);
+                    return true;
+                }
+                if(branches[p].nodeIndex[ps-1] == index)
+                {
+                    if(at0)
+                    {
+                        for(i = 0; i < ps; i++) nbranch.nodeIndex.push_back(branches[p].nodeIndex[i]);
+                        for(i = 1; i < bs; i++) nbranch.nodeIndex.push_back(branches[b].nodeIndex[i]);
+                    }
+                    else
+                    {
+                        for(i = 0; i < bs; i++) nbranch.nodeIndex.push_back(branches[b].nodeIndex[i]);
+                        for(i = ps-2; i >= 0; i--) nbranch.nodeIndex.push_back(branches[p].nodeIndex[i]);
+                    }
+                    std::vector<BasicBranch>::iterator ib = branches.begin()+p;
+                    branches.erase(ib);
+                    ib = branches.begin()+b;
+                    branches.erase(ib);
+                    branches.push_back(nbranch);
+                    return true;
+                }
+            }
+        }
+    }
+    return true;
+}
+
+//-------------------------------------------------------------------------------------
+unsigned int TreeSkeleton::count(void)
+{
+    return branches.size();
+}
+
+//-------------------------------------------------------------------------------------
+int TreeSkeleton::count(unsigned int branchIndex)
+{
+    if(branchIndex >= branches.size()) return -1;
+    return branches[branchIndex].nodeIndex.size();
+}
+
+//-------------------------------------------------------------------------------------
+std::vector<NodeIn3D> TreeSkeleton::branch(unsigned int branchIndex)
+{
+    std::vector<NodeIn3D> r;
+    if(branchIndex >= branches.size()) return r;
+
+    for(std::vector<unsigned int>::iterator nn = branches[branchIndex].nodeIndex.begin(); nn != branches[branchIndex].nodeIndex.end(); ++nn)
+    {
+        r.push_back(nodes[*nn]);
+    }
+    return r;
+}
+
+//-------------------------------------------------------------------------------------
+NodeIn3D TreeSkeleton::node(unsigned int branchI, unsigned int nodeI)
+{
+    NodeIn3D r;
+    if(branchI >= branches.size()) return r;
+    if(nodeI >= branches[branchI].nodeIndex.size()) return r;
+    if(branches[branchI].nodeIndex[nodeI] >= nodes.size()) return r;
+    r = nodes[branches[branchI].nodeIndex[nodeI]];
+    return r;
 }

@@ -52,13 +52,19 @@ struct TreeSkeletonStructure
     std::vector <BasicBranch> branches;
 };
 
-
+//-------------------------------------------------------------------------------------
 class TreeSkeleton:TreeSkeletonStructure
 {
 public:
     TreeSkeleton(double mindistance = 0.5);
     bool saveTree(char *fileName, unsigned int format);
     bool loadTree(char *fileName);
+
+    unsigned int count(void);
+    int count(unsigned int branchIndex);
+    std::vector<NodeIn3D> branch(unsigned int branchIndex);
+    NodeIn3D node(unsigned int branchI, unsigned int nodeI);
+
     bool addBranch(std::vector<NodeIn3D> newBranch);
     bool removeBranch(unsigned int index);
 
