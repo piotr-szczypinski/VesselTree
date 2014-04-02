@@ -53,7 +53,7 @@ struct TreeSkeletonStructure
 };
 
 //-------------------------------------------------------------------------------------
-class TreeSkeleton:TreeSkeletonStructure
+class TreeSkeleton:public TreeSkeletonStructure //?? AS public
 {
 public:
     TreeSkeleton(double mindistance = 0.5);
@@ -67,6 +67,8 @@ public:
 
     bool addBranch(std::vector<NodeIn3D> newBranch);
     bool removeBranch(unsigned int index);
+
+    bool addPoint(double x, double y, double z, unsigned int con, unsigned int dia); //?? AS niebezpieczna
 
 private:
     double joinDistance;

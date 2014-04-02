@@ -1,5 +1,45 @@
 #include "treeskel.h"
+#include "buildtree.h"
 
+int main(int argc, char *argv[])
+{
+    std::cout << "Start\n";
+
+    Obraz mojaKlasa;
+    TreeSkeleton out;
+    TreeSkeleton out2;
+
+    mojaKlasa.fillStructure(openAnalyzeImage("/home/piotr/Program/VesselTree/Test/thinning.img"));
+    out = szacowanie_polaczen (mojaKlasa.returnStruct());
+
+    mojaKlasa.fillStructure(openAnalyzeImage("/home/piotr/Program/VesselTree/Test/ctoutput.img"));
+    out2 = szacowanie_srednicy (mojaKlasa.returnStruct(),out);
+
+    out2.saveTree("/home/piotr/Program/VesselTree/Test/treetest.txt", 0);
+
+/*
+    for (unsigned int i = 0;i<out2.nodes.size();i++)
+    {
+        std::cout<<out2.nodes[i].x<<" "<<out2.nodes[i].y<<" "<<out2.nodes[i].z<<" "<<out2.nodes[i].connections<<" "<<out2.nodes[i].diameter<<std::endl;
+    }
+    */
+    //for (unsigned int i = 0;i<out2.branches.size();i++)
+    //{
+    //    for (unsigned int j = 0;j<out2.branches[i].nodeIndex.size();j++)
+    //    {
+    //        std::cout<<out2.branches[i].nodeIndex[j]<<" "<<i<<" "<<j<<std::endl;
+    //    }
+    //}
+    //mojaKlasa.fillStructure(openAnalyzeImage("D:/Dysk Google/programy/1.4/input.img"));
+    //mojaKlasa.fillStructure(erozja(mojaKlasa.returnStruct(),3));
+    //saveImage(mojaKlasa.returnStruct(), "D:/Dysk Google/programy/grant_solid/szacowanie/plik.nii");
+
+//    system("PAUSE");
+    return 0;
+}
+
+
+/*
 int main(int argc, char* argv[])
 {
     TreeSkeleton treeskel;
@@ -76,3 +116,4 @@ int main(int argc, char* argv[])
     treeskel.saveTree("skeleton2.txt", 0);
 
 }
+*/

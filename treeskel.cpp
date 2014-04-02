@@ -379,3 +379,17 @@ NodeIn3D TreeSkeleton::node(unsigned int branchI, unsigned int nodeI)
     r = nodes[branches[branchI].nodeIndex[nodeI]];
     return r;
 }
+
+
+bool TreeSkeleton::addPoint(double x, double y, double z, unsigned int con, unsigned int dia)
+{
+    NodeIn3D input;
+    input.x = x;
+    input.y = y;
+    input.z = z;
+    input.connections = con;
+    input.diameter = dia;
+    nodes.push_back(input);
+    return true;
+}
+
