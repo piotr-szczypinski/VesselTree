@@ -62,13 +62,16 @@ public:
 
     unsigned int count(void);
     int count(unsigned int branchIndex);
+    unsigned int nodeCount(void);
+
     std::vector<NodeIn3D> branch(unsigned int branchIndex);
     NodeIn3D node(unsigned int branchI, unsigned int nodeI);
+    NodeIn3D node(unsigned int index);
 
     bool addBranch(std::vector<NodeIn3D> newBranch);
     bool removeBranch(unsigned int index);
 
-    bool addPoint(double x, double y, double z, unsigned int con, unsigned int dia); //?? AS niebezpieczna
+    //bool addPoint(double x, double y, double z, unsigned int con, unsigned int dia); //?? AS niebezpieczna
 
 private:
     double joinDistance;

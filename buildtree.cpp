@@ -354,6 +354,10 @@ TreeSkeleton szacowanie_polaczen(strukturaObrazu par1)
     //BasicBranch sb;
     TreeSkeleton treeToCreate;
     std::vector<NodeIn3D> newBranch;
+    NodeIn3D newNode;
+    newNode.connections = 0;
+    newNode.diameter = 0;
+    newNode.direction = 0;
 
 //counter
 
@@ -644,7 +648,7 @@ TreeSkeleton szacowanie_polaczen(strukturaObrazu par1)
     double pary;
     double parz;
     unsigned int parconnections;
-    unsigned int pardiameter = 0;
+//    unsigned int pardiameter = 0;
     unsigned int pardirection;
     ImageType::IndexType idx;
     ImageType::IndexType idx_bif;
@@ -666,10 +670,15 @@ TreeSkeleton szacowanie_polaczen(strukturaObrazu par1)
 
 
 
+               newNode.x = parx;
+               newNode.y = pary;
+               newNode.z = parz;
+
+               newBranch.push_back(newNode);
 
 
 
-               sb.nodeIndex.push_back(counter);
+               //sb.nodeIndex.push_back(counter);
 
 
 
@@ -703,15 +712,19 @@ TreeSkeleton szacowanie_polaczen(strukturaObrazu par1)
                        if (i == center){d = 0;}
                        else if(nitbif.GetPixel(i) == 1.5)
                            {
-                           for (unsigned int h = 0;h<tr.nodes.size();h++)
+                           for (unsigned int h = 0; h<treeToCreate.nodeCount(); h++)
                                {
-                               if (tr.nodes[h].connections == 3)
+
+                               NodeIn3D tempNode = treeToCreate.node(h);
+// Tu może być problem!!!!!!!!!!!!!!!!!!!!!!
+// Nie ma kodu ustawiającego connections na 3
+                               if (tempNode.connections == 3)
+
                                    {
                                    idx_bif = nitbif.GetIndex(i);
-                                   if (tr.nodes[h].x == idx_bif[0] && tr.nodes[h].y == idx_bif[1] && tr.nodes[h].z == idx_bif[2])
+                                   if (tempNode.x == idx_bif[0] && tempNode.y == idx_bif[1] && tempNode.z == idx_bif[2])
                                        {
                                        //sb.nodeIndex.push_back(h);
-                                       //newBranch
 
                                                NodeIn3D newNode;
                                                newNode.x = parx;
@@ -730,11 +743,14 @@ TreeSkeleton szacowanie_polaczen(strukturaObrazu par1)
                 parx = idx[0];
                 pary = idx[1];
                 parz = idx[2];
+
+
+// Tu może być problem!!!!!!!!!!!!!!!!!!!!!!
                 parconnections = 2;
 //                sb.nodeIndex.push_back(counter);
 
 
-                NodeIn3D newNode;
+
                 newNode.x = parx;
                 newNode.y = pary;
                 newNode.z = parz;
@@ -777,6 +793,9 @@ TreeSkeleton szacowanie_polaczen(strukturaObrazu par1)
                 parx = idx[0];
                 pary = idx[1];
                 parz = idx[2];
+
+
+// Tu może być problem!!!!!!!!!!!!!!!!!!!!!!
                 parconnections = 3;
 
 
@@ -785,7 +804,7 @@ TreeSkeleton szacowanie_polaczen(strukturaObrazu par1)
 //                sb.nodeIndex.push_back(counter);
 
 
-                NodeIn3D newNode;
+
                 newNode.x = parx;
                 newNode.y = pary;
                 newNode.z = parz;
@@ -844,9 +863,14 @@ TreeSkeleton szacowanie_polaczen(strukturaObrazu par1)
 
 
 
-            tr.addPoint(parx,pary,parz,parconnections,pardiameter);
+            //tr.addPoint(parx,pary,parz,parconnections,pardiameter);
 
 
+            newNode.x = parx;
+            newNode.y = pary;
+            newNode.z = parz;
+
+            newBranch.push_back(newNode);
 
 
 

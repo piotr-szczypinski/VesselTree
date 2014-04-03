@@ -58,3 +58,5 @@ unix|win32: LIBS += \
                     -lITKNumerics\
                     -litksys\
                     -lITKAlgorithms
+
+

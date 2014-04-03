@@ -343,6 +343,14 @@ bool TreeSkeleton::removeBranch(unsigned int index)
     return true;
 }
 
+
+//-------------------------------------------------------------------------------------
+unsigned int TreeSkeleton::nodeCount(void)
+{
+    return nodes.size();
+}
+
+
 //-------------------------------------------------------------------------------------
 unsigned int TreeSkeleton::count(void)
 {
@@ -380,7 +388,17 @@ NodeIn3D TreeSkeleton::node(unsigned int branchI, unsigned int nodeI)
     return r;
 }
 
+//-------------------------------------------------------------------------------------
+NodeIn3D TreeSkeleton::node(unsigned int index)
+{
+    NodeIn3D r;
+    if(index >= nodes.size()) return r;
+    r = nodes[index];
+    return r;
+}
 
+
+/*
 bool TreeSkeleton::addPoint(double x, double y, double z, unsigned int con, unsigned int dia)
 {
     NodeIn3D input;
@@ -392,4 +410,4 @@ bool TreeSkeleton::addPoint(double x, double y, double z, unsigned int con, unsi
     nodes.push_back(input);
     return true;
 }
-
+*/
