@@ -17,6 +17,8 @@ int main(int argc, char *argv[])
 
     out2.saveTree("/home/piotr/Program/VesselTree/Test/treetest.txt", 0);
 
+    std::cout << "Koniec\n";
+
 /*
     for (unsigned int i = 0;i<out2.nodes.size();i++)
     {

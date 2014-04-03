@@ -351,8 +351,25 @@ strukturaObrazu pocienianie (strukturaObrazu par1)
 TreeSkeleton szacowanie_polaczen(strukturaObrazu par1)
 {
     //par1 - obraz scieniony(zawieraj¹cy linie centralne)
-    BasicBranch sb;
-    TreeSkeleton tr; //pms - missing Structure
+    //BasicBranch sb;
+    TreeSkeleton treeToCreate;
+    std::vector<NodeIn3D> newBranch;
+
+//counter
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
      //----------regiony
     ImageType::RegionType Region;
@@ -646,7 +663,19 @@ TreeSkeleton szacowanie_polaczen(strukturaObrazu par1)
                pary = idx[1];
                parz = idx[2];
                parconnections = 1;
+
+
+
+
+
+
                sb.nodeIndex.push_back(counter);
+
+
+
+
+
+
                 nitbif.SetCenterPixel(1);
                 bool nie_znaleziono = true;
                 for(int i = 0; i<=neigh_num; i++)//albo pocz¹tek ledzenia (wtedy tylko pobiera siê nastêpny punkt ledzenia)
@@ -654,7 +683,14 @@ TreeSkeleton szacowanie_polaczen(strukturaObrazu par1)
                    if (i == center){}
                    else if (nitbif.GetPixel(i)>1){idx = nitbif.GetIndex(i);nie_znaleziono = false;}
                    }
-                if(nie_znaleziono == true){stop = true;tr.branches.push_back(sb);sb.nodeIndex.clear();}//albo to drugie zakoñczenie ledzenia i nie ma dalszej drogi(wtedy koñczymy ledzenie)
+                if(nie_znaleziono == true)
+                {
+                    stop = true;
+                    //tr.branches.push_back(sb);
+                    treeToCreate.addBranch(newBranch); //pms
+                    //sb.nodeIndex.clear();
+                    newBranch.clear(); //pms
+                }//albo to drugie zakoñczenie ledzenia i nie ma dalszej drogi(wtedy koñczymy ledzenie)
 
             }
             else if(nitbif.GetCenterPixel() == 2 || nitbif.GetCenterPixel() == 5)//w pierwszej kolejnoci poszukujemy punktów =2, dopiero jak takich nie ma szukamy wiêkszych
@@ -674,7 +710,17 @@ TreeSkeleton szacowanie_polaczen(strukturaObrazu par1)
                                    idx_bif = nitbif.GetIndex(i);
                                    if (tr.nodes[h].x == idx_bif[0] && tr.nodes[h].y == idx_bif[1] && tr.nodes[h].z == idx_bif[2])
                                        {
-                                       sb.nodeIndex.push_back(h);
+                                       //sb.nodeIndex.push_back(h);
+                                       //newBranch
+
+                                               NodeIn3D newNode;
+                                               newNode.x = parx;
+                                               newNode.y = pary;
+                                               newNode.z = parz;
+
+                                               newBranch.push_back(newNode);
+
+
                                        }
                                    }
                                }
@@ -685,7 +731,17 @@ TreeSkeleton szacowanie_polaczen(strukturaObrazu par1)
                 pary = idx[1];
                 parz = idx[2];
                 parconnections = 2;
-                sb.nodeIndex.push_back(counter);
+//                sb.nodeIndex.push_back(counter);
+
+
+                NodeIn3D newNode;
+                newNode.x = parx;
+                newNode.y = pary;
+                newNode.z = parz;
+
+                newBranch.push_back(newNode);
+
+
                 nitbif.SetCenterPixel(1);
                 bool nie_znaleziono = true;
                 int d = 1;
@@ -722,10 +778,31 @@ TreeSkeleton szacowanie_polaczen(strukturaObrazu par1)
                 pary = idx[1];
                 parz = idx[2];
                 parconnections = 3;
-                sb.nodeIndex.push_back(counter);
-                tr.branches.push_back(sb);
-                sb.nodeIndex.clear();
-                sb.nodeIndex.push_back(counter);
+
+
+
+
+//                sb.nodeIndex.push_back(counter);
+
+
+                NodeIn3D newNode;
+                newNode.x = parx;
+                newNode.y = pary;
+                newNode.z = parz;
+
+                newBranch.push_back(newNode);
+
+//                tr.branches.push_back(sb);
+                treeToCreate.addBranch(newBranch);
+//                sb.nodeIndex.clear();
+                newBranch.clear();
+
+                //sb.nodeIndex.push_back(counter);
+                newBranch.push_back(newNode);
+
+
+
+
 
                 nitbif.SetCenterPixel(1.5);
                 bool nie_znaleziono = true;
@@ -759,7 +836,22 @@ TreeSkeleton szacowanie_polaczen(strukturaObrazu par1)
                    }
             }
             else {stop = true;}
+
+
+
+
+
+
+
+
             tr.addPoint(parx,pary,parz,parconnections,pardiameter);
+
+
+
+
+
+
+
         }
         if(q.size() == 0)
         {
@@ -787,7 +879,7 @@ TreeSkeleton szacowanie_polaczen(strukturaObrazu par1)
             if(jest == true){q.push(idx[0]);q.push(idx[1]);q.push(idx[2]);++licznik;}
         }
     }
-    return tr;
+    return treeToCreate;
 }
 //----------------------------------------------------------------------------------------
 TreeSkeleton szacowanie_srednicy(strukturaObrazu par1, TreeSkeleton par2)
