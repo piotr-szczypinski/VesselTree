@@ -62,11 +62,11 @@ public:
 
     unsigned int count(void);
     int count(unsigned int branchIndex);
-    unsigned int nodeCount(void);
+    //unsigned int nodeCount(void);
 
     std::vector<NodeIn3D> branch(unsigned int branchIndex);
     NodeIn3D node(unsigned int branchI, unsigned int nodeI);
-    NodeIn3D node(unsigned int index);
+    //NodeIn3D node(unsigned int index);
 
     bool addBranch(std::vector<NodeIn3D> newBranch);
     bool removeBranch(unsigned int index);

@@ -354,17 +354,13 @@ TreeSkeleton szacowanie_polaczen(strukturaObrazu par1)
     //BasicBranch sb;
     TreeSkeleton treeToCreate;
     std::vector<NodeIn3D> newBranch;
+    std::vector<NodeIn3D> bifurStack;
     NodeIn3D newNode;
     newNode.connections = 0;
     newNode.diameter = 0;
     newNode.direction = 0;
-
-//counter
-
-
-
-
-
+    ImageType::Pointer inputImage = StructureToItkImage(par1);
+    float voxelValue = inputImage->GetPixel();
 
 
 
@@ -674,6 +670,20 @@ TreeSkeleton szacowanie_polaczen(strukturaObrazu par1)
                newNode.y = pary;
                newNode.z = parz;
 
+
+
+
+
+
+
+////////////////////////
+////////////////////////
+////////////////////////
+////////////////////////
+////////////////////////
+////////////////////////
+
+
                newBranch.push_back(newNode);
 
 
@@ -712,13 +722,14 @@ TreeSkeleton szacowanie_polaczen(strukturaObrazu par1)
                        if (i == center){d = 0;}
                        else if(nitbif.GetPixel(i) == 1.5)
                            {
-                           for (unsigned int h = 0; h<treeToCreate.nodeCount(); h++)
+//                           for (unsigned int h = 0; h<treeToCreate.nodeCount(); h++)
+                             for (unsigned int h = 0; h<bifurStack.size(); h++)
                                {
 
-                               NodeIn3D tempNode = treeToCreate.node(h);
+                               NodeIn3D tempNode = bifurStack[h];
 // Tu może być problem!!!!!!!!!!!!!!!!!!!!!!
 // Nie ma kodu ustawiającego connections na 3
-                               if (tempNode.connections == 3)
+                               //if (tempNode.connections == 3)
 
                                    {
                                    idx_bif = nitbif.GetIndex(i);
@@ -731,6 +742,16 @@ TreeSkeleton szacowanie_polaczen(strukturaObrazu par1)
                                                newNode.y = pary;
                                                newNode.z = parz;
 
+
+
+
+
+
+/////////////////////////
+/////////////////////////
+////////////////////////////
+////////////////////////////
+////////////////////////////
                                                newBranch.push_back(newNode);
 
 
@@ -810,6 +831,10 @@ TreeSkeleton szacowanie_polaczen(strukturaObrazu par1)
                 newNode.z = parz;
 
                 newBranch.push_back(newNode);
+
+
+// Dodanie punktu bifurkacji do stosu
+                bifurStack.push_back(newNode);
 
 //                tr.branches.push_back(sb);
                 treeToCreate.addBranch(newBranch);
