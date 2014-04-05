@@ -92,6 +92,8 @@ strukturaObrazu pocienianie (strukturaObrazu par1);
 
 TreeSkeleton szacowanie_polaczen(strukturaObrazu par1);
 
+TreeSkeleton skeletonToTree(strukturaObrazu inputImage);
+
 TreeSkeleton szacowanie_srednicy(strukturaObrazu par1, TreeSkeleton par2);
 
 

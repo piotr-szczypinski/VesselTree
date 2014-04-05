@@ -41,7 +41,7 @@ bool TreeSkeleton::saveTree(char* fileName, unsigned int format)
         file << "@NumberOfAllNodes " << nodes.size() << std::endl;
         for(std::vector<NodeIn3D>::iterator n = nodes.begin(); n != nodes.end(); ++n)
         {
-            file << "\t" << n->x << " " << n->y << " " << n->z << " " << n->connections << " "<< n->direction << " "<< n->diameter << std::endl;
+            file << "\t" << n->x << " " << n->y << " " << n->z << " " << n->connections << " "<< n->diameter << std::endl;
         }
         file << "@NumberOfBranches " << branches.size() << std::endl;
         for(std::vector<BasicBranch>::iterator b = branches.begin(); b != branches.end(); ++b)
@@ -65,7 +65,7 @@ bool TreeSkeleton::saveTree(char* fileName, unsigned int format)
             for(std::vector<unsigned int>::iterator nn = b->nodeIndex.begin(); nn != b->nodeIndex.end(); ++nn)
             {
                 NodeIn3D* n = &(nodes[*nn]);
-                file << "\t" << n->x << " " << n->y << " " << n->z << " " << n->connections << " "<< n->direction << " "<< n->diameter << std::endl;
+                file << "\t" << n->x << " " << n->y << " " << n->z << " " << n->connections << " "<< n->diameter << std::endl;
             }
         }
     } break;
@@ -95,7 +95,7 @@ bool TreeSkeleton::loadTree(char *fileName)
         for(int n = 0; n < NumberOfAllNodes; n++)
         {
             NodeIn3D newnode;
-            file >> newnode.x >> newnode.y >> newnode.z >> newnode.connections >> newnode.direction >> newnode.diameter;
+            file >> newnode.x >> newnode.y >> newnode.z >> newnode.connections >> newnode.diameter;
             newtree.nodes.push_back(newnode);
         }
 
@@ -130,7 +130,7 @@ bool TreeSkeleton::loadTree(char *fileName)
             for(int n = 0; n < NumberOfNodes; n++)
             {
                 NodeIn3D newnode;
-                file >> newnode.x >> newnode.y >> newnode.z >> newnode.connections >> newnode.direction >> newnode.diameter;
+                file >> newnode.x >> newnode.y >> newnode.z >> newnode.connections >> newnode.diameter;
                 newbranch.push_back(newnode);
             }
             newtree.addBranch(newbranch);
@@ -343,13 +343,13 @@ bool TreeSkeleton::removeBranch(unsigned int index)
     return true;
 }
 
-/*
+
 //-------------------------------------------------------------------------------------
 unsigned int TreeSkeleton::nodeCount(void)
 {
     return nodes.size();
 }
-*/
+
 
 //-------------------------------------------------------------------------------------
 unsigned int TreeSkeleton::count(void)
@@ -387,7 +387,7 @@ NodeIn3D TreeSkeleton::node(unsigned int branchI, unsigned int nodeI)
     r = nodes[branches[branchI].nodeIndex[nodeI]];
     return r;
 }
-/*
+
 //-------------------------------------------------------------------------------------
 NodeIn3D TreeSkeleton::node(unsigned int index)
 {
@@ -397,8 +397,15 @@ NodeIn3D TreeSkeleton::node(unsigned int index)
     return r;
 }
 
+//-------------------------------------------------------------------------------------
+bool TreeSkeleton::setNode(NodeIn3D newNode, unsigned int index)
+{
+    if(index >= nodes.size()) return false;
+    nodes[index] = newNode;
+    return true;
+}
 
-
+/*
 bool TreeSkeleton::addPoint(double x, double y, double z, unsigned int con, unsigned int dia)
 {
     NodeIn3D input;

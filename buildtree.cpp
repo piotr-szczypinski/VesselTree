@@ -21,6 +21,10 @@
 
 #include "buildtree.h"
 
+#include "itkImageDuplicator.h"
+#include <sstream>
+#include <iostream>
+#include <fstream>
 //----------------------------------------------------------------------------------------
 strukturaObrazu itkImageToStructure(ImageType::Pointer par1)
 {
@@ -347,29 +351,155 @@ strukturaObrazu pocienianie (strukturaObrazu par1)
     thinningFilter->Update();
     return itkImageToStructure(thinningFilter->GetOutput());
 }
+
+
+
 //----------------------------------------------------------------------------------------
-TreeSkeleton szacowanie_polaczen(strukturaObrazu par1)
+const int neighborhoodScanSequence[27][3] =
 {
-    //par1 - obraz scieniony(zawieraj¹cy linie centralne)
-    //BasicBranch sb;
+    {0,0,0}, //0 center
+    {0,0,1},{0,0,-1},{0,1,0},{0,-1,0},{1,0,0},{-1,0,0}, //1-6 facet neighbor
+    {0,1,1},{0,1,-1},{0,-1,1},{0,-1,-1},{1,1,0},{1,-1,0},{-1,1,0},{-1,-1,0},{1,0,1},{1,0,-1},{-1,0,1},{-1,0,-1}, //7-18 edge neighbor
+    {1,1,1},{1,1,-1},{1,-1,1},{1,-1,-1},{-1,1,1},{-1,1,-1},{-1,-1,1},{-1,-1,-1} //19-26 vertex neighbor
+};
+
+//----------------------------------------------------------------------------------------
+struct Index3DNeighbor
+{
+    ImageType::IndexType i;
+    int n;
+};
+
+//----------------------------------------------------------------------------------------
+TreeSkeleton skeletonToTree(strukturaObrazu inputImage)
+{
+    ImageType::Pointer inputKImage = StructureToItkImage(inputImage);
+
+// Find tip of whatever brunch to start
+    NeighborhoodIteratorType::RadiusType radius;
+    radius[0]=1; radius[1]=1; radius[2]=1;
+    ImageType::IndexType regionIndex;
+    regionIndex[0]=0;regionIndex[1]=0;regionIndex[2]=0;
+    ImageType::SizeType regionSize = inputKImage->GetRequestedRegion().GetSize();
+    ImageType::RegionType region;
+    region.SetSize(regionSize);
+    region.SetIndex(regionIndex);
+    itk::NeighborhoodIterator<ImageType> iteratorStart(radius, inputKImage, region);
+
+    int sc = iteratorStart.Size() / 2;
+    int sy = iteratorStart.GetStride(1);
+    int sz = iteratorStart.GetStride(2);
+
+    for(iteratorStart.GoToBegin(); !iteratorStart.IsAtEnd(); ++iteratorStart)
+    {
+        int neighbors = 0;
+        unsigned int i = 1;
+        if(iteratorStart.GetCenterPixel() <= 0) continue;
+        for(; i < 7; i++)
+        {
+            const int* nss = neighborhoodScanSequence[i];
+            if(iteratorStart.GetPixel(sc+nss[0]+nss[1]*sy+nss[2]*sz) > 0) neighbors++;
+        }
+        if(neighbors == 1) break;
+        neighbors = 0;
+        for(; i < 19; i++)
+        {
+            const int* nss = neighborhoodScanSequence[i];
+            if(iteratorStart.GetPixel(sc+nss[0]+nss[1]*sy+nss[2]*sz) > 0) neighbors++;
+        }
+        if(neighbors == 1) break;
+        neighbors = 0;
+        for(; i < 27; i++)
+        {
+            const int* nss = neighborhoodScanSequence[i];
+            if(iteratorStart.GetPixel(sc+nss[0]+nss[1]*sy+nss[2]*sz) > 0) neighbors++;
+        }
+        if(neighbors == 1) break;
+    }
+    ImageType::IndexType startNodeIndex = iteratorStart.GetIndex();
+// Now branch tip is available from startNodeIndex
+//    std::cout << startNodeIndex << std::endl;
+
+// Copy image to a buffer
+    typedef itk::ImageDuplicator< ImageType > DuplicatorType;
+    DuplicatorType::Pointer duplicator = DuplicatorType::New();
+    duplicator->SetInputImage(inputKImage);
+    duplicator->Update();
+    ImageType::Pointer bufferImage = duplicator->GetOutput();
+
+// Branch tracking based on flood-fill algorithm with stack
     TreeSkeleton treeToCreate;
     std::vector<NodeIn3D> newBranch;
-    std::vector<NodeIn3D> bifurStack;
+    std::vector<Index3DNeighbor> bifurStack;
     NodeIn3D newNode;
+    Index3DNeighbor newNodeIndex;
+    newNodeIndex.i = startNodeIndex;
+    newNodeIndex.n = 1;
     newNode.connections = 0;
     newNode.diameter = 0;
-    newNode.direction = 0;
-    ImageType::Pointer inputImage = StructureToItkImage(par1);
-    float voxelValue = inputImage->GetPixel();
+    bifurStack.push_back(newNodeIndex);
+    bufferImage->SetPixel(newNodeIndex.i, 0);
 
+    while(bifurStack.size() > 0)
+    {
+        if(bifurStack.back().n >= 27)
+        {
+            bifurStack.pop_back();
+            if(newBranch.size() > 0)
+            {
+                treeToCreate.addBranch(newBranch);
+                newBranch.clear();
+            }
+        }
+        else
+        {
+            regionIndex = bifurStack.back().i;
+            region.SetIndex(regionIndex);
+            itk::NeighborhoodIterator<ImageType> iteratorN(radius, bufferImage, region);
 
+            for(; bifurStack.back().n < 27; bifurStack.back().n++)
+            {
+                const int* nss = neighborhoodScanSequence[bifurStack.back().n];
+                int offset = sc+nss[0]+nss[1]*sy+nss[2]*sz;
+                if(iteratorN.GetPixel(offset) > 0)
+                {
+                    if(newBranch.size() <= 0)
+                    {
+                        newNodeIndex.i = iteratorN.GetIndex(sc);
+                        newNode.x = newNodeIndex.i[0];
+                        newNode.y = newNodeIndex.i[1];
+                        newNode.z = newNodeIndex.i[2];
+                        newBranch.push_back(newNode);
+//                        std::cout << newNodeIndex.i << std::endl;
+                    }
 
+                    newNodeIndex.i = iteratorN.GetIndex(offset);
+                    newNodeIndex.n = 1;
+                    bifurStack.push_back(newNodeIndex);
 
+                    ImageType::IndexType pindex = iteratorN.GetIndex(offset);
+                    bufferImage->SetPixel(pindex, 0);
+                    newNode.x = pindex[0];
+                    newNode.y = pindex[1];
+                    newNode.z = pindex[2];
+                    newBranch.push_back(newNode);
+//                    std::cout << newNodeIndex.i << std::endl;
+                    break;
+                }
+            }
+        }
+    }
+    return treeToCreate;
+}
 
+//----------------------------------------------------------------------------------------
 
-
-
-
+/*
+TreeSkeletonStructure szacowanie_polaczen(strukturaObrazu par1)
+{
+    //par1 - obraz scieniony(zawieraj�cy linie centralne)
+    BasicBranch sb;
+    TreeSkeleton tr;
 
      //----------regiony
     ImageType::RegionType Region;
@@ -412,8 +542,8 @@ TreeSkeleton szacowanie_polaczen(strukturaObrazu par1)
    radius [2]=1;
    int center = 13;
    int neigh_num = 26;
-    //-----------wykrywanie koñcówek -przeszukujemy ca³y ROI(nit3),
-    //Szukamy voxela nale¿¹cego do szkieletu(=1), który ma tylko jednego s¹siada(ip=1),oznaczamy go jako koñcówkê(=3)
+    //-----------wykrywanie ko�c�wek -przeszukujemy ca�y ROI(nit3),
+    //Szukamy voxela nale��cego do szkieletu(=1), kt�ry ma tylko jednego s�siada(ip=1),oznaczamy go jako ko�c�wk�(=3)
     NeighborhoodIteratorType nit3 ( radius, Image, Region );
     for (nit3.GoToBegin(); !nit3.IsAtEnd(); ++nit3)
         {
@@ -425,23 +555,23 @@ TreeSkeleton szacowanie_polaczen(strukturaObrazu par1)
                if (i == center){}
                else {ip += nit3.GetPixel(i);}
                }
-            if(ip == 1){nit3.SetCenterPixel(3);} //**zapisywanie wartoci 3 jako zakoñczenie
+            if(ip == 1){nit3.SetCenterPixel(3);} //**zapisywanie warto�ci 3 jako zako�czenie
             }
         }
-    //-------------"zjadanie" szkieletu,wykrywanie bifurkacji -przeszukujemy ca³y ROI(it) szukaj¹c koñcówek(=3), dla ka¿dek koñcówki rozpoczynamy ledzenie.
-    //zmieniamy tymczasowo wartoæ koñcówki startowej na 3.1, ¿eby odró¿niæ j¹ od pozosta³ych wewn¹trz pêtli ledzenia while.
-    //Po zakoñczeniu pojedyñczego ledzenia nastêpuje ponowna zmiana(=3)
-    //Jeli którykolwiek s¹siad badanego voxela =3 lub =1 stanie siê on nastêpnym badanym voxelem(next).
-    //Pêtla koñczy siê kiedy badany voxel jest koñcówk¹ (=3) lub nie znaleziono nastêpnego s¹siada (wtedy badany voxel oznaczany jest jako zakoñczenie (=4))
-    //Droga pokonana przy ka¿dym ledzeniu oznaczana jest =2, ¿eby nie by³a widoczna dla kolejnych ledzeñ.
+    //-------------"zjadanie" szkieletu,wykrywanie bifurkacji -przeszukujemy ca�y ROI(it) szukaj�c ko�c�wek(=3), dla ka�dek ko�c�wki rozpoczynamy �ledzenie.
+    //zmieniamy tymczasowo warto�� ko�c�wki startowej na 3.1, �eby odr��ni� j� od pozosta�ych wewn�trz p�tli �ledzenia while.
+    //Po zako�czeniu pojedy�czego �ledzenia nast�puje ponowna zmiana(=3)
+    //Je�li kt�rykolwiek s�siad badanego voxela =3 lub =1 stanie si� on nast�pnym badanym voxelem(next).
+    //P�tla ko�czy si� kiedy badany voxel jest ko�c�wk� (=3) lub nie znaleziono nast�pnego s�siada (wtedy badany voxel oznaczany jest jako zako�czenie (=4))
+    //Droga pokonana przy ka�dym �ledzeniu oznaczana jest =2, �eby nie by�a widoczna dla kolejnych �ledze�.
     IteratorType it(Image,Region);
     ImageType::IndexType next;
     NeighborhoodIteratorType nit0 ( radius, Image, Region );
     for ( it.GoToBegin(); !it.IsAtEnd(); ++it)
        {
    //     start z zakonczenia, zamiast od razu zamiana na 2 to kolejka i zamiana na koncu sledzenia,
-   //     przed szukaniem s¹siada 1 szukanie s¹siada 2, jeli znaleziony zamiana s¹siada 2 na 4
-   //     oraz centralnego na 4, potem normalna kontynuacja, czyli szukanie s¹siada 1
+   //     przed szukaniem s�siada 1 szukanie s�siada 2, je�li znaleziony zamiana s�siada 2 na 4
+   //     oraz centralnego na 4, potem normalna kontynuacja, czyli szukanie s�siada 1
         std::queue<int> que;
         ImageType::IndexType queidx,idx1,idx2;
         if(it.Get()==3)
@@ -482,8 +612,8 @@ TreeSkeleton szacowanie_polaczen(strukturaObrazu par1)
                    }
                 if (nie_znaleziono == false){}
                 else if(nit0.GetCenterPixel() == 3) {stop = 1;}
-                else{nit0.SetCenterPixel(4);stop = 1;x = false;}//**zapisywanie wartoci 4 jako bifurkacji
-                if (x == true){nit0.SetLocation(idx1);nit0.SetCenterPixel(4);nit0.SetLocation(idx2);nit0.SetCenterPixel(4);}//**zapisywanie wartoci 4 jako bifurkacji
+                else{nit0.SetCenterPixel(4);stop = 1;x = false;}//**zapisywanie warto�ci 4 jako bifurkacji
+                if (x == true){nit0.SetLocation(idx1);nit0.SetCenterPixel(4);nit0.SetLocation(idx2);nit0.SetCenterPixel(4);}//**zapisywanie warto�ci 4 jako bifurkacji
 
                 }
 
@@ -491,7 +621,7 @@ TreeSkeleton szacowanie_polaczen(strukturaObrazu par1)
                 {
                 queidx[0]=que.front();que.pop();queidx[1]=que.front();que.pop();queidx[2]=que.front();que.pop();
                 nit0.SetLocation(queidx);
-                if (nit0.GetCenterPixel() == 66){nit0.SetCenterPixel(2);}//**zapisywanie wartoci 2 jako czêci ga³êzi
+                if (nit0.GetCenterPixel() == 66){nit0.SetCenterPixel(2);}//**zapisywanie warto�ci 2 jako cz��ci ga��zi
                 }
             it.Set(3);
             }
@@ -509,8 +639,8 @@ TreeSkeleton szacowanie_polaczen(strukturaObrazu par1)
     ImageDirection->FillBuffer(0);
     IteratorType      It2(ImageDirection,Region);
     for (Iti.GoToBegin(),It2.GoToBegin();!Iti.IsAtEnd(),!It2.IsAtEnd();++Iti,++It2){if(Iti.Get() == 1){It2.Set(1);}}
-    //-----------wykrywanie reszty bifurkacji -ten sam sposób co przywykrywaniu koñcówek
-    NeighborhoodIteratorType nit4 ( radius, ImageDirection, Region ); //obraz zawieraj¹cy voxele pominiête w ledzeniu
+    //-----------wykrywanie reszty bifurkacji -ten sam spos�b co przywykrywaniu ko�c�wek
+    NeighborhoodIteratorType nit4 ( radius, ImageDirection, Region ); //obraz zawieraj�cy voxele pomini�te w �ledzeniu
     IteratorType itx ( Image, Region );
     for (nit4.GoToBegin(),itx.GoToBegin(); !nit4.IsAtEnd(),!itx.IsAtEnd(); ++nit4,++itx)
         {
@@ -536,7 +666,7 @@ TreeSkeleton szacowanie_polaczen(strukturaObrazu par1)
             while (stop == 0)
                 {
                 nit0.SetLocation(next);
-                if(nit0.GetCenterPixel() == 1){nit0.SetCenterPixel(2);}//**zapisywanie wartoci 2 jako czêci ga³êzi
+                if(nit0.GetCenterPixel() == 1){nit0.SetCenterPixel(2);}//**zapisywanie warto�ci 2 jako cz��ci ga��zi
 
                              bool nie_znaleziono = true;
                              for(int i = 0; i<=neigh_num; i++)
@@ -555,7 +685,7 @@ TreeSkeleton szacowanie_polaczen(strukturaObrazu par1)
                                 }
                              if (nie_znaleziono == false){}
                              else if(nit0.GetCenterPixel() == 5 || nit0.GetCenterPixel() == 3) {stop = 1;}
-                             else{nit0.SetCenterPixel(4);stop = 1;} //**zapisywanie wartoci 4 jako bifurkacji
+                             else{nit0.SetCenterPixel(4);stop = 1;} //**zapisywanie warto�ci 4 jako bifurkacji
                 }
             it.Set(4);
             }
@@ -578,7 +708,7 @@ TreeSkeleton szacowanie_polaczen(strukturaObrazu par1)
         {
          if(nit.GetCenterPixel() == 4)
             {
-             int ls = 0;// liczba s¹siadów
+             int ls = 0;// liczba s�siad�w
 
              for(int i = 0; i<=neigh_num; i++)
                 {
@@ -587,8 +717,8 @@ TreeSkeleton szacowanie_polaczen(strukturaObrazu par1)
                 }
 
              if(ls == 2)//kiedy bifurkacja jest wykryta obok prawdziwej
-                {//dla ka¿dej bifurkacji, która posiada 2 s¹siadów szkieletu sprawdzane s¹ wszystkie s¹siednie voxele. Jeli który z nich ma 3 s¹siadów,
-                 //jest oznaczany jako bifurkacja(=4). Natomiast poprzednio wykryty jako bifurkacja voxel zamieniany jest na zwyk³y voxel szkieletu(=2)
+                {//dla ka�dej bifurkacji, kt�ra posiada 2 s�siad�w szkieletu sprawdzane s� wszystkie s�siednie voxele. Je�li kt�ry� z nich ma 3 s�siad�w,
+                 //jest oznaczany jako bifurkacja(=4). Natomiast poprzednio wykryty jako bifurkacja voxel zamieniany jest na zwyk�y voxel szkieletu(=2)
                  indx = nit.GetIndex();
                  licznik++;
 
@@ -605,7 +735,7 @@ TreeSkeleton szacowanie_polaczen(strukturaObrazu par1)
                            else if(nit.GetPixel(i) > 0){ls++;}
                            if(nit.GetIndex(i) != indx && nit.GetPixel(i) == 4){ls = 0;}
                            }
-                       if(ls >= 3 && nit.GetCenterPixel() == 2){nit.SetCenterPixel(4);nit.SetLocation(indx);nit.SetCenterPixel(2);goto end;}//**modyfikacja zakonczenia na czêæ ga³êzi i odwrotnie
+                       if(ls >= 3 && nit.GetCenterPixel() == 2){nit.SetCenterPixel(4);nit.SetLocation(indx);nit.SetCenterPixel(2);goto end;}//**modyfikacja zakonczenia na cz��� ga��zi i odwrotnie
                        else {nit.SetLocation(indx);}
                        }
                      }
@@ -625,10 +755,10 @@ TreeSkeleton szacowanie_polaczen(strukturaObrazu par1)
             sreidx = it1.GetIndex();
         }
     }
-    //dodajemy indeks koñcówki do kolejki
+    //dodajemy indeks ko�c�wki do kolejki
     std::queue<int> q;
     q.push(sreidx[0]);q.push(sreidx[1]);q.push(sreidx[2]);
-    //odwrotnie ni¿ dla bifurkacji przeledzona droga oznaczana z 2 na 1
+    //odwrotnie ni� dla bifurkacji prze�ledzona droga oznaczana z 2 na 1
     licznik=0;
     NeighborhoodIteratorType nitbif ( radius, Image, Region );//obraz bifurkacji
     ImageType::Pointer Imagebif = ImageType::New();
@@ -644,7 +774,7 @@ TreeSkeleton szacowanie_polaczen(strukturaObrazu par1)
     double pary;
     double parz;
     unsigned int parconnections;
-//    unsigned int pardiameter = 0;
+    unsigned int pardiameter = 0;
     unsigned int pardirection;
     ImageType::IndexType idx;
     ImageType::IndexType idx_bif;
@@ -663,56 +793,18 @@ TreeSkeleton szacowanie_polaczen(strukturaObrazu par1)
                pary = idx[1];
                parz = idx[2];
                parconnections = 1;
-
-
-
-               newNode.x = parx;
-               newNode.y = pary;
-               newNode.z = parz;
-
-
-
-
-
-
-
-////////////////////////
-////////////////////////
-////////////////////////
-////////////////////////
-////////////////////////
-////////////////////////
-
-
-               newBranch.push_back(newNode);
-
-
-
-               //sb.nodeIndex.push_back(counter);
-
-
-
-
-
-
+               sb.nodeIndex.push_back(counter);
                 nitbif.SetCenterPixel(1);
                 bool nie_znaleziono = true;
-                for(int i = 0; i<=neigh_num; i++)//albo pocz¹tek ledzenia (wtedy tylko pobiera siê nastêpny punkt ledzenia)
+                for(int i = 0; i<=neigh_num; i++)//albo pocz�tek �ledzenia (wtedy tylko pobiera si� nast�pny punkt �ledzenia)
                    {
                    if (i == center){}
                    else if (nitbif.GetPixel(i)>1){idx = nitbif.GetIndex(i);nie_znaleziono = false;}
                    }
-                if(nie_znaleziono == true)
-                {
-                    stop = true;
-                    //tr.branches.push_back(sb);
-                    treeToCreate.addBranch(newBranch); //pms
-                    //sb.nodeIndex.clear();
-                    newBranch.clear(); //pms
-                }//albo to drugie zakoñczenie ledzenia i nie ma dalszej drogi(wtedy koñczymy ledzenie)
+                if(nie_znaleziono == true){stop = true;tr.branches.push_back(sb);sb.nodeIndex.clear();}//albo to drugie zako�czenie �ledzenia i nie ma dalszej drogi(wtedy ko�czymy �ledzenie)
 
             }
-            else if(nitbif.GetCenterPixel() == 2 || nitbif.GetCenterPixel() == 5)//w pierwszej kolejnoci poszukujemy punktów =2, dopiero jak takich nie ma szukamy wiêkszych
+            else if(nitbif.GetCenterPixel() == 2 || nitbif.GetCenterPixel() == 5)//w pierwszej kolejno�ci poszukujemy punkt�w =2, dopiero jak takich nie ma szukamy wi�kszych
             {
                 if (nitbif.GetCenterPixel() == 5)
                    {
@@ -722,39 +814,14 @@ TreeSkeleton szacowanie_polaczen(strukturaObrazu par1)
                        if (i == center){d = 0;}
                        else if(nitbif.GetPixel(i) == 1.5)
                            {
-//                           for (unsigned int h = 0; h<treeToCreate.nodeCount(); h++)
-                             for (unsigned int h = 0; h<bifurStack.size(); h++)
+                           for (unsigned int h = 0;h<tr.nodes.size();h++)
                                {
-
-                               NodeIn3D tempNode = bifurStack[h];
-// Tu może być problem!!!!!!!!!!!!!!!!!!!!!!
-// Nie ma kodu ustawiającego connections na 3
-                               //if (tempNode.connections == 3)
-
+                               if (tr.nodes[h].connections == 3)
                                    {
                                    idx_bif = nitbif.GetIndex(i);
-                                   if (tempNode.x == idx_bif[0] && tempNode.y == idx_bif[1] && tempNode.z == idx_bif[2])
+                                   if (tr.nodes[h].x == idx_bif[0] && tr.nodes[h].y == idx_bif[1] && tr.nodes[h].z == idx_bif[2])
                                        {
-                                       //sb.nodeIndex.push_back(h);
-
-                                               NodeIn3D newNode;
-                                               newNode.x = parx;
-                                               newNode.y = pary;
-                                               newNode.z = parz;
-
-
-
-
-
-
-/////////////////////////
-/////////////////////////
-////////////////////////////
-////////////////////////////
-////////////////////////////
-                                               newBranch.push_back(newNode);
-
-
+                                       sb.nodeIndex.push_back(h);
                                        }
                                    }
                                }
@@ -764,21 +831,8 @@ TreeSkeleton szacowanie_polaczen(strukturaObrazu par1)
                 parx = idx[0];
                 pary = idx[1];
                 parz = idx[2];
-
-
-// Tu może być problem!!!!!!!!!!!!!!!!!!!!!!
                 parconnections = 2;
-//                sb.nodeIndex.push_back(counter);
-
-
-
-                newNode.x = parx;
-                newNode.y = pary;
-                newNode.z = parz;
-
-                newBranch.push_back(newNode);
-
-
+                sb.nodeIndex.push_back(counter);
                 nitbif.SetCenterPixel(1);
                 bool nie_znaleziono = true;
                 int d = 1;
@@ -809,44 +863,16 @@ TreeSkeleton szacowanie_polaczen(strukturaObrazu par1)
                        }
                    }
             }
-            else if(nitbif.GetCenterPixel() == 4)// na pocz¹tku tak samo jak dla =2, nastêpnie szukamy punktów ró¿nych od ju¿ znalezionego i dodajemy je do kolejki
+            else if(nitbif.GetCenterPixel() == 4)// na pocz�tku tak samo jak dla =2, nast�pnie szukamy punkt�w r��nych od ju� znalezionego i dodajemy je do kolejki
             {
                 parx = idx[0];
                 pary = idx[1];
                 parz = idx[2];
-
-
-// Tu może być problem!!!!!!!!!!!!!!!!!!!!!!
                 parconnections = 3;
-
-
-
-
-//                sb.nodeIndex.push_back(counter);
-
-
-
-                newNode.x = parx;
-                newNode.y = pary;
-                newNode.z = parz;
-
-                newBranch.push_back(newNode);
-
-
-// Dodanie punktu bifurkacji do stosu
-                bifurStack.push_back(newNode);
-
-//                tr.branches.push_back(sb);
-                treeToCreate.addBranch(newBranch);
-//                sb.nodeIndex.clear();
-                newBranch.clear();
-
-                //sb.nodeIndex.push_back(counter);
-                newBranch.push_back(newNode);
-
-
-
-
+                sb.nodeIndex.push_back(counter);
+                tr.branches.push_back(sb);
+                sb.nodeIndex.clear();
+                sb.nodeIndex.push_back(counter);
 
                 nitbif.SetCenterPixel(1.5);
                 bool nie_znaleziono = true;
@@ -880,27 +906,7 @@ TreeSkeleton szacowanie_polaczen(strukturaObrazu par1)
                    }
             }
             else {stop = true;}
-
-
-
-
-
-
-
-
-            //tr.addPoint(parx,pary,parz,parconnections,pardiameter);
-
-
-            newNode.x = parx;
-            newNode.y = pary;
-            newNode.z = parz;
-
-            newBranch.push_back(newNode);
-
-
-
-
-
+            tr.addPoint(parx,pary,parz,parconnections,pardiameter);
         }
         if(q.size() == 0)
         {
@@ -912,7 +918,7 @@ TreeSkeleton szacowanie_polaczen(strukturaObrazu par1)
                 sremax = 0;
                 if(qnit.GetCenterPixel() == 2)
                 {
-                    //ls - liczba s¹siadów równych 2
+                    //ls - liczba s�siad�w r�wnych 2
                     ls = 0;
                     for(int i = 0; i <= neigh_num; i++)
                        {
@@ -928,8 +934,10 @@ TreeSkeleton szacowanie_polaczen(strukturaObrazu par1)
             if(jest == true){q.push(idx[0]);q.push(idx[1]);q.push(idx[2]);++licznik;}
         }
     }
-    return treeToCreate;
+    return tr;
 }
+*/
+
 //----------------------------------------------------------------------------------------
 TreeSkeleton szacowanie_srednicy(strukturaObrazu par1, TreeSkeleton par2)
 {
@@ -959,12 +967,14 @@ TreeSkeleton szacowanie_srednicy(strukturaObrazu par1, TreeSkeleton par2)
     IteratorType      Itq(Image,Region);
     for (It.GoToBegin(),Itq.GoToBegin();!It.IsAtEnd(),!Itq.IsAtEnd();++It,++Itq){Itq.Set(It.Get());}
 
-    for (unsigned int i = 0;i<par2.nodes.size();i++)
-        {
+    for (unsigned int i = 0; i<par2.nodeCount(); i++)
+    {
         ImageType::IndexType  ind;
-        ind[0]=par2.nodes[i].x;
-        ind[1]=par2.nodes[i].y;
-        ind[2]=par2.nodes[i].z;
+
+        NodeIn3D node = par2.node(i);
+        ind[0]=node.x;
+        ind[1]=node.y;
+        ind[2]=node.z;
         float procent;
         int tab[10];
         for (int i = 0;i < 10;i++){tab[i]=0;}
@@ -1003,7 +1013,9 @@ TreeSkeleton szacowanie_srednicy(strukturaObrazu par1, TreeSkeleton par2)
         if(tab[7] > 80){diameter = 14;}
         if(tab[8] > 70){diameter = 15;}
         if(tab[8] > 80){diameter = 16;}
-        par2.nodes[i].diameter = diameter;
+        node.diameter = diameter;
+        par2.setNode(node, i);
+
         }
     std::cout<<std::endl;
     return par2;

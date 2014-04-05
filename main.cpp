@@ -10,12 +10,17 @@ int main(int argc, char *argv[])
     TreeSkeleton out2;
 
     mojaKlasa.fillStructure(openAnalyzeImage("/home/piotr/Program/VesselTree/Test/thinning.img"));
-    out = szacowanie_polaczen (mojaKlasa.returnStruct());
+
+    out = skeletonToTree(mojaKlasa.returnStruct());
+
+
+   // out = szacowanie_polaczen (mojaKlasa.returnStruct());
 
     mojaKlasa.fillStructure(openAnalyzeImage("/home/piotr/Program/VesselTree/Test/ctoutput.img"));
     out2 = szacowanie_srednicy (mojaKlasa.returnStruct(),out);
 
     out2.saveTree("/home/piotr/Program/VesselTree/Test/treetest.txt", 0);
+    out2.saveTree("/home/piotr/Program/VesselTree/Test/treetesta.txt", 1);
 
     std::cout << "Koniec\n";
 

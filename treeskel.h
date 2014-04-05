@@ -37,7 +37,6 @@ struct Coordinates3d
 struct NodeIn3D:Coordinates3d
 {
     unsigned int connections;
-    unsigned int direction;
     unsigned int diameter;
 };
 
@@ -53,7 +52,7 @@ struct TreeSkeletonStructure
 };
 
 //-------------------------------------------------------------------------------------
-class TreeSkeleton:public TreeSkeletonStructure //?? AS public
+class TreeSkeleton:TreeSkeletonStructure
 {
 public:
     TreeSkeleton(double mindistance = 0.5);
@@ -62,16 +61,14 @@ public:
 
     unsigned int count(void);
     int count(unsigned int branchIndex);
-    //unsigned int nodeCount(void);
+    unsigned int nodeCount(void);
 
     std::vector<NodeIn3D> branch(unsigned int branchIndex);
     NodeIn3D node(unsigned int branchI, unsigned int nodeI);
-    //NodeIn3D node(unsigned int index);
-
+    NodeIn3D node(unsigned int index);
+    bool setNode(NodeIn3D newNode, unsigned int index);
     bool addBranch(std::vector<NodeIn3D> newBranch);
     bool removeBranch(unsigned int index);
-
-    //bool addPoint(double x, double y, double z, unsigned int con, unsigned int dia); //?? AS niebezpieczna
 
 private:
     double joinDistance;
