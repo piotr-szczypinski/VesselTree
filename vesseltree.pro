@@ -16,13 +16,15 @@ INCLUDEPATH +=  "/usr/include/vtk-5.8"\
 HEADERS += \
     treeskel.h \
     buildtree.h \
-    obraz.h
+    obraz.h \
+    gapsurface.h
 
 SOURCES += \
     treeskel.cpp \
     main.cpp \
     buildtree.cpp \
-    obraz.cpp
+    obraz.cpp \
+    gapsurface.cpp
 
 unix|win32: LIBS += \
                     -lvtkGraphics\

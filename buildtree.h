@@ -97,5 +97,4 @@ TreeSkeleton skeletonToTree(strukturaObrazu inputImage);
 TreeSkeleton szacowanie_srednicy(strukturaObrazu par1, TreeSkeleton par2);
 
 
-
 #endif // BUILDTREE_H

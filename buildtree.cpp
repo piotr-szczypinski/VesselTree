@@ -1021,3 +1021,4 @@ TreeSkeleton szacowanie_srednicy(strukturaObrazu par1, TreeSkeleton par2)
     return par2;
 }
 //----------------------------------------------------------------------------------------
+
