@@ -26,7 +26,7 @@ TreeSkeleton::TreeSkeleton(double mindistance)
 }
 
 //-------------------------------------------------------------------------------------
-bool TreeSkeleton::saveTree(char* fileName, unsigned int format)
+bool TreeSkeleton::saveTree(const char *fileName, unsigned int format)
 {
     std::ofstream file;
     file.open(fileName);
@@ -76,7 +76,7 @@ bool TreeSkeleton::saveTree(char* fileName, unsigned int format)
 }
 
 //-------------------------------------------------------------------------------------
-bool TreeSkeleton::loadTree(char *fileName)
+bool TreeSkeleton::loadTree(const char *fileName)
 {
     std::ifstream file;
     file.open(fileName);

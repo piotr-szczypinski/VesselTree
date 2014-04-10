@@ -8,6 +8,8 @@ TEMPLATE = app
 #CONFIG -= app_bundle
 #CONFIG -= qt
 
+INCLUDEPATH +=  "/home/piotr/Program/build-vesseltreeg-Qt4-Debug"
+
 INCLUDEPATH +=  "/usr/include/vtk-5.8"
 
 

@@ -1022,3 +1022,12 @@ TreeSkeleton szacowanie_srednicy(strukturaObrazu par1, TreeSkeleton par2)
 }
 //----------------------------------------------------------------------------------------
 
+strukturaObrazu rescaleIntensity( strukturaObrazu par1, float min, float max )
+{
+    RescaleFilterType::Pointer rescale = RescaleFilterType::New();
+    rescale->SetInput( StructureToItkImage(par1) );
+    rescale->SetOutputMinimum( min );
+    rescale->SetOutputMaximum( max );
+    rescale->Update();
+    return itkImageToStructure(rescale->GetOutput());
+}

@@ -23,6 +23,29 @@
 #ifndef BUILDTREE_H
 #define BUILDTREE_H
 
+/*
+#include "itkImage.h"
+#include "itkImageFileReader.h"
+#include "itkImageFileWriter.h"
+#include "itkBinaryThinningImageFilter3D.h"
+#include "itkBinaryBallStructuringElement.h"
+#include "itkImageRegionIteratorWithIndex.h"
+#include "itkNeighborhoodInnerProduct.h"
+#include "itkConstantBoundaryCondition.h"
+#include "itkNeighborhoodIterator.h"
+#include "itkImageRegionIterator.h"
+#include "itkDiscreteGaussianImageFilter.h"
+#include "itkRescaleIntensityImageFilter.h"
+#include "itkWhiteTopHatImageFilter.h"
+#include "itkBlackTopHatImageFilter.h"
+#include "itkGrayscaleDilateImageFilter.h"
+#include "itkGrayscaleErodeImageFilter.h"
+#include "itkConnectedThresholdImageFilter.h"
+#include "itkVotingBinaryIterativeHoleFillingImageFilter.h"
+#include "itkImageToVTKImageFilter.h"
+#include "treeskel.h"
+#include "obraz.h"
+*/
 
 #include "itkImage.h"
 #include "itkImageFileReader.h"
@@ -42,8 +65,10 @@
 #include "itkGrayscaleErodeImageFilter.h"
 #include "itkConnectedThresholdImageFilter.h"
 #include "itkVotingBinaryIterativeHoleFillingImageFilter.h"
+#include "itkImageToVTKImageFilter.h"
 #include "treeskel.h"
 #include "obraz.h"
+
 typedef itk::Image< float,3 > ImageType;
 typedef itk::ImageFileReader< ImageType > ReaderType;
 typedef itk::ConstantBoundaryCondition< ImageType > BoundaryConditionType;
@@ -61,6 +86,7 @@ typedef itk::GrayscaleErodeImageFilter <ImageType, ImageType, StructuringElement
 typedef itk::ConnectedThresholdImageFilter< ImageType, ImageType > ConnectedFilterType;
 typedef itk::VotingBinaryIterativeHoleFillingImageFilter<ImageType > HoleFilterType;
 typedef itk::BinaryThinningImageFilter3D< ImageType, ImageType > ThinningFilterType;
+typedef itk::ImageToVTKImageFilter< ImageType > Connector;
 //----------------------------------------------------------------------------------------
 strukturaObrazu itkImageToStructure(ImageType::Pointer par1);
 
@@ -96,5 +122,6 @@ TreeSkeleton skeletonToTree(strukturaObrazu inputImage);
 
 TreeSkeleton szacowanie_srednicy(strukturaObrazu par1, TreeSkeleton par2);
 
+strukturaObrazu rescaleIntensity( strukturaObrazu par1, float min = 0, float max = 255 );
 
 #endif // BUILDTREE_H

@@ -28,8 +28,12 @@ private slots:
 
 
 private slots:
-    void on_actionOn_Off_Transparency_triggered(bool checked);
+    void on_actionChange_Model_Opacity_triggered();
+    void on_actionRemove_Model_triggered();
     void on_actionSet_Transparency_triggered();
+    void on_actionOnOff_Transparency_triggered(bool checked);
+    void on_actionChange_Model_Color_triggered();
+    void on_actionDraw_Model_triggered();
     void on_actionChange_Image_Color_triggered();
     void on_actionHessian_Filter_triggered();
     void on_actionRemove_Raster_Image_triggered();

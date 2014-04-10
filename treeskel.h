@@ -57,7 +57,7 @@ class TreeSkeleton:TreeSkeletonStructure
 public:
     TreeSkeleton(double mindistance = 0.5);
     bool saveTree(char *fileName, unsigned int format);
-    bool loadTree(char *fileName);
+    bool loadTree(const char *fileName);
 
     unsigned int count(void);
     int count(unsigned int branchIndex);
