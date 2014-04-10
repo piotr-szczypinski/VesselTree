@@ -90,7 +90,7 @@ bool TreeSkeleton::loadTree(char *fileName)
     if(inputstring == "@TreeSkeleton2014_Internal")
     {
         int NumberOfAllNodes;
-        file>>inputstring; if(inputstring != "@NumberOfAllNodes"); return false;
+        file>>inputstring; if(inputstring != "@NumberOfAllNodes") return false;
         file>>NumberOfAllNodes; if(NumberOfAllNodes <= 0) return false;
         for(int n = 0; n < NumberOfAllNodes; n++)
         {
@@ -100,7 +100,7 @@ bool TreeSkeleton::loadTree(char *fileName)
         }
 
         int NumberOfBranches;
-        file>>inputstring; if(inputstring != "@NumberOfBranches"); return false;
+        file>>inputstring; if(inputstring != "@NumberOfBranches") return false;
         file>>NumberOfBranches; if(NumberOfBranches <= 0) return false;
         for(int b = 0; b < NumberOfBranches; b++)
         {
@@ -119,13 +119,13 @@ bool TreeSkeleton::loadTree(char *fileName)
     else if(inputstring == "@TreeSkeleton2014_Simple")
     {
         int NumberOfBranches;
-        file>>inputstring; if(inputstring != "@NumberOfBranches"); return false;
+        file>>inputstring; if(inputstring != "@NumberOfBranches") return false;
         file>>NumberOfBranches; if(NumberOfBranches <= 0) return false;
         for(int b = 0; b < NumberOfBranches; b++)
         {
             std::vector<NodeIn3D> newbranch;
             int NumberOfNodes;
-            file>>inputstring; if(inputstring != "@NumberOfNodes"); return false;
+            file>>inputstring; if(inputstring != "@NumberOfNodes") return false;
             file>>NumberOfNodes; if(NumberOfNodes <= 0) return false;
             for(int n = 0; n < NumberOfNodes; n++)
             {

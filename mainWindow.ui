@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>600</width>
+    <height>400</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>MainWindow</string>
+  </property>
+  <widget class="QWidget" name="centralWidget">
+   <layout class="QGridLayout" name="gridLayout">
+    <item row="0" column="0">
+     <layout class="QVBoxLayout" name="verticalLayout"/>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QStatusBar" name="statusBar"/>
+  <widget class="QMenuBar" name="menuBar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>600</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menuZa_aduj_obraz">
+    <property name="title">
+     <string>Image Functions</string>
+    </property>
+    <addaction name="actionOpen_Image"/>
+    <addaction name="actionGaussian_Filter"/>
+    <addaction name="actionHessian_Filter"/>
+   </widget>
+   <widget class="QMenu" name="menuViewer_Functions">
+    <property name="title">
+     <string>Viewer Functions</string>
+    </property>
+    <addaction name="actionChange_Background_Color"/>
+    <addaction name="actionChange_Image_Color"/>
+    <addaction name="actionOn_Off_Transparency"/>
+    <addaction name="actionSet_Transparency"/>
+    <addaction name="actionRemove_Raster_Image"/>
+   </widget>
+   <addaction name="menuZa_aduj_obraz"/>
+   <addaction name="menuViewer_Functions"/>
+  </widget>
+  <action name="actionOpen_Image">
+   <property name="text">
+    <string>Open Image</string>
+   </property>
+  </action>
+  <action name="actionChange_Background_Color">
+   <property name="text">
+    <string>Change Background Color</string>
+   </property>
+  </action>
+  <action name="actionGaussian_Filter">
+   <property name="text">
+    <string>Gaussian Filter</string>
+   </property>
+  </action>
+  <action name="actionHessian_Filter">
+   <property name="text">
+    <string>Hessian Filter</string>
+   </property>
+  </action>
+  <action name="actionRemove_Raster_Image">
+   <property name="text">
+    <string>Remove Raster Image</string>
+   </property>
+  </action>
+  <action name="actionChange_Image_Color">
+   <property name="text">
+    <string>Change Image Color</string>
+   </property>
+  </action>
+  <action name="actionOn_Off_Transparency">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>On/Off Transparency</string>
+   </property>
+   <property name="toolTip">
+    <string>On_Off Transparency</string>
+   </property>
+  </action>
+  <action name="actionSet_Transparency">
+   <property name="text">
+    <string>Set Transparency</string>
+   </property>
+  </action>
+ </widget>
+ <layoutdefault spacing="6" margin="11"/>
+ <resources/>
+ <connections/>
+</ui>

@@ -1,7 +1,12 @@
+QT       += core gui svg printsupport
+
+greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
+
+
 TEMPLATE = app
-CONFIG += console
-CONFIG -= app_bundle
-CONFIG -= qt
+#CONFIG += console
+#CONFIG -= app_bundle
+#CONFIG -= qt
 
 INCLUDEPATH +=  "/usr/include/vtk-5.8"
 
@@ -27,14 +32,20 @@ INCLUDEPATH +=  "/usr/include/InsightToolkit/Common"\
 HEADERS += \
     treeskel.h \
     buildtree.h \
-    obraz.h
+    obraz.h \
+    widget.h \
+    mainWindow.h \
+    itkFunctions.h
 #    gapsurface.h
 
 SOURCES += \
     treeskel.cpp \
-    main.cpp \
     buildtree.cpp \
-    obraz.cpp
+    obraz.cpp \
+    main.cxx \
+    widget.cpp \
+    mainWindow.cxx \
+    itkFunctions.cxx
 #    gapsurface.cpp
 
 unix|win32: LIBS += \
@@ -44,11 +55,13 @@ unix|win32: LIBS += \
                     -lvtkImaging\
                     -lvtkCommon\
                     -lvtkFiltering\
-                    -lvtkHybrid
-#                    -lQVTK\
+                    -lvtkHybrid \
+                    -lvtkVolumeRendering \
+                    -lQVTK
 
 
 unix|win32: LIBS += \
+                    -lITKBasicFilters\
                     -lITKIO\
                     -lITKCommon\
                     -lITKDICOMParser\
@@ -98,7 +111,13 @@ unix|win32: LIBS += \
 #                    -litksys-4\
 #                    -lITKAlgorithms-4
 
+FORMS += \
+    widget.ui \
+    mainWindow.ui
 
 
 
 
+
+
+unix|win32: LIBS += -lvtkWidgets
