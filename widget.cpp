@@ -184,7 +184,7 @@ void widget::resetCamera()
 #include <vtkSTLWriter.h>
 #include <vtkTriangleFilter.h>
 #include <vtkPolyDataConnectivityFilter.h>
-//#include <vtkBooleanOperationPolyDataFilter.h>
+#include <vtkBooleanOperationPolyDataFilter.h>
 
 
 
