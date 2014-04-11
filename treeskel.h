@@ -28,10 +28,9 @@
 #include <math.h>
 
 /** \struct Coordinates3d
- *  \brief Coordinates3d stores coordinates x, y, and z.
+ *  \brief Coordinates3d stores coordinates x, y and z.
  *
- * This is simple coordinate vector.
- * \ingroup Gap
+ * This is simply a vector of coordinates.
  */
 struct Coordinates3d
 {
@@ -41,25 +40,23 @@ struct Coordinates3d
 };
 
 /** \struct NodeIn3D
- *  \brief NodeIn3D stores node description.
+ *  \brief NodeIn3D stores node coordinates, number
+ *  of neighbors and local diameter of a vessel.
  *
  * This structure derives from the Coordinates3d.
- * It stores coordinates of a node, number of other nodes
- * connected to it and diameter of a vessel arround the node.
- * \ingroup Gap
+ * It stores coordinates of the node, number of nodes connected to
+ * it and diameter of a vessel arround the node.
  */
 struct NodeIn3D:Coordinates3d
 {
-/** Number of other nodes connected to this one. */
+/** Number of nodes connected to this one. */
     unsigned int connections;
 /** Diameter of a vessel arround the node. */
     unsigned int diameter;
 };
 
 /** \struct BasicBranch
- *  \brief BasicBranch stores indexes of nodes building a branch.
- * BasicBranch stores indexes of nodes building a branch.
- * \ingroup Gap
+ *  \brief BasicBranch stores indexes of nodes building the branch.
  */
 struct BasicBranch
 {
@@ -68,10 +65,14 @@ struct BasicBranch
 
 /** \struct TreeSkeletonStructure
  *  \brief TreeSkeletonStructure stores information on a vessel tree.
+ *
  * TreeSkeletonStructure stores indexes of nodes building individual
- * branches in branches vector and corresponding nodes description in
- * nodes vector.
- * \ingroup Gap
+ * branches in a vector of BasicBranch structures.
+ * The corresponding nodes coordinate, connectivity and diameter are stored
+ * in a vector of NodeIn3D structures.
+ * User should not operate directly on the TreeSkeletonStructure.
+ * Instead it is preferred to use functions of TreeSkeleton class
+ * to add or remove branches.
  */
 struct TreeSkeletonStructure
 {
@@ -82,9 +83,10 @@ struct TreeSkeletonStructure
 //-------------------------------------------------------------------------------------
 /** \classt TreeSkeleton
  *  \brief TreeSkeleton derives from TreeSkeletonStructure.
+ *
  * TreeSkeleton defines functions to safely add and remove branches
- * in TreeSkeleton structure.
- * \ingroup Gap
+ * in TreeSkeleton structure, query the number of nodes and branches,
+ * to save and load data, etc.
  */
 class TreeSkeleton:TreeSkeletonStructure
 {
@@ -102,27 +104,40 @@ public:
 
 /** Returns count of branches.*/
     unsigned int count(void);
-/** Returns count of nodes in a branch with an index branchIndex.*/
+/** Returns count of nodes in a branch.
+ * \param branchIndex is an index of the branch
+ * \returns count of nodes or negative value if fails*/
     int count(unsigned int branchIndex);
 /** Returns count of all the nodes forming the tree.*/
     unsigned int nodeCount(void);
 
-/** Returns vector of nodes formin a branch with an index branchIndex.*/
+/** Returns vector of nodes belonging to the branch.
+ * \param branchIndex is an index of the branch*/
     std::vector<NodeIn3D> branch(unsigned int branchIndex);
-/** Returns a subsequent Inode node of a branch with an index branchI.*/
+/** Returns a node of the branch.
+ * \param branchI is an index of the branch
+ * \param nodeI is an index of subsequent node of the branch*/
     NodeIn3D node(unsigned int branchI, unsigned int nodeI);
-/** Returns a subsequent node of a tree.*/
+/** Returns a node of a tree.
+  * \param index is a global index of node in the tree*/
     NodeIn3D node(unsigned int index);
-/** Exchanges a node given by index with a new information provided
- *  in a newNode.*/
+/** Exchanges a node in the tree with a new one.
+  * \param index is an index in the tree of the node to overwrite
+  * \param newNode is a structure with a new node specification
+  * \returns true on success*/
     bool setNode(NodeIn3D newNode, unsigned int index);
-/** Adds a new branch newBranch to the tree.*/
+/** Adds a new branch newBranch to the tree.
+  * \param newBranch vector of the new branch nodes
+  * \returns true on success*/
     bool addBranch(std::vector<NodeIn3D> newBranch);
-/** Removes a branch of an index index from the tree.*/
+/** Removes a branch of an index index from the tree.
+    * \param index is an index in the branch to remove
+    * \returns true on success*/
     bool removeBranch(unsigned int index);
 
 private:
-    double joinDistance; /**< Distance to join nodes, set by the constructor.*/
+/** Distance to join nodes, set by the constructor.*/
+    double joinDistance;
 };
 
 #endif // TREESKEL_H
