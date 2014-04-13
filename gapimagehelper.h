@@ -29,15 +29,15 @@ typedef itk::RescaleIntensityImageFilter< ImageType,ImageType>                  
 
 //! K L A S A    I T K F U N C T I O N S
 /*!
-Klasê itkFunctions tworz¹ funkcje przetwarzania obrazów. Zwarzywszy na fakt, ¿e ka¿da z nich
-pobiera obraz wejœciowy jako argument funkcji, przeprowadza operacjê filtracji po czym zwraca obraz,
-nale¿a³oby siê zastanowiæ czy istnieje potrzeba tworzenia klasy. Jeœli do³¹czy³oby siê te funkcje jako
-"samodzielne metody" to umo¿liwi³oby to korzystanie z nich bez koniecznoœci inicjalizowania obiektu klasy.
-Ta decyzja pozostawiona jest G³ównemu Twórcy oprogramowania.
+KlasÄ™ itkFunctions tworzÄ… funkcje przetwarzania obrazÃ³w. Zwarzywszy na fakt, Å¼e kaÅ¼da z nich
+pobiera obraz wejÅ›ciowy jako argument funkcji, przeprowadza operacjÄ™ filtracji po czym zwraca obraz,
+naleÅ¼aÅ‚oby siÄ™ zastanowiÄ‡ czy istnieje potrzeba tworzenia klasy. JeÅ›li doÅ‚Ä…czyÅ‚oby siÄ™ te funkcje jako
+"samodzielne metody" to umoÅ¼liwiÅ‚oby to korzystanie z nich bez koniecznoÅ›ci inicjalizowania obiektu klasy.
+Ta decyzja pozostawiona jest GÅ‚Ã³wnemu TwÃ³rcy oprogramowania.
 ----------------------------------------------------------------------------------------------------------
-Dwie pierwsze funkcje (itkImageToStructure i StructureToItkImage) s³u¿¹ do konwersji miêdzy obrazami
-w postaci struktury (obraz.cpp) i kontenerem obrazu u¿ywanym przez biblioteki Insight Toolkit. Jest to konieczne,
-poniewa¿ wszystkie metody wykorzystuj¹ metody w³aœnie z tego œrodowiska (ITK).
+Dwie pierwsze funkcje (itkImageToStructure i StructureToItkImage) sÅ‚uÅ¼Ä… do konwersji miÄ™dzy obrazami
+w postaci struktury (obraz.cpp) i kontenerem obrazu uÅ¼ywanym przez biblioteki Insight Toolkit. Jest to konieczne,
+poniewaÅ¼ wszystkie metody wykorzystujÄ… metody wÅ‚aÅ›nie z tego Å›rodowiska (ITK).
 */
 class GapImageHelpers
 {
@@ -46,120 +46,120 @@ private:
 public:
     //! Konwersja obrazu ITK do postaci struktury zdeklarowanej w obraz.cpp
     /*!
-    \param par1 wskaŸnik do obrazu ITK.
-    \return ten sam obraz reprezentowany ju¿ jako struktura.
+    \param par1 wskaÅºnik do obrazu ITK.
+    \return ten sam obraz reprezentowany juÅ¼ jako struktura.
     */
     strukturaObrazu itkImageToStructure(ImageType::Pointer par1);
     //! Konwersja obrazu w postaci struktury zdeklarowanej w obraz.cpp do typu akceptowalnego przez ITK
     /*!
     \param par1 obraz w postaci struktury.
-    \return ten sam obraz reprezentowany ju¿ jako ITK image.
+    \return ten sam obraz reprezentowany juÅ¼ jako ITK image.
     */
     ImageType::Pointer StructureToItkImage(strukturaObrazu par1);
     //! Otwarcie obrazu zapisanego w plikach .nii, .img, .hdr
     /*!
-    \param par1 œcie¿ka do pliku
+    \param par1 Å›cieÅ¼ka do pliku
     \return obraz w postaci struktury.
     */
     strukturaObrazu openAnalyzeImage(std::string par1);
-    //! Zmiana zakresu jasnoœci reprezentuj¹cych obraz ("rozci¹ganie histogramu")
+    //! Zmiana zakresu jasnoÅ›ci reprezentujÄ…cych obraz ("rozciÄ…ganie histogramu")
     /*!
-    \param par1 obraz wejœciowy w postaci struktury
-    \param min wartoœæ minimalna jasnoœci w obrazie wyjœciowym (domyœlnie 0)
-    \param max wartoœæ maxymalna jasnoœci w obrazie wyjœciowym (domyœlnie 255)
-    \return obraz wyjœciowy w postaci struktury.
+    \param par1 obraz wejÅ›ciowy w postaci struktury
+    \param min wartoÅ›Ä‡ minimalna jasnoÅ›ci w obrazie wyjÅ›ciowym (domyÅ›lnie 0)
+    \param max wartoÅ›Ä‡ maxymalna jasnoÅ›ci w obrazie wyjÅ›ciowym (domyÅ›lnie 255)
+    \return obraz wyjÅ›ciowy w postaci struktury.
     */
     strukturaObrazu rescaleIntensity( strukturaObrazu par1, float min = 0, float max = 255 );
     //! Filtr Gaussa o zadanym poziomie rozmycia
     /*!
-    \param par1 obraz wejœciowy w postaci struktury
-    \param par2 wartoœæ wariancji
-    \return obraz wyjœciowy w postaci struktury.
+    \param par1 obraz wejÅ›ciowy w postaci struktury
+    \param par2 wartoÅ›Ä‡ wariancji
+    \return obraz wyjÅ›ciowy w postaci struktury.
     */
     strukturaObrazu gaussianFilter(strukturaObrazu par1, float par2);
-    //! Filtracja Macie¿¹ Hessego i funkcja unnaczynniania Franghiego
+    //! Filtracja MacieÅ¼Ä… Hessego i funkcja unnaczynniania Franghiego
     /*!
-      Funkcja s³u¿y do wyeksponowania struktur cylindrycznych w obrazie. Wartoœæ rozmycia
-      (par2) odpowiada za rozmiar obiektów które zostan¹ wyeksponowane.
-    \param par1 obraz wejœciowy w postaci struktury
-    \param par2 wartoœæ sigma odpowiedzialna na rozmycie
-    \return obraz wyjœciowy w postaci struktury.
+      Funkcja sÅ‚uÅ¼y do wyeksponowania struktur cylindrycznych w obrazie. WartoÅ›Ä‡ rozmycia
+      (par2) odpowiada za rozmiar obiektÃ³w ktÃ³re zostanÄ… wyeksponowane.
+    \param par1 obraz wejÅ›ciowy w postaci struktury
+    \param par2 wartoÅ›Ä‡ sigma odpowiedzialna na rozmycie
+    \return obraz wyjÅ›ciowy w postaci struktury.
     */
     strukturaObrazu hessianFilter(strukturaObrazu par1, float par2);
-    //! Z³o¿enie dwóch obrazów w jeden za zasadzie rzutowania najwiêkszych jasnoœci
+    //! ZÅ‚oÅ¼enie dwÃ³ch obrazÃ³w w jeden za zasadzie rzutowania najwiÄ™kszych jasnoÅ›ci
     /*!
       W przyadku filtracji wieloskalowych (filtracja hessego) konieczne jest sumowanie kolejnych
-      efektów filtracji. Funkcja ta porównuje wartoœci wokseli obu obrazów o tych samych wspó³rzêdnych.
-      Do obrazu wynikowego trafia wy¿sza wartoœæ. Operacja powtarzana jest dla wszystkich punktów obrazu.
-      Obrazy musz¹ byæ tych samych rozmiarów.
-    \param par1 obraz wejœciowy w postaci struktury
-    \param par2 obraz wejœciowy w postaci struktury
-    \param par3 wartoœæ sigma odpowiedzialna na rozmycie
-    \return obraz wyjœciowy w postaci struktury.
+      efektÃ³w filtracji. Funkcja ta porÃ³wnuje wartoÅ›ci wokseli obu obrazÃ³w o tych samych wspÃ³Å‚rzÄ™dnych.
+      Do obrazu wynikowego trafia wyÅ¼sza wartoÅ›Ä‡. Operacja powtarzana jest dla wszystkich punktÃ³w obrazu.
+      Obrazy muszÄ… byÄ‡ tych samych rozmiarÃ³w.
+    \param par1 obraz wejÅ›ciowy w postaci struktury
+    \param par2 obraz wejÅ›ciowy w postaci struktury
+    \param par3 wartoÅ›Ä‡ sigma odpowiedzialna na rozmycie
+    \return obraz wyjÅ›ciowy w postaci struktury.
     */
     strukturaObrazu mipTwoImages(strukturaObrazu par1, strukturaObrazu par2, float par3);
     //! Rozrost obszaru od zarodka
     /*!
-      Rozrost obszaru od danego punktu obrazu. Metoda iteracyjna polegaj¹ca na do³¹czaniu do obszaru s¹siednich punktów
-      których wartoœci s¹ w przedziale (par2, par3).
-    \param par1 obraz wejœciowy w postaci struktury
-    \param par2 próg dolny
-    \param par3 próg górny
-    \param coord wspó³rzêdne punktu startu rozrostu obszaru
-    \return obraz wyjœciowy w postaci struktury.
+      Rozrost obszaru od danego punktu obrazu. Metoda iteracyjna polegajÄ…ca na doÅ‚Ä…czaniu do obszaru sÄ…siednich punktÃ³w
+      ktÃ³rych wartoÅ›ci sÄ… w przedziale (par2, par3).
+    \param par1 obraz wejÅ›ciowy w postaci struktury
+    \param par2 prÃ³g dolny
+    \param par3 prÃ³g gÃ³rny
+    \param coord wspÃ³Å‚rzÄ™dne punktu startu rozrostu obszaru
+    \return obraz wyjÅ›ciowy w postaci struktury.
     */
     strukturaObrazu RegionGrowing(strukturaObrazu par1, float par2, float par3, std::vector<unsigned int> coord);
     //! Utworzenie pustego obrazu
     /*!
-      Utworzenie pustego obrazu, o tej samej rozdzielczoœci, spacingu i typie co obraz wejœciowy.
-    \param par1 obraz wejœciowy w postaci struktury
-    \return obraz wyjœciowy w postaci struktury.
+      Utworzenie pustego obrazu, o tej samej rozdzielczoÅ›ci, spacingu i typie co obraz wejÅ›ciowy.
+    \param par1 obraz wejÅ›ciowy w postaci struktury
+    \return obraz wyjÅ›ciowy w postaci struktury.
     */
     strukturaObrazu CreateEmptyStructure(strukturaObrazu par1);
     //! Wieloskalowa filtracja Hessego
     /*!
-      Funkcja "hessianFilter" wykonywana wielokrotnie, a wyniki poszczególnych iteracji sk³adane s¹ przy
+      Funkcja "hessianFilter" wykonywana wielokrotnie, a wyniki poszczegÃ³lnych iteracji skÅ‚adane sÄ… przy
       pomocy funkcji "mipTwoImages".
-    \param par1 obraz wejœciowy w postaci struktury
-    \param sigmaMin wartoœæ minimalna rozmycia
-    \param sigmaMax wartoœæ maksymalna rozmycia
-    \param noOfScales iloœæ iteracji filtracji
-    \return obraz wyjœciowy w postaci struktury.
+    \param par1 obraz wejÅ›ciowy w postaci struktury
+    \param sigmaMin wartoÅ›Ä‡ minimalna rozmycia
+    \param sigmaMax wartoÅ›Ä‡ maksymalna rozmycia
+    \param noOfScales iloÅ›Ä‡ iteracji filtracji
+    \return obraz wyjÅ›ciowy w postaci struktury.
     */
     strukturaObrazu MultiscaleHessianAlgorithm(strukturaObrazu par1, float sigmaMin, float sigmaMax, int noOfScales);
     //! Znajdowanie zarodka, punktu startu operacji rozrostu obszaru
     /*!
-      Prosta funkcja znajduj¹ca najjaœniejszy punkt wewn¹trz obrazu
-    \param par1 obraz wejœciowy w postaci struktury
-    \return wspó³rzêdne w postaci wektora.
+      Prosta funkcja znajdujÄ…ca najjaÅ›niejszy punkt wewnÄ…trz obrazu
+    \param par1 obraz wejÅ›ciowy w postaci struktury
+    \return wspÃ³Å‚rzÄ™dne w postaci wektora.
     */
     std::vector<unsigned int> FindSeed(strukturaObrazu par1);
-    //! Wartoœæ maksymalna jasnoœci obrazu
+    //! WartoÅ›Ä‡ maksymalna jasnoÅ›ci obrazu
     /*!
-    \param par1 obraz wejœciowy w postaci struktury
-    \return wartoœæ maksymana
+    \param par1 obraz wejÅ›ciowy w postaci struktury
+    \return wartoÅ›Ä‡ maksymana
     */
     double FindMaximumValue(strukturaObrazu par1);
-    //! Wartoœæ minimalna jasnoœci obrazu
+    //! WartoÅ›Ä‡ minimalna jasnoÅ›ci obrazu
     /*!
-    \param par1 obraz wejœciowy w postaci struktury
-    \return wartoœæ minimalna
+    \param par1 obraz wejÅ›ciowy w postaci struktury
+    \return wartoÅ›Ä‡ minimalna
     */
     double FindMinimumValue(strukturaObrazu par1);
     //! Zapis obrazu do pliku (.nii, .img, .hdr)
     /*!
-    \param par1 obraz wejœciowy w postaci struktury
-    \param par2 œcie¿ka wraz z nazw¹ pliku
+    \param par1 obraz wejÅ›ciowy w postaci struktury
+    \param par2 Å›cieÅ¼ka wraz z nazwÄ… pliku
     */
     void saveImage(strukturaObrazu par1, std::string par2);
-    //! Algorytm znajdowania naczyñ krwionoœnych w obrazach Time of Flight
+    //! Algorytm znajdowania naczyÅ„ krwionoÅ›nych w obrazach Time of Flight
     /*!
-      Funkcja wykonuje wielokrotn¹ filtracjê hessego, oraz przeprowadza segmentacjê od automatycznie znalezionego
+      Funkcja wykonuje wielokrotnÄ… filtracjÄ™ hessego, oraz przeprowadza segmentacjÄ™ od automatycznie znalezionego
       punktu rozrostu obszaru.
-    \param par1 obraz wejœciowy w postaci struktury
-    \param noOfScales iloœæ iteracji filtracji hessego
-    \param thresholdPercent wartoœæ progu wyra¿ona procentowo
-    \return obraz wyjœciowy w postaci struktury.
+    \param par1 obraz wejÅ›ciowy w postaci struktury
+    \param noOfScales iloÅ›Ä‡ iteracji filtracji hessego
+    \param thresholdPercent wartoÅ›Ä‡ progu wyraÅ¼ona procentowo
+    \return obraz wyjÅ›ciowy w postaci struktury.
     */
     strukturaObrazu HVSalgorithm(strukturaObrazu par1, int noOfScales, float thresholdPercent);
 };

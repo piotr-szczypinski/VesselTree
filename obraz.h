@@ -1,7 +1,7 @@
 /*
  * VesselTree - MRI image segmentation and characterization
  *
- * Copyright 2014  Piotr M. SzczypiÅ„ski <piotr.szczypinski@p.lodz.pl>
+ * Copyright 2014  Piotr M. SzczypiÄ¹â€ski <piotr.szczypinski@p.lodz.pl>
  *                 Adam Sankowski <sankowski@gmail.com>
  *                 Grzegorz Dwojakowski <grzegorz.dwojakowski@gmail.com>
  *
@@ -23,14 +23,14 @@
 #include <vector>
 
 //! Typ wyliczeniowy
-/*! Typ danych reprezentuj¹cych obraz */
+/*! Typ danych reprezentujÄ…cych obraz */
 enum type
 {
     BOOL1, UCHAR8, INT16, FLOAT32, DOUBLE64
 };
 //! S T R U K T U R A    O B R A Z U
 /*!
-Struktura zawieraj¹ca niezbêdne informacje o obrazie.
+Struktura zawierajÄ…ca niezbÄ™dne informacje o obrazie.
 */
 struct strukturaObrazu
 {
@@ -39,20 +39,20 @@ struct strukturaObrazu
     std::vector<double> origin;     /*!< vektor - origin w danym kierunku   */
     type fileType;                  /*!< typ obrazu wybrany z typu wyliczeniowego enum   */
     std::string shortNote;          /*!< opcjonalna informacja o obrazie   */
-    void *imageData;                /*!< wskaŸnik do danych   */
+    void *imageData;                /*!< wskaÅºnik do danych   */
 };
 
 //! K L A S A    O B R A Z
 /*!
-Klasa Obraz zawiera podstawowe funkcje dzia³aj¹ce na strukturze obrazu. Wszystkie z nich napisane zosta³y w taki sposób
-aby u¿ytkownik nie musia³ ko¿ystaæ z zewnêtrznych bibliotek do przetwarzania obrazów.
+Klasa Obraz zawiera podstawowe funkcje dziaÅ‚ajÄ…ce na strukturze obrazu. Wszystkie z nich napisane zostaÅ‚y w taki sposÃ³b
+aby uÅ¼ytkownik nie musiaÅ‚ koÅ¼ystaÄ‡ z zewnÄ™trznych bibliotek do przetwarzania obrazÃ³w.
 */
 class Obraz : strukturaObrazu
 {
 public:
-    //! Informacja o iloœci wymiarów obrazu
+    //! Informacja o iloÅ›ci wymiarÃ³w obrazu
     /*!
-    \return liczba wymiarów.
+    \return liczba wymiarÃ³w.
     */
     int dimensionality();
     //! Typ obrazu
@@ -67,67 +67,67 @@ public:
     std::string getShortNote();
     //! Rozmiar obrazu
     /*!
-    \return rozmiar obrazu we wszystkich dostêpnych kierunkach
+    \return rozmiar obrazu we wszystkich dostÄ™pnych kierunkach
     */
     std::vector<unsigned int> getSize();
     //! Spacing obrazu
     /*!
-    \return spacing obrazu we wszystkich dostêpnych kierunkach
+    \return spacing obrazu we wszystkich dostÄ™pnych kierunkach
     */
     std::vector<double> getSpacing();
-    //! Pocz¹tek obrazu
+    //! PoczÄ…tek obrazu
     /*!
-    \return origin obrazu we wszystkich dostêpnych kierunkach
+    \return origin obrazu we wszystkich dostÄ™pnych kierunkach
     */
     std::vector<double> getOrigin();
-    //! Pobierz wartoœæ voksela
+    //! Pobierz wartoÅ›Ä‡ voksela
     /*!
-    \param coord wspó³rzêdne woksela
-    \return wartoœæ danego woksela
+    \param coord wspÃ³Å‚rzÄ™dne woksela
+    \return wartoÅ›Ä‡ danego woksela
     */
     double getValue(std::vector<int> coord);
-    //! Pobierz wartoœæ voksela (tylko obraz 3d)
+    //! Pobierz wartoÅ›Ä‡ voksela (tylko obraz 3d)
     /*!
-    \param x wspó³rzêdna 0
-    \param y wspó³rzêdna 1
-    \param z wspó³rzêdna 2
-    \return wartoœæ danego woksela
+    \param x wspÃ³Å‚rzÄ™dna 0
+    \param y wspÃ³Å‚rzÄ™dna 1
+    \param z wspÃ³Å‚rzÄ™dna 2
+    \return wartoÅ›Ä‡ danego woksela
     */
     double getValue(int x, int y, int z);
-    //! Pobierz wskaŸnik do linni
+    //! Pobierz wskaÅºnik do linni
     /*!
-    \param coord wspó³rzêdne woksela
+    \param coord wspÃ³Å‚rzÄ™dne woksela
     \param direction kierunek linni
-    \return wskaŸnik do pocz¹tku lini
+    \return wskaÅºnik do poczÄ…tku lini
     */
     void* getLinePointer(std::vector<int> coord, int direction);
-    //! Pobierz wskaŸnik do slica
+    //! Pobierz wskaÅºnik do slica
     /*!
-    \param coord wspó³rzêdne woksela
+    \param coord wspÃ³Å‚rzÄ™dne woksela
     \param direction kierunek slica
-    \return wskaŸnik do pocz¹tku slica
+    \return wskaÅºnik do poczÄ…tku slica
     */
     void* getSlice(std::vector<int> coord, int direction);
-    //! Ustaw wartoœæ voksela
+    //! Ustaw wartoÅ›Ä‡ voksela
     /*!
-    \param coord wspó³rzêdne woksela
-    \param value rz¹dana wartoœæ
+    \param coord wspÃ³Å‚rzÄ™dne woksela
+    \param value rzÄ…dana wartoÅ›Ä‡
     */
     void setValue(std::vector<int> coord, double value);
-    //! Ustaw wartoœæ voksela (tylko obraz 3d)
+    //! Ustaw wartoÅ›Ä‡ voksela (tylko obraz 3d)
     /*!
-    \param x wspó³rzêdna 0
-    \param y wspó³rzêdna 1
-    \param z wspó³rzêdna 2
-    \param value rz¹dana wartoœæ
+    \param x wspÃ³Å‚rzÄ™dna 0
+    \param y wspÃ³Å‚rzÄ™dna 1
+    \param z wspÃ³Å‚rzÄ™dna 2
+    \param value rzÄ…dana wartoÅ›Ä‡
     */
     void setValue(int x, int y, int z, double value);
-    //! Wype³nij strukturê danymi
+    //! WypeÅ‚nij strukturÄ™ danymi
     /*!
     \param image struktura obrazu
     */
     void fillStructure(strukturaObrazu image);
-    //! Zwróæ strukturê obrqazu
+    //! ZwrÃ³Ä‡ strukturÄ™ obrqazu
     /*!
     \return struktura obrazu
     */
