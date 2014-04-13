@@ -27,10 +27,13 @@
 #include <fstream>
 #include <math.h>
 
-/** \struct Coordinates3d
+/* \struct Coordinates3d
  *  \brief Coordinates3d stores coordinates x, y and z.
  *
  * This is simply a vector of coordinates.
+ */
+/** \struct Coordinates3d
+ *  \brief struktura Coordinates3d przechowuje współrzędne (x, y, z) przestrzeni trójwymiarowej.
  */
 struct Coordinates3d
 {
@@ -39,7 +42,7 @@ struct Coordinates3d
     double z;
 };
 
-/** \struct NodeIn3D
+/* \struct NodeIn3D
  *  \brief NodeIn3D stores node coordinates, number
  *  of neighbors and local diameter of a vessel.
  *
@@ -47,23 +50,40 @@ struct Coordinates3d
  * It stores coordinates of the node, number of nodes connected to
  * it and diameter of a vessel arround the node.
  */
+/** \struct NodeIn3D
+ *  \brief struktura NodeIn3D przechowuje współrzędne węzła, liczbę węzłów połączonych i średnicę naczynia.
+ *
+ * Struktura dziedziczy z Coordinates3d i dodatkowo deklaruje zmienne
+ * \param connections do przechowywania liczby połączeń z węzłami sąsiednimi
+ * oraz \param diameter określający średnicę naczynia krwionośnego
+ * w miejscu położenia węzła.
+ */
 struct NodeIn3D:Coordinates3d
 {
-/** Number of nodes connected to this one. */
+    /** Liczba sąziednich węzłów połączonych*/
     unsigned int connections;
-/** Diameter of a vessel arround the node. */
+    /** Średnica naczynia krwionośnego w położeniu węzła*/
     unsigned int diameter;
 };
 
-/** \struct BasicBranch
+/* \struct BasicBranch
  *  \brief BasicBranch stores indexes of nodes building the branch.
+ */
+/** \struct BasicBranch
+ *  \brief struktura BasicBranch zawiera wektor indeksów węzłów tworzących
+ *  gałąź drzewa.
+ *
+ * Struktura zawiera wektor indeksów węzłów tworzących gałąź drzewa.
+ * Współrzędne i inne informacje o węzłach muszą być przechowywane
+ * w innym wektorze danych. Przykładem zastosowania jest struktura
+ * TreeSkeletonStructure.
  */
 struct BasicBranch
 {
     std::vector<unsigned int> nodeIndex;
 };
 
-/** \struct TreeSkeletonStructure
+/* \struct TreeSkeletonStructure
  *  \brief TreeSkeletonStructure stores information on a vessel tree.
  *
  * TreeSkeletonStructure stores indexes of nodes building individual
@@ -74,69 +94,126 @@ struct BasicBranch
  * Instead it is preferred to use functions of TreeSkeleton class
  * to add or remove branches.
  */
+/** \struct TreeSkeletonStructure
+ *  \brief struktura TreeSkeletonStructure przechowuje informację o budowie drzewa.
+ *
+ * TreeSkeletonStructure przechowuje informację o budowie drzewa.
+ * wszystkie węzły tworzące drzewo przechowywane są w wektorze nodes
+ * natomiast to, które z tych węzłów tworzą poszczególne gałęzie
+ * zapisywane jest w wektorze branches.
+ * Użytkownik nie powinien bezpośrednio korzystać z pól tej struktury.
+ * Zamiast tego należy korzystać z klasy TreeSkeleton implementującej
+ * odpowiednie funkcje.
+ */
 struct TreeSkeletonStructure
 {
+    /** Lista węzłów*/
     std::vector <NodeIn3D> nodes;
+    /** Lista gałęzi*/
     std::vector <BasicBranch> branches;
 };
 
 //-------------------------------------------------------------------------------------
-/** \classt TreeSkeleton
+/* \classt TreeSkeleton
  *  \brief TreeSkeleton derives from TreeSkeletonStructure.
  *
  * TreeSkeleton defines functions to safely add and remove branches
  * in TreeSkeleton structure, query the number of nodes and branches,
  * to save and load data, etc.
  */
+/** \classt TreeSkeleton
+ *  \brief TreeSkeleton dziedziczy z TreeSkeletonStructure i implementuje
+ *  funkcje dostępu.
+ *
+ * TreeSkeleton definiuje funkcje do bezpiecznego korzystania ze struktury
+ * TreeSkeletonStructure. Między innymi są to funkcje dodawania i usuwania
+ * gałęzi, zapisu do pliku i odczytu z pliku.
+ *
+ * \author Piotr M. Szczypiński
+ */
 class TreeSkeleton:TreeSkeletonStructure
 {
 public:
-/** Constructor. The mindistance parameter defines a minimum distance
- * below which tip nodes of branch being added is joined with the closest
- * node of a tree.*/
+/** Konstruktor klasy. Parametr mindistance decyduje o łączeniu węzłów.
+ * Jeśli odległość węzłą końcowego dodawanej gałęzi od istniejącego węzła
+ * drzewa jest mniejsza od mindistance to węzły są ze sobą łączone w jeden.*/
     TreeSkeleton(double mindistance = 0.5);
 
-/** Saves a tree to a file of a given fileName in interna format
- * format=0 or as separate branches format=1.*/
-    bool saveTree(char *fileName, unsigned int format);
-/** Loads a tree from a file of a given fileName.*/
+/** Zapisuje drzewo do pliku o podanej nazwie i w jednym z kilku dostępnych
+ * formatów
+ * \param fileName jest nazwą pliku
+ * \param format jest numerem oznaczającym format zapisu:
+ * 0 - oddzielnie węzły i indeksy węzłów w gałęziach
+ * 1 - gałęzie z pełną informacją o węzłach
+*/
+    bool saveTree(const char *fileName, unsigned int format);
+/** Odczytuje dane z pliku
+ * \param fileName jest nazwą pliku
+*/
     bool loadTree(const char *fileName);
 
-/** Returns count of branches.*/
+/* Returns count of branches.*/
+/** Liczba gałęzi drzewa.
+ * \returns zwraca liczbę gałęzi drzewa*/
     unsigned int count(void);
-/** Returns count of nodes in a branch.
+/* Returns count of nodes in a branch.
  * \param branchIndex is an index of the branch
  * \returns count of nodes or negative value if fails*/
-    int count(unsigned int branchIndex);
-/** Returns count of all the nodes forming the tree.*/
+/** Liczba węzłów w gałęzi.
+ * \param ib indeks gałęzi
+ * \returns zwraca liczbę węzłów tworzących gałąź o indeksie ib.*/
+    int count(unsigned int ib);
+/** Liczba węzłów drzewa.
+ * \returns zwraca liczbę węzłów tworzących całe drzewo.*/
     unsigned int nodeCount(void);
 
-/** Returns vector of nodes belonging to the branch.
- * \param branchIndex is an index of the branch*/
-    std::vector<NodeIn3D> branch(unsigned int branchIndex);
-/** Returns a node of the branch.
+/** Wektor węzłów gałęzi.
+ * \param ib indeks gałęzi
+ * \returns zwraca wektor węzłów tworzących gałąź o indeksie ib.*/
+    std::vector<NodeIn3D> branch(unsigned int ib);
+/* Returns a node of the branch.
  * \param branchI is an index of the branch
  * \param nodeI is an index of subsequent node of the branch*/
-    NodeIn3D node(unsigned int branchI, unsigned int nodeI);
-/** Returns a node of a tree.
+/** Węzeł gałęzi.
+ * \param ib indeks gałęzi
+ * \param in indeks kolejny węzła gałęzi
+ * \returns węzeł gałęzi*/
+    NodeIn3D node(unsigned int ib, unsigned int in);
+/* Returns a node of a tree.
   * \param index is a global index of node in the tree*/
-    NodeIn3D node(unsigned int index);
-/** Exchanges a node in the tree with a new one.
+/** Węzeł drzewa.
+ * \param i indeks węzła w drzewie
+ * \returns węzeł drzewa*/
+    NodeIn3D node(unsigned int i);
+
+/* Exchanges a node in the tree with a new one.
   * \param index is an index in the tree of the node to overwrite
   * \param newNode is a structure with a new node specification
   * \returns true on success*/
-    bool setNode(NodeIn3D newNode, unsigned int index);
-/** Adds a new branch newBranch to the tree.
+/** Podmienia węzeł w drzewie na nowy.
+ * \param i indeks węzła w drzewie
+ * \param node nowy węzeł
+ * \returns zwrace true jeśli się uda albo false jeśli się nie uda*/
+    bool setNode(NodeIn3D node, unsigned int i);
+/* Adds a new branch newBranch to the tree.
   * \param newBranch vector of the new branch nodes
   * \returns true on success*/
-    bool addBranch(std::vector<NodeIn3D> newBranch);
-/** Removes a branch of an index index from the tree.
+/** Dodaje nową gałąź do drzewa.
+ * \param branch lista węzłów tworzących dodawaną gałąź
+ * \returns zwrace true jeśli się uda albo false jeśli się nie uda*/
+    bool addBranch(std::vector<NodeIn3D> branch);
+/* Removes a branch of an index index from the tree.
     * \param index is an index in the branch to remove
     * \returns true on success*/
-    bool removeBranch(unsigned int index);
+/** Usuwa gałąź z drzewa.
+ * \param ib indeks gałęzi do usunięcia
+ * \returns zwrace true jeśli się uda albo false jeśli się nie uda*/
+    bool removeBranch(unsigned int ib);
 
 private:
-/** Distance to join nodes, set by the constructor.*/
+/* Distance to join nodes, set by the constructor.*/
+/** Parametr ustawiany przez konstruktor klasy, decyduje o łączeniu węzłów.
+*/
     double joinDistance;
 };
 

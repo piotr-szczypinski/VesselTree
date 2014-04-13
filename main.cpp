@@ -9,15 +9,15 @@ int main(int argc, char *argv[])
     TreeSkeleton out;
     TreeSkeleton out2;
 
-    mojaKlasa.fillStructure(openAnalyzeImage("/home/piotr/Program/VesselTree/Test/thinning.img"));
+    mojaKlasa.fillStructure(GapBuildTreeHelpers::openAnalyzeImage("/home/piotr/Program/VesselTree/Test/thinning.img"));
 
-    out = skeletonToTree(mojaKlasa.returnStruct());
+    out = GapBuildTreeHelpers::skeletonToTree(mojaKlasa.returnStruct());
 
 
    // out = szacowanie_polaczen (mojaKlasa.returnStruct());
 
-    mojaKlasa.fillStructure(openAnalyzeImage("/home/piotr/Program/VesselTree/Test/ctoutput.img"));
-    out2 = szacowanie_srednicy (mojaKlasa.returnStruct(),out);
+    mojaKlasa.fillStructure(GapBuildTreeHelpers::openAnalyzeImage("/home/piotr/Program/VesselTree/Test/ctoutput.img"));
+    out2 = GapBuildTreeHelpers::szacowanie_srednicy (mojaKlasa.returnStruct(),out);
 
     out2.saveTree("/home/piotr/Program/VesselTree/Test/treetest.txt", 0);
     out2.saveTree("/home/piotr/Program/VesselTree/Test/treetesta.txt", 1);

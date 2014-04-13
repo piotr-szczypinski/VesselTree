@@ -1,6 +1,6 @@
-#include "itkFunctions.h"
+#include "gapimagehelper.h"
 
-strukturaObrazu itkFunctions::itkImageToStructure(ImageType::Pointer par1)
+strukturaObrazu GapImageHelpers::itkImageToStructure(ImageType::Pointer par1)
 {
     //--Konwersja obrazu w formacie ITK do postaci struktury--//
     strukturaObrazu tempImage;
@@ -18,7 +18,7 @@ strukturaObrazu itkFunctions::itkImageToStructure(ImageType::Pointer par1)
     return tempImage;
 }
 
-ImageType::Pointer itkFunctions::StructureToItkImage(strukturaObrazu par1)
+ImageType::Pointer GapImageHelpers::StructureToItkImage(strukturaObrazu par1)
 {
     //--Konwersja struktury obrazu do formatu ITK--//
     ImageType::Pointer emptyImage = ImageType::New();
@@ -48,7 +48,7 @@ ImageType::Pointer itkFunctions::StructureToItkImage(strukturaObrazu par1)
     return emptyImage;
 }
 
-strukturaObrazu itkFunctions::openAnalyzeImage(std::string par1)
+strukturaObrazu GapImageHelpers::openAnalyzeImage(std::string par1)
 {
     //--Wczytanie obrazu w formacie .nii, .hdr, .img--//
     ReaderType::Pointer      reader = ReaderType::New();
@@ -58,9 +58,8 @@ strukturaObrazu itkFunctions::openAnalyzeImage(std::string par1)
     return itkImageToStructure(reader->GetOutput());
 }
 
-strukturaObrazu itkFunctions::rescaleIntensity( strukturaObrazu par1, float min, float max )
+strukturaObrazu GapImageHelpers::rescaleIntensity( strukturaObrazu par1, float min, float max )
 {
-    //--rozciaganie obrazu od progu min do progu max (potrzebne we viewerze
     RescaleFilterType::Pointer rescale = RescaleFilterType::New();
     rescale->SetInput( StructureToItkImage(par1) );
     rescale->SetOutputMinimum( min );
@@ -69,7 +68,7 @@ strukturaObrazu itkFunctions::rescaleIntensity( strukturaObrazu par1, float min,
     return itkImageToStructure(rescale->GetOutput());
 }
 
-strukturaObrazu itkFunctions::gaussianFilter(strukturaObrazu par1, float par2)
+strukturaObrazu GapImageHelpers::gaussianFilter(strukturaObrazu par1, float par2)
 {
     //--Filtracja gausowska, par2 odpowiedzialny za rozmycie--//
     GaussianFilterType::Pointer     gaussian = GaussianFilterType::New();
@@ -79,7 +78,7 @@ strukturaObrazu itkFunctions::gaussianFilter(strukturaObrazu par1, float par2)
     return itkImageToStructure(gaussian->GetOutput());
 }
 
-strukturaObrazu itkFunctions::hessianFilter(strukturaObrazu par1, float par2)
+strukturaObrazu GapImageHelpers::hessianFilter(strukturaObrazu par1, float par2)
 {
     //-- Filtracja hessego z dan¹ wartoœci¹ sigma (par2) --//
     HessianFilterType::Pointer hessian = HessianFilterType::New();
@@ -91,7 +90,7 @@ strukturaObrazu itkFunctions::hessianFilter(strukturaObrazu par1, float par2)
     return itkImageToStructure(vesselnessFilter->GetOutput());
 }
 
-strukturaObrazu itkFunctions::mipTwoImages(strukturaObrazu par1, strukturaObrazu par2, float par3)
+strukturaObrazu GapImageHelpers::mipTwoImages(strukturaObrazu par1, strukturaObrazu par2, float par3)
 {
     //-- z³o¿enie dwóch obrazów w jeden za zasadzie rzutowania najwiêkszych jasnoœci, (par3 jest wspó³czynnikiem sumowania) --//
     ImageType::Pointer mipImage = ImageType::New();
@@ -108,7 +107,7 @@ strukturaObrazu itkFunctions::mipTwoImages(strukturaObrazu par1, strukturaObrazu
     return itkImageToStructure(mipImage);
 }
 
-strukturaObrazu itkFunctions::RegionGrowing(strukturaObrazu par1, float par2, float par3, std::vector<unsigned int> coord)
+strukturaObrazu GapImageHelpers::RegionGrowing(strukturaObrazu par1, float par2, float par3, std::vector<unsigned int> coord)
 {
     //-- rozrost obszaru od zarodka (coord), par2 i par3 to odpowiednio próg dolny i górny
     ConnectedFilterType::Pointer ct = ConnectedFilterType::New();
@@ -124,7 +123,7 @@ strukturaObrazu itkFunctions::RegionGrowing(strukturaObrazu par1, float par2, fl
     std::cout<<"region growing"<<std::endl;
 }
 
-strukturaObrazu itkFunctions::CreateEmptyStructure(strukturaObrazu par1)
+strukturaObrazu GapImageHelpers::CreateEmptyStructure(strukturaObrazu par1)
 {
     //-- Tworzenie pustego obrazu ktory poslozy do operacji MIP kolejnych operacji filtracji --//
     ImageType::RegionType Region;
@@ -147,7 +146,7 @@ strukturaObrazu itkFunctions::CreateEmptyStructure(strukturaObrazu par1)
     return itkImageToStructure(emptyImage);
 }
 
-strukturaObrazu itkFunctions::MultiscaleHessianAlgorithm(strukturaObrazu par1, float sigmaMin, float sigmaMax, int noOfScales)
+strukturaObrazu GapImageHelpers::MultiscaleHessianAlgorithm(strukturaObrazu par1, float sigmaMin, float sigmaMax, int noOfScales)
 {
     //wieloskalowa filtracja hessego (noOfScales - iloœæ powtórzeñ), od warotœci minimalnej (sigmaMin) do maksymalnej (sigmaMax)--//
     strukturaObrazu img;
@@ -164,7 +163,7 @@ strukturaObrazu itkFunctions::MultiscaleHessianAlgorithm(strukturaObrazu par1, f
     return img;
 }
 
-std::vector<unsigned int> itkFunctions::FindSeed(strukturaObrazu par1)
+std::vector<unsigned int> GapImageHelpers::FindSeed(strukturaObrazu par1)
 {
     //--Automatyczne znalezienie punktu startowego do rozrostu obszaru
     ImageType::RegionType MiniRegion;
@@ -197,7 +196,7 @@ std::vector<unsigned int> itkFunctions::FindSeed(strukturaObrazu par1)
     return point;
 }
 
-double itkFunctions::FindMaximumValue(strukturaObrazu par1)
+double GapImageHelpers::FindMaximumValue(strukturaObrazu par1)
 {
     //--Wartoœæ maksymalna
     ImageCalculatorFilterType::Pointer imageCalculatorFilter = ImageCalculatorFilterType::New ();
@@ -206,7 +205,7 @@ double itkFunctions::FindMaximumValue(strukturaObrazu par1)
     return imageCalculatorFilter->GetMaximum();
 }
 
-double itkFunctions::FindMinimumValue(strukturaObrazu par1)
+double GapImageHelpers::FindMinimumValue(strukturaObrazu par1)
 {
     //--Wartoœæ minimalna
     ImageCalculatorFilterType::Pointer imageCalculatorFilter = ImageCalculatorFilterType::New ();
@@ -215,7 +214,7 @@ double itkFunctions::FindMinimumValue(strukturaObrazu par1)
     return imageCalculatorFilter->GetMinimum();
 }
 
-void itkFunctions::saveImage(strukturaObrazu par1, std::string par2)
+void GapImageHelpers::saveImage(strukturaObrazu par1, std::string par2)
 {
     //--Zapis obrazu na dysk, par2 to nazwa pliku--//
     WriterType::Pointer      writer = WriterType::New();
@@ -224,7 +223,7 @@ void itkFunctions::saveImage(strukturaObrazu par1, std::string par2)
     writer->Update();
 }
 
-strukturaObrazu itkFunctions::HVSalgorithm(strukturaObrazu par1, int noOfScales, float thresholdPercent)
+strukturaObrazu GapImageHelpers::HVSalgorithm(strukturaObrazu par1, int noOfScales, float thresholdPercent)
 {
     //--Pe³ny algorytm detekcji naczyñ wyko¿ystuj¹cy wieloskalow¹filtracje i rozrost obszaru
     strukturaObrazu img;

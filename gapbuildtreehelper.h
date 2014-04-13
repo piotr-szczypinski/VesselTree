@@ -88,40 +88,69 @@ typedef itk::VotingBinaryIterativeHoleFillingImageFilter<ImageType > HoleFilterT
 typedef itk::BinaryThinningImageFilter3D< ImageType, ImageType > ThinningFilterType;
 typedef itk::ImageToVTKImageFilter< ImageType > Connector;
 //----------------------------------------------------------------------------------------
-strukturaObrazu itkImageToStructure(ImageType::Pointer par1);
 
-ImageType::Pointer StructureToItkImage(strukturaObrazu par1);
 
-strukturaObrazu openAnalyzeImage(std::string par1);
+struct Index3DNeighbor
+{
+    ImageType::IndexType i;
+    int n;
+};
 
-strukturaObrazu gaussianFilter(strukturaObrazu par1, float par2);
+const int neighborhoodScanSequence[27][3] =
+{
+    {0,0,0}, //0 center
+    {0,0,1},{0,0,-1},{0,1,0},{0,-1,0},{1,0,0},{-1,0,0}, //1-6 facet neighbor
+    {0,1,1},{0,1,-1},{0,-1,1},{0,-1,-1},{1,1,0},{1,-1,0},{-1,1,0},{-1,-1,0},{1,0,1},{1,0,-1},{-1,0,1},{-1,0,-1}, //7-18 edge neighbor
+    {1,1,1},{1,1,-1},{1,-1,1},{1,-1,-1},{-1,1,1},{-1,1,-1},{-1,-1,1},{-1,-1,-1} //19-26 vertex neighbor
+};
 
-void saveImage(strukturaObrazu par1, std::string par2);
+//----------------------------------------------------------------------------------------
+/** \classt GapBuildTreeHelpers
+ *  \brief GapBuildTreeHelpers jest klasą funkcji pomocniczych do szkieletyzacji obrazu i budowania drzewa.
+ */
+class GapBuildTreeHelpers
+{
+public:
 
-strukturaObrazu reskalowanie (strukturaObrazu par1, float par2, float par3);
+    static strukturaObrazu itkImageToStructure(ImageType::Pointer par1);
 
-strukturaObrazu wth (strukturaObrazu par1, float par2);
+    static ImageType::Pointer StructureToItkImage(strukturaObrazu par1);
 
-strukturaObrazu bth (strukturaObrazu par1, float par2);
+    static strukturaObrazu openAnalyzeImage(std::string par1);
 
-strukturaObrazu dylatacja (strukturaObrazu par1, float par2);
+    static strukturaObrazu gaussianFilter(strukturaObrazu par1, float par2);
 
-strukturaObrazu erozja (strukturaObrazu par1, float par2);
+    static void saveImage(strukturaObrazu par1, std::string par2);
 
-strukturaObrazu rozrost (strukturaObrazu par1, float par2, float par3, float par4, float par5, float par6);
+    static strukturaObrazu reskalowanie (strukturaObrazu par1, float par2, float par3);
 
-strukturaObrazu rozrost_automatyczny (strukturaObrazu par1, float par2, float par3);
+    static strukturaObrazu wth (strukturaObrazu par1, float par2);
 
-strukturaObrazu wypelnianie (strukturaObrazu par1, float par2, float par3);
+    static strukturaObrazu bth (strukturaObrazu par1, float par2);
 
-strukturaObrazu pocienianie (strukturaObrazu par1);
+    static strukturaObrazu dylatacja (strukturaObrazu par1, float par2);
 
-TreeSkeleton szacowanie_polaczen(strukturaObrazu par1);
+    static strukturaObrazu erozja (strukturaObrazu par1, float par2);
 
-TreeSkeleton skeletonToTree(strukturaObrazu inputImage);
+    static strukturaObrazu rozrost (strukturaObrazu par1, float par2, float par3, float par4, float par5, float par6);
 
-TreeSkeleton szacowanie_srednicy(strukturaObrazu par1, TreeSkeleton par2);
+    static strukturaObrazu rozrost_automatyczny (strukturaObrazu par1, float par2, float par3);
 
-strukturaObrazu rescaleIntensity( strukturaObrazu par1, float min = 0, float max = 255 );
+    static strukturaObrazu wypelnianie (strukturaObrazu par1, float par2, float par3);
 
+    static strukturaObrazu pocienianie (strukturaObrazu par1);
+
+    static TreeSkeleton szacowanie_polaczen(strukturaObrazu par1);
+
+/** Analizuje obraz rastrowy ze szkieletem i buduje drzewo.
+ * \param image wejściowy obraz rastrowy, voksele szkieletu dane liczbami większymi od zera pozostałe wyzeorwane.
+ * \returns zwrace klasę zbudowanego drzewa
+ * \author Piotr M. Szczypiński
+*/
+    static TreeSkeleton skeletonToTree(strukturaObrazu image);
+
+    static TreeSkeleton szacowanie_srednicy(strukturaObrazu par1, TreeSkeleton par2);
+
+    static strukturaObrazu rescaleIntensity( strukturaObrazu par1, float min = 0, float max = 255 );
+};
 #endif // BUILDTREE_H

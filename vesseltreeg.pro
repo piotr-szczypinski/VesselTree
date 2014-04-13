@@ -33,21 +33,21 @@ INCLUDEPATH +=  "/usr/include/InsightToolkit/Common"\
 
 HEADERS += \
     treeskel.h \
-    buildtree.h \
     obraz.h \
     widget.h \
     mainWindow.h \
-    itkFunctions.h
+    gapimagehelper.h \
+    gapbuildtreehelper.h
 #    gapsurface.h
 
 SOURCES += \
     treeskel.cpp \
-    buildtree.cpp \
     obraz.cpp \
     main.cxx \
     widget.cpp \
     mainWindow.cxx \
-    itkFunctions.cxx
+    gapimagehelper.cpp \
+    gapbuildtreehelper.cpp
 #    gapsurface.cpp
 
 unix|win32: LIBS += \

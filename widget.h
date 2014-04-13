@@ -2,7 +2,7 @@
 #define widget_H
 
 #include <QWidget>
-#include "buildtree.h"
+#include "gapbuildtreehelper.h"
 
 #include <vtkPolyDataMapper.h>
 #include <vtkSmartPointer.h>
