@@ -1,5 +1,5 @@
-#ifndef GAPSURFACE_H
-#define GAPSURFACE_H
+#ifndef TREERENDER_H
+#define TREERENDER_H
 
 #include <vector>
 #include <string>
@@ -36,13 +36,13 @@
 #include <vtkSTLWriter.h>
 #include <vtkTriangleFilter.h>
 #include <vtkPolyDataConnectivityFilter.h>
-#include <vtkBooleanOperationPolyDataFilter.h>
-#include "treeskel.h"
+//??? #include <vtkBooleanOperationPolyDataFilter.h>
+#include "tree.h"
 
-/** \class GapGeometryHelpers
- *  \brief GapGeometryHelpers jest klasą funkcji pomocniczych do prezentacji obrazu raztrowego i drzewa naczyń krwionośnych.
+/** \class TreeRender
+ *  \brief TreeRender jest klasą funkcji pomocniczych do prezentacji obrazu raztrowego i drzewa naczyń krwionośnych.
  */
-class GapGeometryHelpers
+class TreeRender
 {
 public:
 /** \brief Tworzenie modelu geometrycznego na podstawie struktury galezi
@@ -53,7 +53,7 @@ public:
  *  \param par3 - promien sfery (1: promieñ równy oszacowanemu w rozgalezieniu)
  *  \returns Zwraca vtkActor zawierający model
  */
-  static vtkSmartPointer<vtkActor> returnActor(TreeSkeleton tree, float par1 = 0.2, bool par2 = true, float par3 = 1.1);
+  static vtkSmartPointer<vtkActor> returnActor(Tree tree, float par1 = 0.2, bool par2 = true, float par3 = 1.1);
 /**  \brief Tworzenie alternatywnego modelu geometrycznego (kule, linia centralna, bifurkacje i zakoñczenia) na podstawie struktury galezi
  *  Przygotowanie vtkActor do wyświetlenia
  *  \param tree - struktura galezi
@@ -61,19 +61,19 @@ public:
  *  \param par2 - ilosc punktow brana pod uwage przy budowie linii srodkowej (wszystkie - 1)
  *  \returns Zwraca wektor zawierający wiele vtkActor
  */
-  static std::vector< vtkSmartPointer<vtkActor> > returnActors(TreeSkeleton tree, float par1 = 0.05, float par2 = 0.5);
+  static std::vector< vtkSmartPointer<vtkActor> > returnActors(Tree tree, float par1 = 0.05, float par2 = 0.5);
 /**  \brief Tworzenie linii centralnej na podstawie struktury galezi
  *  Przygotowanie vtkActor do wyświetlenia
  *  \param tree - struktura galezi
  *  \param par1 - ilosc punktow brana pod uwage przy budowie linii srodkowej (wszystkie - 1)
  *  \returns Zwraca wektor zawierający wiele vtkActor
  */
-  static std::vector< vtkSmartPointer<vtkActor> > returnActors2(TreeSkeleton tree, float par1 = 0.5);
+  static std::vector< vtkSmartPointer<vtkActor> > returnActors2(Tree tree, float par1 = 0.5);
 
 
 /* \brief Function converts vessel tree boundatry to tiangle
  * mesh representation and saves it to an *.stl file.
- *  \param tree input TreeSkeleton class
+ *  \param tree input Tree class
  *  \param partial (0.0 - 1.0] fraction of nodes used in conversion
  *  \param file_name output file name
  */
@@ -83,7 +83,7 @@ public:
  * \param file_name nazwa pliku wyjściowego
  * \returns zwraca true gdy się uda albo false gdy się nie uda
  */
-  static bool saveModel (TreeSkeleton tree, float par1, const char* par2);
+  static bool saveModel (Tree tree, float par1, const char* par2);
 /**  \brief Tworzenie modelu geometrycznego na podstawie struktury galezi
  *  Zapis modelu do pliku .stl
  *  tree - struktura galezi
@@ -93,8 +93,8 @@ public:
  *  \param par4 - promien sfery (1: promień równy oszacowanemu w rozgalezieniu)
  *  \returns Zwraca wartosc true jezeli zapis do pliku sie powiodl
  */
-  static bool saveModel (TreeSkeleton tree, float par1, const char* par2, bool par3, float par4 = 1.1);
+  static bool saveModel (Tree tree, float par1, const char* par2, bool par3, float par4 = 1.1);
 
 };
 
-#endif // GAPSURFACE_H
+#endif // TREERENDER_H

@@ -17,16 +17,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "treeskel.h"
+#include "tree.h"
 
 //-------------------------------------------------------------------------------------
-TreeSkeleton::TreeSkeleton(double mindistance)
+Tree::Tree(double mindistance)
 {
     joinDistance = mindistance;
 }
 
 //-------------------------------------------------------------------------------------
-bool TreeSkeleton::saveTree(const char *fileName, unsigned int format)
+bool Tree::saveTree(const char *fileName, unsigned int format)
 {
     std::ofstream file;
     file.open(fileName);
@@ -76,14 +76,14 @@ bool TreeSkeleton::saveTree(const char *fileName, unsigned int format)
 }
 
 //-------------------------------------------------------------------------------------
-bool TreeSkeleton::loadTree(const char *fileName)
+bool Tree::loadTree(const char *fileName)
 {
     std::ifstream file;
     file.open(fileName);
     if (!file.is_open()) return false;
     if (!file.good()) return false;
 
-    TreeSkeleton newtree;
+    Tree newtree;
     std::string inputstring;
     file >> inputstring;
 
@@ -145,7 +145,7 @@ bool TreeSkeleton::loadTree(const char *fileName)
 }
 
 //-------------------------------------------------------------------------------------
-bool TreeSkeleton::addBranch(std::vector<NodeIn3D> branch)
+bool Tree::addBranch(std::vector<NodeIn3D> branch)
 {
     int n;
     int bsize = branch.size();
@@ -237,7 +237,7 @@ bool TreeSkeleton::addBranch(std::vector<NodeIn3D> branch)
 }
 
 //-------------------------------------------------------------------------------------
-bool TreeSkeleton::removeBranch(unsigned int ib)
+bool Tree::removeBranch(unsigned int ib)
 {
     int n;
     int bsize = branches.size();
@@ -345,27 +345,27 @@ bool TreeSkeleton::removeBranch(unsigned int ib)
 
 
 //-------------------------------------------------------------------------------------
-unsigned int TreeSkeleton::nodeCount(void)
+unsigned int Tree::nodeCount(void)
 {
     return nodes.size();
 }
 
 
 //-------------------------------------------------------------------------------------
-unsigned int TreeSkeleton::count(void)
+unsigned int Tree::count(void)
 {
     return branches.size();
 }
 
 //-------------------------------------------------------------------------------------
-int TreeSkeleton::count(unsigned int ib)
+int Tree::count(unsigned int ib)
 {
     if(ib >= branches.size()) return -1;
     return branches[ib].nodeIndex.size();
 }
 
 //-------------------------------------------------------------------------------------
-std::vector<NodeIn3D> TreeSkeleton::branch(unsigned int ib)
+std::vector<NodeIn3D> Tree::branch(unsigned int ib)
 {
     std::vector<NodeIn3D> r;
     if(ib >= branches.size()) return r;
@@ -378,7 +378,7 @@ std::vector<NodeIn3D> TreeSkeleton::branch(unsigned int ib)
 }
 
 //-------------------------------------------------------------------------------------
-NodeIn3D TreeSkeleton::node(unsigned int ib, unsigned int in)
+NodeIn3D Tree::node(unsigned int ib, unsigned int in)
 {
     NodeIn3D r;
     if(ib >= branches.size()) return r;
@@ -389,7 +389,7 @@ NodeIn3D TreeSkeleton::node(unsigned int ib, unsigned int in)
 }
 
 //-------------------------------------------------------------------------------------
-NodeIn3D TreeSkeleton::node(unsigned int i)
+NodeIn3D Tree::node(unsigned int i)
 {
     NodeIn3D r;
     if(i >= nodes.size()) return r;
@@ -398,7 +398,7 @@ NodeIn3D TreeSkeleton::node(unsigned int i)
 }
 
 //-------------------------------------------------------------------------------------
-bool TreeSkeleton::setNode(NodeIn3D node, unsigned int i)
+bool Tree::setNode(NodeIn3D node, unsigned int i)
 {
     if(i >= nodes.size()) return false;
     nodes[i] = node;
@@ -406,7 +406,7 @@ bool TreeSkeleton::setNode(NodeIn3D node, unsigned int i)
 }
 
 /*
-bool TreeSkeleton::addPoint(double x, double y, double z, unsigned int con, unsigned int dia)
+bool Tree::addPoint(double x, double y, double z, unsigned int con, unsigned int dia)
 {
     NodeIn3D input;
     input.x = x;

@@ -1,9 +1,10 @@
-#include "gapimagehelper.h"
+#include "image.h"
+#include "imagefilters.h"
 
-strukturaObrazu GapImageHelpers::itkImageToStructure(ImageType::Pointer par1)
+ImageStructure ImageFilters::itkImageToStructure(ImageType::Pointer par1)
 {
     //--Konwersja obrazu w formacie ITK do postaci struktury--//
-    strukturaObrazu tempImage;
+    ImageStructure tempImage;
 
     for(int i = 0; i<par1->GetLargestPossibleRegion().GetImageDimension(); i++)
     {
@@ -18,7 +19,7 @@ strukturaObrazu GapImageHelpers::itkImageToStructure(ImageType::Pointer par1)
     return tempImage;
 }
 
-ImageType::Pointer GapImageHelpers::StructureToItkImage(strukturaObrazu par1)
+ImageType::Pointer ImageFilters::StructureToItkImage(ImageStructure par1)
 {
     //--Konwersja struktury obrazu do formatu ITK--//
     ImageType::Pointer emptyImage = ImageType::New();
@@ -48,7 +49,7 @@ ImageType::Pointer GapImageHelpers::StructureToItkImage(strukturaObrazu par1)
     return emptyImage;
 }
 
-strukturaObrazu GapImageHelpers::openAnalyzeImage(std::string par1)
+ImageStructure ImageFilters::openAnalyzeImage(std::string par1)
 {
     //--Wczytanie obrazu w formacie .nii, .hdr, .img--//
     ReaderType::Pointer      reader = ReaderType::New();
@@ -58,7 +59,7 @@ strukturaObrazu GapImageHelpers::openAnalyzeImage(std::string par1)
     return itkImageToStructure(reader->GetOutput());
 }
 
-strukturaObrazu GapImageHelpers::rescaleIntensity( strukturaObrazu par1, float min, float max )
+ImageStructure ImageFilters::rescaleIntensity( ImageStructure par1, float min, float max )
 {
     RescaleFilterType::Pointer rescale = RescaleFilterType::New();
     rescale->SetInput( StructureToItkImage(par1) );
@@ -68,7 +69,7 @@ strukturaObrazu GapImageHelpers::rescaleIntensity( strukturaObrazu par1, float m
     return itkImageToStructure(rescale->GetOutput());
 }
 
-strukturaObrazu GapImageHelpers::gaussianFilter(strukturaObrazu par1, float par2)
+ImageStructure ImageFilters::gaussianFilter(ImageStructure par1, float par2)
 {
     //--Filtracja gausowska, par2 odpowiedzialny za rozmycie--//
     GaussianFilterType::Pointer     gaussian = GaussianFilterType::New();
@@ -78,7 +79,7 @@ strukturaObrazu GapImageHelpers::gaussianFilter(strukturaObrazu par1, float par2
     return itkImageToStructure(gaussian->GetOutput());
 }
 
-strukturaObrazu GapImageHelpers::hessianFilter(strukturaObrazu par1, float par2)
+ImageStructure ImageFilters::hessianFilter(ImageStructure par1, float par2)
 {
     //-- Filtracja hessego z dan¹ wartoœci¹ sigma (par2) --//
     HessianFilterType::Pointer hessian = HessianFilterType::New();
@@ -90,7 +91,7 @@ strukturaObrazu GapImageHelpers::hessianFilter(strukturaObrazu par1, float par2)
     return itkImageToStructure(vesselnessFilter->GetOutput());
 }
 
-strukturaObrazu GapImageHelpers::mipTwoImages(strukturaObrazu par1, strukturaObrazu par2, float par3)
+ImageStructure ImageFilters::mipTwoImages(ImageStructure par1, ImageStructure par2, float par3)
 {
     //-- z³o¿enie dwóch obrazów w jeden za zasadzie rzutowania najwiêkszych jasnoœci, (par3 jest wspó³czynnikiem sumowania) --//
     ImageType::Pointer mipImage = ImageType::New();
@@ -99,7 +100,7 @@ strukturaObrazu GapImageHelpers::mipTwoImages(strukturaObrazu par1, strukturaObr
     inputImage = StructureToItkImage(par1);
 
     ConstIteratorType inputIterator(inputImage, inputImage->GetRequestedRegion());
-    IteratorType      mipIterator(mipImage, mipImage->GetRequestedRegion());
+    IteratorType mipIterator(mipImage, mipImage->GetRequestedRegion());
     for ( inputIterator.GoToBegin(), mipIterator.GoToBegin(); !inputIterator.IsAtEnd(); ++inputIterator, ++mipIterator)
     {
         if (par3*(inputIterator.Get())> mipIterator.Get()){mipIterator.Set(inputIterator.Get());}
@@ -107,7 +108,7 @@ strukturaObrazu GapImageHelpers::mipTwoImages(strukturaObrazu par1, strukturaObr
     return itkImageToStructure(mipImage);
 }
 
-strukturaObrazu GapImageHelpers::RegionGrowing(strukturaObrazu par1, float par2, float par3, std::vector<unsigned int> coord)
+ImageStructure ImageFilters::RegionGrowing(ImageStructure par1, float par2, float par3, std::vector<unsigned int> coord)
 {
     //-- rozrost obszaru od zarodka (coord), par2 i par3 to odpowiednio próg dolny i górny
     ConnectedFilterType::Pointer ct = ConnectedFilterType::New();
@@ -123,7 +124,7 @@ strukturaObrazu GapImageHelpers::RegionGrowing(strukturaObrazu par1, float par2,
     std::cout<<"region growing"<<std::endl;
 }
 
-strukturaObrazu GapImageHelpers::CreateEmptyStructure(strukturaObrazu par1)
+ImageStructure ImageFilters::CreateEmptyStructure(ImageStructure par1)
 {
     //-- Tworzenie pustego obrazu ktory poslozy do operacji MIP kolejnych operacji filtracji --//
     ImageType::RegionType Region;
@@ -146,10 +147,10 @@ strukturaObrazu GapImageHelpers::CreateEmptyStructure(strukturaObrazu par1)
     return itkImageToStructure(emptyImage);
 }
 
-strukturaObrazu GapImageHelpers::MultiscaleHessianAlgorithm(strukturaObrazu par1, float sigmaMin, float sigmaMax, int noOfScales)
+ImageStructure ImageFilters::MultiscaleHessianAlgorithm(ImageStructure par1, float sigmaMin, float sigmaMax, int noOfScales)
 {
     //wieloskalowa filtracja hessego (noOfScales - iloœæ powtórzeñ), od warotœci minimalnej (sigmaMin) do maksymalnej (sigmaMax)--//
-    strukturaObrazu img;
+    ImageStructure img;
 
     img = CreateEmptyStructure(par1);
 
@@ -163,7 +164,7 @@ strukturaObrazu GapImageHelpers::MultiscaleHessianAlgorithm(strukturaObrazu par1
     return img;
 }
 
-std::vector<unsigned int> GapImageHelpers::FindSeed(strukturaObrazu par1)
+std::vector<unsigned int> ImageFilters::FindSeed(ImageStructure par1)
 {
     //--Automatyczne znalezienie punktu startowego do rozrostu obszaru
     ImageType::RegionType MiniRegion;
@@ -196,7 +197,7 @@ std::vector<unsigned int> GapImageHelpers::FindSeed(strukturaObrazu par1)
     return point;
 }
 
-double GapImageHelpers::FindMaximumValue(strukturaObrazu par1)
+double ImageFilters::FindMaximumValue(ImageStructure par1)
 {
     //--Wartoœæ maksymalna
     ImageCalculatorFilterType::Pointer imageCalculatorFilter = ImageCalculatorFilterType::New ();
@@ -205,7 +206,7 @@ double GapImageHelpers::FindMaximumValue(strukturaObrazu par1)
     return imageCalculatorFilter->GetMaximum();
 }
 
-double GapImageHelpers::FindMinimumValue(strukturaObrazu par1)
+double ImageFilters::FindMinimumValue(ImageStructure par1)
 {
     //--Wartoœæ minimalna
     ImageCalculatorFilterType::Pointer imageCalculatorFilter = ImageCalculatorFilterType::New ();
@@ -214,7 +215,7 @@ double GapImageHelpers::FindMinimumValue(strukturaObrazu par1)
     return imageCalculatorFilter->GetMinimum();
 }
 
-void GapImageHelpers::saveImage(strukturaObrazu par1, std::string par2)
+void ImageFilters::saveImage(ImageStructure par1, std::string par2)
 {
     //--Zapis obrazu na dysk, par2 to nazwa pliku--//
     WriterType::Pointer      writer = WriterType::New();
@@ -223,10 +224,10 @@ void GapImageHelpers::saveImage(strukturaObrazu par1, std::string par2)
     writer->Update();
 }
 
-strukturaObrazu GapImageHelpers::HVSalgorithm(strukturaObrazu par1, int noOfScales, float thresholdPercent)
+ImageStructure ImageFilters::HVSalgorithm(ImageStructure par1, int noOfScales, float thresholdPercent)
 {
     //--Pe³ny algorytm detekcji naczyñ wyko¿ystuj¹cy wieloskalow¹filtracje i rozrost obszaru
-    strukturaObrazu img;
+    ImageStructure img;
     img = MultiscaleHessianAlgorithm(par1, 0.1, 2.0, noOfScales);
     saveImage(img, "plikTEMP.nii");
     std::vector<unsigned int> point2;

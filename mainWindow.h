@@ -5,7 +5,7 @@
 #include <QtCore>
 #include <QtGui>
 
-#include "widget.h"
+#include "renderitqt.h"
 
 namespace Ui {
     class MainWindow;
@@ -21,8 +21,8 @@ public:
 
 private:
     Ui::MainWindow *ui;
-    widget *wi;
-    Obraz *mojaKlasa;
+    RenderITQt *wi;
+    Image *mojaKlasa;
 
 private slots:
 

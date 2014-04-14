@@ -17,8 +17,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef TREESKEL_H
-#define TREESKEL_H
+#ifndef TREE_H
+#define TREE_H
 
 #include <vector>
 #include <string>
@@ -83,15 +83,15 @@ struct BasicBranch
     std::vector<unsigned int> nodeIndex;
 };
 
-/* \struct TreeSkeletonStructure
- *  \brief TreeSkeletonStructure stores information on a vessel tree.
+/* \struct TreeStructure
+ *  \brief TreeStructure stores information on a vessel tree.
  *
- * TreeSkeletonStructure stores indexes of nodes building individual
+ * TreeStructure stores indexes of nodes building individual
  * branches in a vector of BasicBranch structures.
  * The corresponding nodes coordinate, connectivity and diameter are stored
  * in a vector of NodeIn3D structures.
- * User should not operate directly on the TreeSkeletonStructure.
- * Instead it is preferred to use functions of TreeSkeleton class
+ * User should not operate directly on the TreeStructure.
+ * Instead it is preferred to use functions of Tree class
  * to add or remove branches.
  */
 /** \struct TreeSkeletonStructure
@@ -105,7 +105,7 @@ struct BasicBranch
  * Zamiast tego należy korzystać z klasy TreeSkeleton implementującej
  * odpowiednie funkcje.
  */
-struct TreeSkeletonStructure
+struct TreeStructure
 {
     /** Lista węzłów*/
     std::vector <NodeIn3D> nodes;
@@ -114,11 +114,11 @@ struct TreeSkeletonStructure
 };
 
 //-------------------------------------------------------------------------------------
-/* \classt TreeSkeleton
- *  \brief TreeSkeleton derives from TreeSkeletonStructure.
+/* \classt Tree
+ *  \brief Tree derives from TreeStructure.
  *
- * TreeSkeleton defines functions to safely add and remove branches
- * in TreeSkeleton structure, query the number of nodes and branches,
+ * Tree defines functions to safely add and remove branches
+ * in Tree structure, query the number of nodes and branches,
  * to save and load data, etc.
  */
 /** \classt TreeSkeleton
@@ -131,13 +131,13 @@ struct TreeSkeletonStructure
  *
  * \author Piotr M. Szczypiński
  */
-class TreeSkeleton:TreeSkeletonStructure
+class Tree:TreeStructure
 {
 public:
 /** Konstruktor klasy. Parametr mindistance decyduje o łączeniu węzłów.
  * Jeśli odległość węzłą końcowego dodawanej gałęzi od istniejącego węzła
  * drzewa jest mniejsza od mindistance to węzły są ze sobą łączone w jeden.*/
-    TreeSkeleton(double mindistance = 0.5);
+    Tree(double mindistance = 0.5);
 
 /** Zapisuje drzewo do pliku o podanej nazwie i w jednym z kilku dostępnych
  * formatów
@@ -217,4 +217,4 @@ private:
     double joinDistance;
 };
 
-#endif // TREESKEL_H
+#endif // TREE_H

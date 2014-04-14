@@ -32,22 +32,27 @@ INCLUDEPATH +=  "/usr/include/InsightToolkit/Common"\
                 "/usr/include/InsightToolkit/Review"
 
 HEADERS += \
-    treeskel.h \
-    obraz.h \
-    widget.h \
     mainWindow.h \
-    gapimagehelper.h \
-    gapbuildtreehelper.h
+    buildtree.h \
+    tree.h \
+    image.h \
+    imagefilters.h \
+    treerender.h \
+    renderit.h \
+    renderitqt.h \
+    typedefsti.h
 #    gapsurface.h
 
 SOURCES += \
-    treeskel.cpp \
-    obraz.cpp \
     main.cxx \
-    widget.cpp \
     mainWindow.cxx \
-    gapimagehelper.cpp \
-    gapbuildtreehelper.cpp
+    buildtree.cpp \
+    tree.cpp \
+    image.cpp \
+    imagefilters.cpp \
+    treerender.cpp \
+    renderit.cpp \
+    renderitqt.cpp
 #    gapsurface.cpp
 
 unix|win32: LIBS += \
@@ -114,7 +119,6 @@ unix|win32: LIBS += \
 #                    -lITKAlgorithms-4
 
 FORMS += \
-    widget.ui \
     mainWindow.ui
 
 

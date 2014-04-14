@@ -19,6 +19,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#ifndef IMAGE_H
+#define IMAGE_H
+
 #include <iostream>
 #include <vector>
 
@@ -28,11 +31,11 @@ enum type
 {
     BOOL1, UCHAR8, INT16, FLOAT32, DOUBLE64
 };
-//! S T R U K T U R A    O B R A Z U
+
 /*!
-Struktura zawierająca niezbędne informacje o obrazie.
+ImageStructure zawiera niezbędne informacje o obrazie.
 */
-struct strukturaObrazu
+struct ImageStructure
 {
     std::vector<unsigned int> size; /*!< vektor - rozmiar obrazu w danym kierunku  */
     std::vector<double> spacing;    /*!< vektor - spacing w danym kierunku   */
@@ -42,12 +45,11 @@ struct strukturaObrazu
     void *imageData;                /*!< wskaźnik do danych   */
 };
 
-//! K L A S A    O B R A Z
 /*!
-Klasa Obraz zawiera podstawowe funkcje działające na strukturze obrazu. Wszystkie z nich napisane zostały w taki sposób
+Image - klasa zawiera podstawowe funkcje działające na strukturze obrazu. Wszystkie z nich napisane zostały w taki sposób
 aby użytkownik nie musiał kożystać z zewnętrznych bibliotek do przetwarzania obrazów.
 */
-class Obraz : strukturaObrazu
+class Image : ImageStructure
 {
 public:
     //! Informacja o ilości wymiarów obrazu
@@ -126,10 +128,12 @@ public:
     /*!
     \param image struktura obrazu
     */
-    void fillStructure(strukturaObrazu image);
-    //! Zwróć strukturę obrqazu
+    void fillStructure(ImageStructure image);
+    //! Zwróć strukturę obrazu
     /*!
     \return struktura obrazu
     */
-    strukturaObrazu returnStruct();
+    ImageStructure returnStruct();
 };
+
+#endif //IMAGE_H

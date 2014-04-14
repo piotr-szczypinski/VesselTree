@@ -1,4 +1,5 @@
 #include "mainWindow.h"
+#include "imagefilters.h"
 
 // W projekcie dodac sciezke do folderu z ui_widget.h do INCLUDEPATH
 // bo inaczej bedzie wojna miedzy systemowa
@@ -15,9 +16,8 @@ MainWindow::MainWindow(QWidget *parent) :
     //QWidget *wi = new widget();
     //ui->verticalLayout->addWidget(wi);
 
-    wi = new widget();
-    QWidget *miniWidget = wi;
-    ui->verticalLayout->addWidget(miniWidget);
+    wi = new RenderITQt();
+    setCentralWidget((QWidget*) wi);
 }
 
 MainWindow::~MainWindow()
@@ -34,17 +34,17 @@ void MainWindow::on_actionOpen_Image_triggered()
         return;
     }
     //itkFunctions itek;
-    mojaKlasa = new Obraz();
-    mojaKlasa->fillStructure(openAnalyzeImage(filePath.toStdString()));
-    wi->dodajObr(mojaKlasa);
-    wi->renderNewImage();
+    mojaKlasa = new Image();
+    mojaKlasa->fillStructure(ImageFilters::openAnalyzeImage(filePath.toStdString()));
+    wi->setImage(mojaKlasa);
+    //wi->renderNewImage();
 }
 
 void MainWindow::on_actionGaussian_Filter_triggered()
 {
     //itkFunctions itek;
-    mojaKlasa->fillStructure(gaussianFilter(mojaKlasa->returnStruct(), 2));
-    wi->update();
+    mojaKlasa->fillStructure(ImageFilters::gaussianFilter(mojaKlasa->returnStruct(), 2));
+    wi->updateImage(mojaKlasa);
 }
 
 void MainWindow::on_actionHessian_Filter_triggered()
@@ -56,17 +56,17 @@ void MainWindow::on_actionHessian_Filter_triggered()
 
 void MainWindow::on_actionChange_Background_Color_triggered()
 {
-    wi->changeBackgroundColor((float)(rand()%256)/256,(float)(rand()%256)/256,(float)(rand()%256)/256);
+    wi->setBackgroundColor((float)(rand()%256)/256,(float)(rand()%256)/256,(float)(rand()%256)/256);
 }
 
 void MainWindow::on_actionRemove_Raster_Image_triggered()
 {
-    wi->usunObr();
+    wi->removeImage();
 }
 
 void MainWindow::on_actionChange_Image_Color_triggered()
 {
-    wi->changeDataColor((float)(rand()%256)/256,(float)(rand()%256)/256,(float)(rand()%256)/256);
+    wi->setImageColor((float)(rand()%256)/256,(float)(rand()%256)/256,(float)(rand()%256)/256);
 }
 
 /*
@@ -101,34 +101,37 @@ void MainWindow::on_actionDraw_Model_triggered()
 
     if (!fileName.isEmpty())
     {
-        TreeSkeleton out;
+        Tree out;
         out.loadTree(fileName.toStdString().c_str());
-        wi->AddActor(wi->returnActor(out, 0.15));
+//        out.saveTree("aaaaaa.txt", 1);
+        wi->addTree(out, 0);
+//        wi->AddActor(wi->returnActor(out, 0.15));
     }
 }
 
 
 void MainWindow::on_actionChange_Model_Color_triggered()
 {
-    wi->changeActorColor((float)(rand()%256)/256,(float)(rand()%256)/256,(float)(rand()%256)/256);
+    wi->setTreeColor((float)(rand()%256)/256,(float)(rand()%256)/256,(float)(rand()%256)/256);
 }
 
 void MainWindow::on_actionOnOff_Transparency_triggered(bool checked)
 {
-    wi->SetTransparentOpticity(checked);
+    if(checked) wi->setImageOpacity();
+    else wi->setImageOpacity(0.0, 1.0);
 }
 
 void MainWindow::on_actionSet_Transparency_triggered()
 {
-    wi->SetTransparencyLevels(0,0.1);
+    wi->setImageOpacity(0,0.1);
 }
 
 void MainWindow::on_actionRemove_Model_triggered()
 {
-    wi->usunActor(0);
+    wi->removeTree(0);
 }
 
 void MainWindow::on_actionChange_Model_Opacity_triggered()
 {
-    wi->changeActorOpacity(0.2);
+    wi->setTreeOpacity(0.2, 0);
 }

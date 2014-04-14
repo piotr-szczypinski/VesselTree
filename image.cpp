@@ -19,13 +19,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "obraz.h"
+#include "image.h"
 
-int Obraz::dimensionality()
+int Image::dimensionality()
 {
     return size.size();
 }
-type Obraz::getType()
+type Image::getType()
 {
     switch(fileType)
     {
@@ -37,24 +37,24 @@ type Obraz::getType()
     }
     return fileType;
 }
-std::string Obraz::getShortNote()
+std::string Image::getShortNote()
 {
    return shortNote;
 }
-std::vector<unsigned int> Obraz::getSize()
+std::vector<unsigned int> Image::getSize()
 {
     return size;
 }
-std::vector<double> Obraz::getSpacing()
+std::vector<double> Image::getSpacing()
 {
     return spacing;
 }
-std::vector<double> Obraz::getOrigin()
+std::vector<double> Image::getOrigin()
 {
     return origin;
 }
 
-double Obraz::getValue(std::vector<int> coord)
+double Image::getValue(std::vector<int> coord)
 {
     unsigned int suma = 0, mnoznik = 1;
     for(int i = 0 ; i<coord.size() ; i++)
@@ -65,7 +65,7 @@ double Obraz::getValue(std::vector<int> coord)
     float *dane = (float*)(void*)imageData;
     return dane[suma];
 }
-double Obraz::getValue(int x, int y, int z)
+double Image::getValue(int x, int y, int z)
 {
     std::vector<int> coord;
     coord.push_back(x);
@@ -74,7 +74,7 @@ double Obraz::getValue(int x, int y, int z)
     return getValue(coord);
 }
 
-void* Obraz::getLinePointer(std::vector<int> coord, int direction)
+void* Image::getLinePointer(std::vector<int> coord, int direction)
 {
     coord[direction] = 0;
     unsigned int suma = 0, mnoznik = 1;
@@ -87,7 +87,7 @@ void* Obraz::getLinePointer(std::vector<int> coord, int direction)
 
     return  dane+suma;
 }
-void* Obraz::getSlice(std::vector<int> coord, int direction)
+void* Image::getSlice(std::vector<int> coord, int direction)
 {
     unsigned int suma = 0, mnoznik = 1;
     for(int i = 0 ; i<coord.size() ; i++)
@@ -100,7 +100,7 @@ void* Obraz::getSlice(std::vector<int> coord, int direction)
     return  dane+suma;
 }
 
-void Obraz::setValue(std::vector<int> coord, double value)
+void Image::setValue(std::vector<int> coord, double value)
 {
     unsigned int suma = 0, mnoznik = 1;
     for(int i = 0 ; i<coord.size() ; i++)
@@ -111,7 +111,7 @@ void Obraz::setValue(std::vector<int> coord, double value)
     float *dane = (float*)(void*)imageData;
     dane[suma] = value;
 }
-void Obraz::setValue(int x, int y, int z, double value)
+void Image::setValue(int x, int y, int z, double value)
 {
     std::vector<int> coord;
     coord.push_back(x);
@@ -121,7 +121,7 @@ void Obraz::setValue(int x, int y, int z, double value)
 
 }
 
-void Obraz::fillStructure(strukturaObrazu image)
+void Image::fillStructure(ImageStructure image)
 {
     fileType = image.fileType;
     imageData = image.imageData;
@@ -130,9 +130,9 @@ void Obraz::fillStructure(strukturaObrazu image)
     size = image.size;
     shortNote = image.shortNote;
 }
-strukturaObrazu Obraz::returnStruct()
+ImageStructure Image::returnStruct()
 {
-    strukturaObrazu tempImg;
+    ImageStructure tempImg;
     tempImg.fileType = fileType;
     tempImg.imageData = imageData;
     tempImg.spacing = spacing;

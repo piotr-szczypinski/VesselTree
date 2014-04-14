@@ -19,17 +19,37 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "gapbuildtreehelper.h"
+#include "buildtree.h"
 
 #include "itkImageDuplicator.h"
 #include <sstream>
 #include <iostream>
 #include <fstream>
+
+
+typedef itk::Image< float,3 > ImageType;
+typedef itk::ImageFileReader< ImageType > ReaderType;
+typedef itk::ConstantBoundaryCondition< ImageType > BoundaryConditionType;
+typedef itk::NeighborhoodIterator< ImageType > NeighborhoodIteratorType1;
+typedef itk::NeighborhoodIterator< ImageType, BoundaryConditionType> NeighborhoodIteratorType;
+typedef itk::ImageRegionIteratorWithIndex< ImageType > IteratorType;
+typedef itk::ImageFileWriter< ImageType >  WriterType;
+typedef itk::DiscreteGaussianImageFilter< ImageType, ImageType> GaussianFilterType;
+typedef itk::RescaleIntensityImageFilter< ImageType,ImageType> RescaleFilterType;
+typedef itk::BinaryBallStructuringElement< float, 3> StructuringElementType;
+typedef itk::WhiteTopHatImageFilter< ImageType, ImageType, StructuringElementType >WhiteFilterType;
+typedef itk::BlackTopHatImageFilter< ImageType, ImageType, StructuringElementType >BlackFilterType;
+typedef itk::GrayscaleDilateImageFilter <ImageType, ImageType, StructuringElementType>GrayscaleDilateImageFilterType;
+typedef itk::GrayscaleErodeImageFilter <ImageType, ImageType, StructuringElementType>GrayscaleErodeImageFilterType;
+typedef itk::ConnectedThresholdImageFilter< ImageType, ImageType > ConnectedFilterType;
+typedef itk::VotingBinaryIterativeHoleFillingImageFilter<ImageType > HoleFilterType;
+typedef itk::BinaryThinningImageFilter3D< ImageType, ImageType > ThinningFilterType;
+typedef itk::ImageToVTKImageFilter< ImageType > Connector;
 //----------------------------------------------------------------------------------------
-strukturaObrazu GapBuildTreeHelpers::itkImageToStructure(ImageType::Pointer par1)
+ImageStructure BuildTree::itkImageToStructure(itk::Image< float,3 >::Pointer par1)
 {
     //--Konwersja obrazu w formacie ITK do postaci struktury--//
-    strukturaObrazu tempImage;
+    ImageStructure tempImage;
 
     for(int i = 0; i<par1->GetLargestPossibleRegion().GetImageDimension(); i++)
     {
@@ -44,13 +64,13 @@ strukturaObrazu GapBuildTreeHelpers::itkImageToStructure(ImageType::Pointer par1
     return tempImage;
 }
 //----------------------------------------------------------------------------------------
-ImageType::Pointer GapBuildTreeHelpers::StructureToItkImage(strukturaObrazu par1)
+itk::Image< float,3 >::Pointer BuildTree::StructureToItkImage(ImageStructure par1)
 {
     //--Konwersja struktury obrazu do formatu ITK--//
-    ImageType::Pointer emptyImage = ImageType::New();
-    ImageType::RegionType Region;
-    ImageType::RegionType::IndexType Start;
-    ImageType::RegionType::SizeType Size;
+    itk::Image< float,3 >::Pointer emptyImage = itk::Image< float,3 >::New();
+    itk::Image< float,3 >::RegionType Region;
+    itk::Image< float,3 >::RegionType::IndexType Start;
+    itk::Image< float,3 >::RegionType::SizeType Size;
 
     double spac[3], orgi[3];
     for(int i = 0; i<3; i++)
@@ -74,7 +94,7 @@ ImageType::Pointer GapBuildTreeHelpers::StructureToItkImage(strukturaObrazu par1
     return emptyImage;
 }
 //----------------------------------------------------------------------------------------
-strukturaObrazu GapBuildTreeHelpers::openAnalyzeImage(std::string par1)
+ImageStructure BuildTree::openAnalyzeImage(std::string par1)
 {
     //--Wczytanie obrazu w formacie .nii, .hdr, .img--//
     ReaderType::Pointer      reader = ReaderType::New();
@@ -84,7 +104,7 @@ strukturaObrazu GapBuildTreeHelpers::openAnalyzeImage(std::string par1)
     return itkImageToStructure(reader->GetOutput());
 }
 //----------------------------------------------------------------------------------------
-strukturaObrazu GapBuildTreeHelpers::gaussianFilter(strukturaObrazu par1, float par2)
+ImageStructure BuildTree::gaussianFilter(ImageStructure par1, float par2)
 {
     //--Filtracja gausowska, par2 odpowiedzialny za rozmycie--//
     GaussianFilterType::Pointer     gaussian = GaussianFilterType::New();
@@ -94,7 +114,7 @@ strukturaObrazu GapBuildTreeHelpers::gaussianFilter(strukturaObrazu par1, float 
     return itkImageToStructure(gaussian->GetOutput());
 }
 //----------------------------------------------------------------------------------------
-void GapBuildTreeHelpers::saveImage(strukturaObrazu par1, std::string par2)
+void BuildTree::saveImage(ImageStructure par1, std::string par2)
 {
     //--Zapis obrazu na dysk, par2 to nazwa pliku--//
     WriterType::Pointer      writer = WriterType::New();
@@ -103,7 +123,7 @@ void GapBuildTreeHelpers::saveImage(strukturaObrazu par1, std::string par2)
     writer->Update();
 }
 //----------------------------------------------------------------------------------------
-strukturaObrazu GapBuildTreeHelpers::reskalowanie (strukturaObrazu par1, float par2, float par3)
+ImageStructure BuildTree::reskalowanie (ImageStructure par1, float par2, float par3)
 {
     //par2 - dolna wartoæ jasnoci
     //par3 - górna wartoæ jasnoci
@@ -115,7 +135,7 @@ strukturaObrazu GapBuildTreeHelpers::reskalowanie (strukturaObrazu par1, float p
     return itkImageToStructure(rescale->GetOutput());
 }
 //----------------------------------------------------------------------------------------
-strukturaObrazu GapBuildTreeHelpers::wth (strukturaObrazu par1, float par2)
+ImageStructure BuildTree::wth (ImageStructure par1, float par2)
 {
     //par2 - promieñ elementu strukturuj¹cego
     StructuringElementType ball;
@@ -128,7 +148,7 @@ strukturaObrazu GapBuildTreeHelpers::wth (strukturaObrazu par1, float par2)
     return itkImageToStructure(wtophat->GetOutput());
 }
 //----------------------------------------------------------------------------------------
-strukturaObrazu GapBuildTreeHelpers::bth (strukturaObrazu par1, float par2)
+ImageStructure BuildTree::bth (ImageStructure par1, float par2)
 {
     //par2 - promieñ elementu strukturuj¹cego
     StructuringElementType ball;
@@ -141,7 +161,7 @@ strukturaObrazu GapBuildTreeHelpers::bth (strukturaObrazu par1, float par2)
     return itkImageToStructure(btophat->GetOutput());
 }
 //----------------------------------------------------------------------------------------
-strukturaObrazu GapBuildTreeHelpers::dylatacja (strukturaObrazu par1, float par2)
+ImageStructure BuildTree::dylatacja (ImageStructure par1, float par2)
 {
     //par2 - promieñ elementu strukturuj¹cego
     StructuringElementType structuringElement;
@@ -154,7 +174,7 @@ strukturaObrazu GapBuildTreeHelpers::dylatacja (strukturaObrazu par1, float par2
     return itkImageToStructure(dilateFilter->GetOutput());
 }
 //----------------------------------------------------------------------------------------
-strukturaObrazu GapBuildTreeHelpers::erozja (strukturaObrazu par1, float par2)
+ImageStructure BuildTree::erozja (ImageStructure par1, float par2)
 {
     //par2 - promieñ elementu strukturuj¹cego
     StructuringElementType structuringElement;
@@ -167,7 +187,7 @@ strukturaObrazu GapBuildTreeHelpers::erozja (strukturaObrazu par1, float par2)
     return itkImageToStructure(erodeFilter->GetOutput());
 }
 //----------------------------------------------------------------------------------------
-strukturaObrazu GapBuildTreeHelpers::rozrost (strukturaObrazu par1, float par2, float par3, float par4, float par5, float par6)
+ImageStructure BuildTree::rozrost (ImageStructure par1, float par2, float par3, float par4, float par5, float par6)
 {
     //par2 - wartoæ dolnego progu
     //par3 - wartoæ górnego progu
@@ -186,7 +206,7 @@ strukturaObrazu GapBuildTreeHelpers::rozrost (strukturaObrazu par1, float par2, 
     return itkImageToStructure(connectedThreshold->GetOutput());
 }
 //----------------------------------------------------------------------------------------
-strukturaObrazu GapBuildTreeHelpers::rozrost_automatyczny (strukturaObrazu par1, float par2, float par3)
+ImageStructure BuildTree::rozrost_automatyczny (ImageStructure par1, float par2, float par3)
 {
     //par2 - dolny zakres progu
     //par3 - górny zakres progu
@@ -325,7 +345,7 @@ strukturaObrazu GapBuildTreeHelpers::rozrost_automatyczny (strukturaObrazu par1,
     return itkImageToStructure(connectedThreshold->GetOutput());
 }
 //----------------------------------------------------------------------------------------
-strukturaObrazu GapBuildTreeHelpers::wypelnianie (strukturaObrazu par1, float par2, float par3)
+ImageStructure BuildTree::wypelnianie (ImageStructure par1, float par2, float par3)
 {
     //par2 - promieñ elementu strukturuj¹cego
     //par3 - maksymalna liczba iteracji
@@ -344,7 +364,7 @@ strukturaObrazu GapBuildTreeHelpers::wypelnianie (strukturaObrazu par1, float pa
     return itkImageToStructure(holefilling->GetOutput());
 }
 //----------------------------------------------------------------------------------------
-strukturaObrazu GapBuildTreeHelpers::pocienianie (strukturaObrazu par1)
+ImageStructure BuildTree::pocienianie (ImageStructure par1)
 {
     ThinningFilterType::Pointer thinningFilter = ThinningFilterType::New();
     thinningFilter->SetInput( StructureToItkImage(par1) );
@@ -353,7 +373,7 @@ strukturaObrazu GapBuildTreeHelpers::pocienianie (strukturaObrazu par1)
 }
 
 //----------------------------------------------------------------------------------------
-TreeSkeleton GapBuildTreeHelpers::skeletonToTree(strukturaObrazu image)
+Tree BuildTree::skeletonToTree(ImageStructure image)
 {
     ImageType::Pointer inputKImage = StructureToItkImage(image);
 
@@ -410,7 +430,7 @@ TreeSkeleton GapBuildTreeHelpers::skeletonToTree(strukturaObrazu image)
     ImageType::Pointer bufferImage = duplicator->GetOutput();
 
 // Branch tracking based on flood-fill algorithm with stack
-    TreeSkeleton treeToCreate;
+    Tree treeToCreate;
     std::vector<NodeIn3D> newBranch;
     std::vector<Index3DNeighbor> bifurStack;
     NodeIn3D newNode;
@@ -477,11 +497,11 @@ TreeSkeleton GapBuildTreeHelpers::skeletonToTree(strukturaObrazu image)
 //----------------------------------------------------------------------------------------
 
 /*
-TreeSkeletonStructure GapBuildTreeHelpers::szacowanie_polaczen(strukturaObrazu par1)
+TreeStructure BuildTree::szacowanie_polaczen(ImageStructure par1)
 {
     //par1 - obraz scieniony(zawieraj�cy linie centralne)
     BasicBranch sb;
-    TreeSkeleton tr;
+    Tree tr;
 
      //----------regiony
     ImageType::RegionType Region;
@@ -921,7 +941,7 @@ TreeSkeletonStructure GapBuildTreeHelpers::szacowanie_polaczen(strukturaObrazu p
 */
 
 //----------------------------------------------------------------------------------------
-TreeSkeleton GapBuildTreeHelpers::szacowanie_srednicy(strukturaObrazu par1, TreeSkeleton par2)
+Tree BuildTree::szacowanie_srednicy(ImageStructure par1, Tree par2)
 {
     //par1 - obraz binarny po segmentacji
     //par2 - czêciowo uzupe³niona struktura zwrócona przez funkcjê szacowanie_polaczen
@@ -1004,7 +1024,7 @@ TreeSkeleton GapBuildTreeHelpers::szacowanie_srednicy(strukturaObrazu par1, Tree
 }
 //----------------------------------------------------------------------------------------
 
-strukturaObrazu GapBuildTreeHelpers::rescaleIntensity( strukturaObrazu par1, float min, float max )
+ImageStructure BuildTree::rescaleIntensity( ImageStructure par1, float min, float max )
 {
     RescaleFilterType::Pointer rescale = RescaleFilterType::New();
     rescale->SetInput( StructureToItkImage(par1) );

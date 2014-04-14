@@ -1,12 +1,12 @@
-#include "gapsurface.h"
+#include "treerender.h"
 
 //-------------------------------------------------------------------------------------
-bool GapGeometryHelpers::saveModel (TreeSkeleton tree, float par1, const char* par2)
+bool TreeRender::saveModel (Tree tree, float par1, const char* par2)
 {
     //par1 - iloæ punktów brana pod uwagê przy budowie modelu (wszystkie - 1)
     //par2 - cie¿ka do pliku, który ma byæ zapisany
-    vtkSmartPointer<vtkBooleanOperationPolyDataFilter> booleanOperation = vtkSmartPointer<vtkBooleanOperationPolyDataFilter>::New();
-    booleanOperation->SetOperationToUnion();
+//???    vtkSmartPointer<vtkBooleanOperationPolyDataFilter> booleanOperation = vtkSmartPointer<vtkBooleanOperationPolyDataFilter>::New();
+//???    booleanOperation->SetOperationToUnion();
     vtkSmartPointer<vtkPolyData> boolCopy = vtkSmartPointer<vtkPolyData>::New();
     int count_boolean = 0;
     for (int i = 0;i<tree.count();i++)
@@ -67,7 +67,7 @@ bool GapGeometryHelpers::saveModel (TreeSkeleton tree, float par1, const char* p
 
             vtkTriangleFilter *triangle = vtkTriangleFilter::New();
             triangle->SetInput(tuber->GetOutput());
-
+/*???
             if (count_boolean == 0)
             {
                 booleanOperation->SetInput(0,triangle->GetOutput());
@@ -87,24 +87,29 @@ bool GapGeometryHelpers::saveModel (TreeSkeleton tree, float par1, const char* p
                 boolCopy = booleanOperation2->GetOutput();
                 boolCopy->Update();
             }
+            */
             count_boolean++;
         }
     }
     //---------- stl
+
+/*???
     vtkSmartPointer<vtkSTLWriter> stlWriter = vtkSmartPointer<vtkSTLWriter>::New();
     stlWriter->SetFileName(par2);
     stlWriter->SetFileTypeToASCII();
     stlWriter->SetInputConnection(boolCopy->GetProducerPort());
     stlWriter->Write();
+
+    */
     return true;
 }
 
 
 //-------------------------------------------------------------------------------------
-bool GapGeometryHelpers::saveModel (TreeSkeleton tree, float par1, const char* par2, bool par3, float par4)
+bool TreeRender::saveModel (Tree tree, float par1, const char* par2, bool par3, float par4)
 {
-    vtkSmartPointer<vtkBooleanOperationPolyDataFilter> booleanOperation = vtkSmartPointer<vtkBooleanOperationPolyDataFilter>::New();
-    booleanOperation->SetOperationToUnion();
+//???    vtkSmartPointer<vtkBooleanOperationPolyDataFilter> booleanOperation = vtkSmartPointer<vtkBooleanOperationPolyDataFilter>::New();
+//???    booleanOperation->SetOperationToUnion();
     vtkSmartPointer<vtkPolyData> boolCopy = vtkSmartPointer<vtkPolyData>::New();
     int count_boolean = 0;
     for (int i = 0;i<tree.count();i++)
@@ -168,7 +173,7 @@ bool GapGeometryHelpers::saveModel (TreeSkeleton tree, float par1, const char* p
 
             vtkTriangleFilter *triangle = vtkTriangleFilter::New();
             triangle->SetInput(tuber->GetOutput());
-
+/*???
             if (count_boolean == 0)
             {
                 booleanOperation->SetInput(0,triangle->GetOutput());
@@ -188,6 +193,8 @@ bool GapGeometryHelpers::saveModel (TreeSkeleton tree, float par1, const char* p
                 boolCopy = booleanOperation2->GetOutput();
                 boolCopy->Update();
             }
+            */
+
             count_boolean++;
             vtkSmartPointer<vtkSphereSource> polygonSource = vtkSmartPointer<vtkSphereSource>::New();
             if(conn == 3 && par3 == true)
@@ -195,6 +202,8 @@ bool GapGeometryHelpers::saveModel (TreeSkeleton tree, float par1, const char* p
                 polygonSource->SetRadius(rad*par4);
                 polygonSource->SetCenter(xxx,yyy,zzz);
                 polygonSource->Update();
+
+/*???
                 if (count_boolean == 0)
                 {
                     booleanOperation->SetInput(0,polygonSource->GetOutput());
@@ -214,22 +223,26 @@ bool GapGeometryHelpers::saveModel (TreeSkeleton tree, float par1, const char* p
                     boolCopy = booleanOperation2->GetOutput();
                     boolCopy->Update();
                 }
+                */
+
                 count_boolean++;
                 }
     }
     //---------- stl
+/*
     vtkSmartPointer<vtkSTLWriter> stlWriter = vtkSmartPointer<vtkSTLWriter>::New();
     stlWriter->SetFileName(par2);
     stlWriter->SetFileTypeToASCII();
     stlWriter->SetInputConnection(boolCopy->GetProducerPort());
     stlWriter->Write();
+    */
     return true;
 }
 //-------------------------------------------------------------
-vtkSmartPointer<vtkActor> GapGeometryHelpers::returnActor(TreeSkeleton tree, float par1, bool par2, float par3)
+vtkSmartPointer<vtkActor> TreeRender::returnActor(Tree tree, float par1, bool par2, float par3)
 {
-    vtkSmartPointer<vtkBooleanOperationPolyDataFilter> booleanOperation = vtkSmartPointer<vtkBooleanOperationPolyDataFilter>::New();
-    booleanOperation->SetOperationToUnion();
+//???    vtkSmartPointer<vtkBooleanOperationPolyDataFilter> booleanOperation = vtkSmartPointer<vtkBooleanOperationPolyDataFilter>::New();
+//???    booleanOperation->SetOperationToUnion();
     vtkSmartPointer<vtkPolyData> boolCopy = vtkSmartPointer<vtkPolyData>::New();
     int count_boolean = 0;
     for (int i = 0;i<tree.count();i++)
@@ -293,7 +306,7 @@ vtkSmartPointer<vtkActor> GapGeometryHelpers::returnActor(TreeSkeleton tree, flo
 
             vtkTriangleFilter *triangle = vtkTriangleFilter::New();
             triangle->SetInput(tuber->GetOutput());
-
+/*???
             if (count_boolean == 0)
             {
                 booleanOperation->SetInput(0,triangle->GetOutput());
@@ -313,6 +326,7 @@ vtkSmartPointer<vtkActor> GapGeometryHelpers::returnActor(TreeSkeleton tree, flo
                 boolCopy = booleanOperation2->GetOutput();
                 boolCopy->Update();
             }
+            */
             count_boolean++;
             vtkSmartPointer<vtkSphereSource> polygonSource = vtkSmartPointer<vtkSphereSource>::New();
             if(conn == 3 && par2 == true)
@@ -320,6 +334,7 @@ vtkSmartPointer<vtkActor> GapGeometryHelpers::returnActor(TreeSkeleton tree, flo
                 polygonSource->SetRadius(rad*par3);
                 polygonSource->SetCenter(xxx,yyy,zzz);
                 polygonSource->Update();
+/*???
                 if (count_boolean == 0)
                 {
                     booleanOperation->SetInput(0,polygonSource->GetOutput());
@@ -339,6 +354,8 @@ vtkSmartPointer<vtkActor> GapGeometryHelpers::returnActor(TreeSkeleton tree, flo
                     boolCopy = booleanOperation2->GetOutput();
                     boolCopy->Update();
                 }
+                */
+
                 count_boolean++;
            }
     }
@@ -352,7 +369,7 @@ vtkSmartPointer<vtkActor> GapGeometryHelpers::returnActor(TreeSkeleton tree, flo
        return actor;
 }
 //------------------------------------------------------------------------
-std::vector< vtkSmartPointer<vtkActor> > GapGeometryHelpers::returnActors(TreeSkeleton tree, float par1, float par2)
+std::vector< vtkSmartPointer<vtkActor> > TreeRender::returnActors(Tree tree, float par1, float par2)
 {
 
     vtkSmartPointer<vtkPoints> pointsG = vtkSmartPointer<vtkPoints>::New();
@@ -597,7 +614,7 @@ std::vector< vtkSmartPointer<vtkActor> > GapGeometryHelpers::returnActors(TreeSk
       return actors;
 }
 //------------------------------------------------------------------------------
-std::vector< vtkSmartPointer<vtkActor> > GapGeometryHelpers::returnActors2(TreeSkeleton tree, float par1)
+std::vector< vtkSmartPointer<vtkActor> > TreeRender::returnActors2(Tree tree, float par1)
 {
     std::vector<vtkSmartPointer<vtkActor> > actors;
       for (int i = 0;i<tree.count();i++)
