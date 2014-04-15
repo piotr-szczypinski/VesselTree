@@ -39,7 +39,7 @@ public:
     int removeTree(int id = -1);
     void cameraReset();
     void setBackgroundColor(float r, float g, float b);
-    void setImageColor(float r, float g, float b);
+    void setImageColor(float r, float g, float b, float min = 0.0, float max = 255.0);
     void setImageOpacity(float min=1.0, float max=1.0);
     int setTreeColor(float r, float g, float b, unsigned int id = -1);
     int setTreeOpacity(float o, unsigned int id);

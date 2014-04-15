@@ -114,11 +114,11 @@ void RenderIT::setBackgroundColor(float r, float g, float b)
     renderer->SetBackground(r, g, b);
     renderer->GetRenderWindow()->Render();
 }
-void RenderIT::setImageColor(float r, float g, float b)
+void RenderIT::setImageColor(float r, float g, float b, float min, float max)
 {
     colorTransferFunction->RemoveAllPoints();
-    colorTransferFunction->AddRGBPoint(0,   0.0, 0.0, 0.0);
-    colorTransferFunction->AddRGBPoint(255, r, g, b);
+    colorTransferFunction->AddRGBPoint(min,   0.0, 0.0, 0.0);
+    colorTransferFunction->AddRGBPoint(max, r, g, b);
     if(renderer->GetRenderWindow() != NULL) renderer->GetRenderWindow()->Render();
 }
 int RenderIT::setTreeColor(float r, float g, float b, unsigned int id)
