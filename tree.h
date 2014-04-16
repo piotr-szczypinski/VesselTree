@@ -120,8 +120,9 @@ struct TreeStructure
  * Tree defines functions to safely add and remove branches
  * in Tree structure, query the number of nodes and branches,
  * to save and load data, etc.
+ * See example createtree.cpp: @include createtree.cpp
  */
-/** \classt TreeSkeleton
+/** \class TreeSkeleton
  *  \brief TreeSkeleton dziedziczy z TreeSkeletonStructure i implementuje
  *  funkcje dostępu.
  *
@@ -130,6 +131,8 @@ struct TreeStructure
  * gałęzi, zapisu do pliku i odczytu z pliku.
  *
  * \author Piotr M. Szczypiński
+ *
+ * Przykład createtree.cpp: \include createtree.cpp
  */
 class Tree:TreeStructure
 {

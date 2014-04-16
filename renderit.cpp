@@ -196,12 +196,27 @@ void RenderITWindow::show(void)
     renderWindowInteractor->Start();
 }
 
+#if defined(WIN32) || defined(_WIN32) || defined(WIN64) || defined(_WIN64)
+RenderITWindow* threadPointerRenderITWindow;
+DWORD WINAPI threadFunctionShowRenderITWindow(LPVOID lpParam)
+{
+    threadFunctionRenderITWindow->show();
+    return 0;
+}
 void RenderITWindow::showAndGo(void)
 {
-
-#if defined(WIN32) || defined(_WIN32) || defined(WIN64) || defined(_WIN64)
-    show();
+    threadPointerRenderITWindow = this;
+    CreateThread(
+                NULL,                               // default security attributes
+                0,                                  // use default stack size
+                threadFunctionShowRenderITWindow,   // thread function name
+                0,                                  // argument to thread function
+                0,                                  // use default creation flags
+                NULL);                              // returns the thread identifier
+}
 #else
+void RenderITWindow::showAndGo(void)
+{
     pid_t child_pid;
     child_pid = fork();
     if(child_pid == 0)
@@ -209,5 +224,5 @@ void RenderITWindow::showAndGo(void)
         show();
         exit(0);
     }
-#endif
 }
+#endif

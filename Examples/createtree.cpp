@@ -1,3 +1,7 @@
+/** @example createtree.cpp
+ * Przykład pokazuje jak załadować obraz, zbinaryzować go, wyznaczyć szkielet,
+ * zamienić obraz rastrowy na opis drzewa i zapisać wynik.
+ */
 #include "tree.h"
 #include "buildtree.h"
 

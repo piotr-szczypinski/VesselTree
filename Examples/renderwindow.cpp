@@ -1,3 +1,9 @@
+/** \example renderwindow.cpp
+ * Przykład pokazuje jak załadować obraz rastrowy i opis drzewa z plików a następnie wyświetlić je w oknie.
+ * \image html renderwindow.jpg
+ * \image latex renderwindow.eps
+ */
+
 #include "tree.h"
 #include "buildtree.h"
 #include "image.h"
@@ -6,23 +12,16 @@
 int main(int argc, char *argv[])
 {
     Image image;
-    //Tree tree;
+    Tree tree;
 
     if(argc < 3) return 1;
-
-    std::cout << "A" << std::endl;
-
     image.fillStructure(BuildTree::openAnalyzeImage(argv[1]));
-    //tree.loadTree(argv[2]);
-    std::cout << "B" << std::endl;
+    tree.loadTree(argv[2]);
 
     RenderITWindow window = RenderITWindow(1);
-    std::cout << "C" << std::endl;
-
     window.setImage(&image);
-
+    window.addTree(tree, 1);
+    window.setTreeColor(1.0, 0.5, 0, 0);
     window.showAndGo();
-    std::cout << "Out" << std::endl;
-    //window.addTree(tree);
     return 0;
 }

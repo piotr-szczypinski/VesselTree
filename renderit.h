@@ -23,7 +23,7 @@ typedef itk::Image< float,3 > ImageType;
 #include "image.h"
 #include "tree.h"
 
-/*!
+/**
 RenderIT klasa zawiera funkcje do wyświetlania obrazu rastrowego klasy Image z nałożonymi obiektami
 klasy Tree. Użytkownik nie powinien tworzyć obiektów tej klasy. Zamiast tego należy utworzyć obiekt
 klasy dziedziczącej RenderITWindow lub RenderItQt.
@@ -114,13 +114,22 @@ private:
     std::vector<std::vector<vtkSmartPointer<vtkActor> > >       treeActors;
 };
 
-/*! RenderITWindow dziedziczy po klasie RenderIT. Jej zadaniem jest
- * utworzenie niezaleznego okna do wyświetlania danych 3D.*/
+/** \class RenderITWindow
+ *  \brief dziedziczy po klasie RenderIT. Jej zadaniem jest
+ * utworzenie niezaleznego okna do wyświetlania danych 3D.
+ *
+ * \author Piotr M. Szczypiński
+ */
 class RenderITWindow:public RenderIT
 {
 public:
+/** Konstruktor klasy
+ * \param style 0 lub 1 określa sposób obsługi okna myszą
+ */
     RenderITWindow(int style);
+/** wyświetla okno i czeka na jego zamknięcie */
     void show(void);
+/** wyświetla okno i wykonuje dalsze elementy programu*/
     void showAndGo(void);
 
 private:

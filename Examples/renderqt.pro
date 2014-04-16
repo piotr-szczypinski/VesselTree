@@ -1,18 +1,15 @@
-#-------------------------------------------------
-#
-# Project created by QtCreator 2014-04-15T13:38:55
-#
-#-------------------------------------------------
-
 QT       += core gui
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
-TARGET = QtGUIExample
 TEMPLATE = app
-INCLUDEPATH +=  "../"\
+
+
+INCLUDEPATH +=  "../" \
                 "../ThirdParty"
+
 INCLUDEPATH +=  "/usr/include/vtk-5.8"
+
 INCLUDEPATH +=  "/usr/include/InsightToolkit/Common"\
                 "/usr/include/InsightToolkit"\
                 "/usr/include/InsightToolkit/Utilities/vxl/vcl"\
@@ -22,27 +19,20 @@ INCLUDEPATH +=  "/usr/include/InsightToolkit/Common"\
                 "/usr/include/InsightToolkit/BasicFilters"\
                 "/usr/include/InsightToolkit/Review"
 
-SOURCES += main.cpp\
-        mainwindow.cpp \
-    ../renderitqt.cpp \
-    ../renderit.cpp \
-    ../tree.cpp \
-    ../treerender.cpp \
-    ../imagefilters.cpp \
-    ../image.cpp \
-    ../buildtree.cpp
-
-HEADERS  += mainwindow.h \
-    ../renderitqt.h \
-    ../renderit.h \
-    ../typedefsti.h \
-    ../treerender.h \
+HEADERS += \
     ../tree.h \
-    ../imagefilters.h \
     ../image.h \
-    ../buildtree.h
+    ../renderit.h
 
-FORMS    += mainwindow.ui
+SOURCES += \
+    renderqt.cpp \
+    ../tree.cpp \
+    ../image.cpp \
+    ../treerender.cpp \
+    ../renderit.cpp \
+    ../buildtree.cpp \
+    ../imagefilters.cpp \
+    ../renderitqt.cpp
 
 unix|win32: LIBS += \
                     -lvtkGraphics\
@@ -51,8 +41,8 @@ unix|win32: LIBS += \
                     -lvtkImaging\
                     -lvtkCommon\
                     -lvtkFiltering\
-                    -lvtkHybrid \
-                    -lvtkVolumeRendering \
+                    -lvtkHybrid\
+                    -lvtkVolumeRendering\
                     -lQVTK
 
 unix|win32: LIBS += \
