@@ -32,16 +32,71 @@ class RenderIT
 {
 public:
     RenderIT();
+/** \brief Ustawia obraz trójwymiarowy do wyświetlenia w scenie i resetuje parametry wyświetlania
+ * \param image wskaźnik opbrazu
+ */
     void setImage(Image* image);
+/** \brief Ustawia obraz trójwymiarowy do wyświetlenia w scenie bez resetowania parametrów wyświetlania
+ * \param image wskaźnik opbrazu
+ */
     void updateImage(Image* image);
+/** \brief Usuwa obraz trójwymiarowy ze sceny
+ */
     void removeImage(void);
+
+/** \brief Dodaje drzewo do wyświetlenia w scenie.
+ * \param tree opis drzewa
+ * \param mode liczba 0..3 okreslająca sposób wyświetlania drzewa
+ * \returns indeks dodanego drzewa na liście wyswietlanych drzew
+ */
     int addTree(Tree tree, int mode);
+
+/** \brief Usuwa drzewo o danym indeksie ze sceny
+ * \param id index drzewa, jeśli id<0 to usuwane są wszystkie drzewa
+ * \returns indeks ostatniego drzewa na liście wyswietlanych drzew
+ */
     int removeTree(int id = -1);
+
+/** \brief Resetuje ustawienia sceny
+ */
     void cameraReset();
+
+/** \brief Zmienia kolor tła
+ * \param r składowa czerwona koloru
+ * \param g składowa zielona koloru
+ * \param b składowa niebieska koloru
+ */
     void setBackgroundColor(float r, float g, float b);
+
+/** \brief Zmienia kolor obrazu rastrowego
+ * \param r składowa czerwona koloru
+ * \param g składowa zielona koloru
+ * \param b składowa niebieska koloru
+ * \param min wartość dla minimalnej jasności (czerni)
+ * \param max wartość dla maksymalnej jasności
+ */
     void setImageColor(float r, float g, float b, float min = 0.0, float max = 255.0);
-    void setImageOpacity(float min=1.0, float max=1.0);
-    int setTreeColor(float r, float g, float b, unsigned int id = -1);
+
+/** \brief Zmienia przeźroczystość obrazu rastrowego
+ * \param min wartość dla pełnej przeźroczystości
+ * \param max wartość dla pełnej widoczności, nieprzeźroczystości
+ */
+    void setImageOpacity(float min, float max);
+
+/** \brief Zmienia kolor drzewa
+ * \param r składowa czerwona koloru
+ * \param g składowa zielona koloru
+ * \param b składowa niebieska koloru
+ * \param id index drzewa
+ * \returns indeks ostatniego drzewa na liście wyswietlanych drzew
+ */
+    int setTreeColor(float r, float g, float b, unsigned int id);
+
+/** Zmienia przeźroczystość drzewa
+ * \param o poziom przeźroczystości od 0.0 do 1.0
+ * \param id index drzewa
+ * \returns indeks ostatniego drzewa na liście wyswietlanych drzew
+ */
     int setTreeOpacity(float o, unsigned int id);
 
 protected:
@@ -56,16 +111,20 @@ private:
     vtkSmartPointer<vtkVolumeRayCastCompositeFunction>          compositeFunction;
     vtkSmartPointer<vtkVolume>                                  volume;
     vtkSmartPointer<vtkVolumeRayCastMapper>                     volumeMapper;
-//    vtkSmartPointer<vtkPolyDataMapper>                          mapper;
-//    std::vector<vtkSmartPointer<vtkActor> >                     vectorOfActors;
-//    std::vector<unsigned int>                                   numActorsPerTree;
     std::vector<std::vector<vtkSmartPointer<vtkActor> > >       treeActors;
 };
 
-/*! RenderITWindow tworzy okno wyświetlania dla klasy RenderIT, po której dziedziczy*/
+/*! RenderITWindow dziedziczy po klasie RenderIT. Jej zadaniem jest
+ * utworzenie niezaleznego okna do wyświetlania danych 3D.*/
 class RenderITWindow:public RenderIT
 {
+public:
     RenderITWindow(int style);
+    void show(void);
+    void showAndGo(void);
+
+private:
+    int style;
 };
 
 #endif // RENDERIT_H

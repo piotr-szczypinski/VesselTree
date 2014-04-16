@@ -2,8 +2,14 @@
 #include "treerender.h"
 #include "imagefilters.h"
 
-#include <vtkOrientationMarkerWidget.h>
-#include <vtkAxesActor.h>
+#if defined(WIN32) || defined(_WIN32) || defined(WIN64) || defined(_WIN64)
+    #include <windows.h>
+#else
+    #include <unistd.h>
+#endif
+
+//#include <vtkOrientationMarkerWidget.h>
+//#include <vtkAxesActor.h>
 
 RenderIT::RenderIT()
 {
@@ -39,14 +45,16 @@ void RenderIT::setImage(Image* image)
     volume->Update();
     renderer->AddVolume(volume);
     cameraReset();
-    if(renderer->GetRenderWindow() != NULL) renderer->GetRenderWindow()->Render();
+    if(renderer->GetRenderWindow() != NULL)
+        renderer->GetRenderWindow()->Render();
 }
 void RenderIT::updateImage(Image* image)
 {
     connector->SetInput(ImageFilters::StructureToItkImage(ImageFilters::rescaleIntensity(image->returnStruct())));
     connector->Modified();
     connector->Update();
-    if(renderer->GetRenderWindow() != NULL) renderer->GetRenderWindow()->Render();
+    if(renderer->GetRenderWindow() != NULL)
+        renderer->GetRenderWindow()->Render();
 }
 void RenderIT::removeImage(void)
 {
@@ -146,8 +154,8 @@ int RenderIT::setTreeOpacity(float o, unsigned int id)
 void RenderIT::setImageOpacity(float min, float max)
 {
     opticityTransferFunction->RemoveAllPoints();
-    opticityTransferFunction->AddPoint(0,         min);
-    opticityTransferFunction->AddPoint(255,       max);
+    opticityTransferFunction->AddPoint(255, max);
+    opticityTransferFunction->AddPoint(0, min);
     if(renderer->GetRenderWindow() != NULL) renderer->GetRenderWindow()->Render();
 }
 
@@ -156,25 +164,17 @@ void RenderIT::setImageOpacity(float min, float max)
 RenderITWindow::RenderITWindow(int style):
     RenderIT()
 {
+    this->style = style;
+}
+
+void RenderITWindow::show(void)
+{
     vtkSmartPointer<vtkRenderWindow> renderWindow =
       vtkSmartPointer<vtkRenderWindow>::New();
     vtkSmartPointer<vtkRenderWindowInteractor> renderWindowInteractor =
       vtkSmartPointer<vtkRenderWindowInteractor>::New();
-    vtkSmartPointer<vtkOrientationMarkerWidget> widget =
-      vtkSmartPointer<vtkOrientationMarkerWidget>::New();
-    vtkSmartPointer<vtkAxesActor> axes =
-      vtkSmartPointer<vtkAxesActor>::New();
-
     renderWindow->AddRenderer(renderer);
     renderWindowInteractor->SetRenderWindow(renderWindow);
-
-    widget->SetOutlineColor( 0.9300, 0.5700, 0.1300 );
-    widget->SetOrientationMarker( axes );
-    widget->SetInteractor( renderWindowInteractor );
-    widget->SetViewport( 0.0, 0.0, 0.4, 0.4 );
-    widget->SetEnabled( 1 );
-    widget->InteractiveOn();
-
     renderWindow->Render();
 
     switch(style)
@@ -194,4 +194,20 @@ RenderITWindow::RenderITWindow(int style):
     } break;
     }
     renderWindowInteractor->Start();
+}
+
+void RenderITWindow::showAndGo(void)
+{
+
+#if defined(WIN32) || defined(_WIN32) || defined(WIN64) || defined(_WIN64)
+    show();
+#else
+    pid_t child_pid;
+    child_pid = fork();
+    if(child_pid == 0)
+    {
+        show();
+        exit(0);
+    }
+#endif
 }

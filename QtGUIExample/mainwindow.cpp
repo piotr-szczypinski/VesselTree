@@ -7,6 +7,7 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
     imagecolor = QColor(255, 255, 255);
+    treecolor = QColor(255, 255, 255);
     renderer = new RenderITQt();
     setCentralWidget((QWidget*) renderer);
 }
@@ -57,8 +58,11 @@ void MainWindow::on_pushButtonImageColor_clicked()
 
 void MainWindow::on_pushButtonTreeColor_clicked()
 {
-    QColor color = QColorDialog::getColor();
-    renderer->setTreeColor(color.red()/255.0, color.green()/255.0, color.blue()/255.0, 0);
+    int op = ui->sliderTreeOpacity->value();
+    treecolor = QColorDialog::getColor();
+    renderer->setTreeColor(treecolor.red()/255.0,
+                           treecolor.green()/255.0,
+                           treecolor.blue()/255.0, 0);
 }
 
 void MainWindow::on_sliderImageMinOpacity_actionTriggered(int action)
@@ -90,6 +94,5 @@ void MainWindow::on_sliderImageMaxWindow_actionTriggered(int action)
 
 void MainWindow::on_sliderTreeOpacity_actionTriggered(int action)
 {
-    int op = ui->sliderTreeOpacity->value();
-    renderer->setTreeOpacity(op/1024.0, 0);
+    on_pushButtonTreeColor_clicked();
 }

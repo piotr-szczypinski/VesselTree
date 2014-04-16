@@ -51,6 +51,7 @@ private:
     Image *image;
     QColor imagecolor;
     Tree tree;
+    QColor treecolor;
 };
 
 #endif // MAINWINDOW_H
