@@ -1,6 +1,9 @@
 #ifndef RENDERIT_H
 #define RENDERIT_H
 
+#define vtkRenderingCore_AUTOINIT 4(vtkInteractionStyle,vtkRenderingFreeType,vtkRenderingFreeTypeOpenGL,vtkRenderingOpenGL)
+#define vtkRenderingVolume_AUTOINIT 1(vtkRenderingVolumeOpenGL)
+
 //#include <vtkPolyDataMapper.h>
 #include <vtkSmartPointer.h>
 #include <vtkImageCast.h>
@@ -15,6 +18,22 @@
 #include <vtkRenderWindow.h>
 #include <vtkRenderWindowInteractor.h>
 #include <vtkCamera.h>
+#include <vtkImageActor.h>
+#include <vtkImageMapper3D.h>
+
+
+#include <itkImageFileReader.h>
+#include "itkImageToVTKImageFilter.h"
+#include <vtkSmartPointer.h>
+#include <vtkGPUVolumeRayCastMapper.h>
+#include <vtkColorTransferFunction.h>
+#include <vtkPiecewiseFunction.h>
+#include <vtkRenderer.h>
+#include <vtkRenderWindow.h>
+#include <vtkRenderWindowInteractor.h>
+#include <vtkVolumeProperty.h>
+#include <vtkMatrix4x4.h>
+#include <vtkAxesActor.h>
 
 #include <itkImage.h>
 #include <itkImageToVTKImageFilter.h>

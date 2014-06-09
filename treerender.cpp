@@ -60,13 +60,13 @@ bool TreeRender::saveModel (Tree tree, float par1, const char* par2)
             polyData->GetPointData()->SetActiveScalars("TubeRadius");
 
             vtkTubeFilter* tuber = vtkTubeFilter::New();
-            tuber->SetInput(polyData);
+            tuber->SetInputData(polyData);
             tuber->SetNumberOfSides(20);
             tuber->SetVaryRadiusToVaryRadiusByAbsoluteScalar();
             tuber->CappingOn();
 
             vtkTriangleFilter *triangle = vtkTriangleFilter::New();
-            triangle->SetInput(tuber->GetOutput());
+            triangle->SetInputData(tuber->GetOutput());
 /*???
             if (count_boolean == 0)
             {
@@ -166,13 +166,13 @@ bool TreeRender::saveModel (Tree tree, float par1, const char* par2, bool par3, 
             polyData->GetPointData()->SetActiveScalars("TubeRadius");
 
             vtkTubeFilter* tuber = vtkTubeFilter::New();
-            tuber->SetInput(polyData);
+            tuber->SetInputData(polyData);
             tuber->SetNumberOfSides(20);
             tuber->SetVaryRadiusToVaryRadiusByAbsoluteScalar();
             tuber->CappingOn();
 
             vtkTriangleFilter *triangle = vtkTriangleFilter::New();
-            triangle->SetInput(tuber->GetOutput());
+            triangle->SetInputData(tuber->GetOutput());
 /*???
             if (count_boolean == 0)
             {
@@ -299,13 +299,13 @@ vtkSmartPointer<vtkActor> TreeRender::returnActor(Tree tree, float par1, bool pa
             polyData->GetPointData()->SetActiveScalars("TubeRadius");
 
             vtkTubeFilter* tuber = vtkTubeFilter::New();
-            tuber->SetInput(polyData);
+            tuber->SetInputData(polyData);
             tuber->SetNumberOfSides(20);
             tuber->SetVaryRadiusToVaryRadiusByAbsoluteScalar();
             tuber->CappingOn();
 
             vtkTriangleFilter *triangle = vtkTriangleFilter::New();
-            triangle->SetInput(tuber->GetOutput());
+            triangle->SetInputData(tuber->GetOutput());
 /*???
             if (count_boolean == 0)
             {
@@ -361,7 +361,7 @@ vtkSmartPointer<vtkActor> TreeRender::returnActor(Tree tree, float par1, bool pa
     }
        // Setup actors and mappers
        vtkSmartPointer<vtkPolyDataMapper> mapper = vtkSmartPointer<vtkPolyDataMapper>::New();
-       mapper->SetInput(boolCopy);
+       mapper->SetInputData(boolCopy);
        mapper->ScalarVisibilityOff();
        vtkSmartPointer<vtkActor> actor = vtkSmartPointer<vtkActor>::New();
        actor->SetMapper(mapper);
@@ -455,14 +455,14 @@ std::vector< vtkSmartPointer<vtkActor> > TreeRender::returnActors(Tree tree, flo
      std::vector<vtkSmartPointer<vtkActor> > actors;
 
      vtkSmartPointer<vtkPolyData> polydataG = vtkSmartPointer<vtkPolyData>::New();polydataG->SetPoints(pointsG);
-     vtkSmartPointer<vtkGlyph3D> glyph3DG = vtkSmartPointer<vtkGlyph3D>::New();glyph3DG->SetSource(sphereSource->GetOutput());glyph3DG->SetInput(polydataG);
+     vtkSmartPointer<vtkGlyph3D> glyph3DG = vtkSmartPointer<vtkGlyph3D>::New();glyph3DG->SetSourceData(sphereSource->GetOutput());glyph3DG->SetInputData(polydataG);
      glyph3DG->GeneratePointIdsOn();
      vtkSmartPointer<vtkPolyDataMapper> mapperG = vtkSmartPointer<vtkPolyDataMapper>::New();mapperG->SetInputConnection(glyph3DG->GetOutputPort());
      vtkSmartPointer<vtkActor> actorG = vtkSmartPointer<vtkActor>::New();actorG->SetMapper(mapperG);
      actorG->GetProperty()->SetColor(0,1,0);actors.push_back(actorG);
 
      vtkSmartPointer<vtkPolyData> polydataY = vtkSmartPointer<vtkPolyData>::New();polydataY->SetPoints(pointsY);
-     vtkSmartPointer<vtkGlyph3D> glyph3DY = vtkSmartPointer<vtkGlyph3D>::New();glyph3DY->SetSource(sphereSource->GetOutput());glyph3DY->SetInput(polydataY);
+     vtkSmartPointer<vtkGlyph3D> glyph3DY = vtkSmartPointer<vtkGlyph3D>::New();glyph3DY->SetSourceData(sphereSource->GetOutput());glyph3DY->SetInputData(polydataY);
      glyph3DY->GeneratePointIdsOn();
      vtkSmartPointer<vtkPolyDataMapper> mapperY = vtkSmartPointer<vtkPolyDataMapper>::New();mapperY->SetInputConnection(glyph3DY->GetOutputPort());
      vtkSmartPointer<vtkActor> actorY = vtkSmartPointer<vtkActor>::New();actorY->SetMapper(mapperY);
@@ -471,97 +471,97 @@ std::vector< vtkSmartPointer<vtkActor> > TreeRender::returnActors(Tree tree, flo
       float opacity = par1;
 
       vtkSmartPointer<vtkPolyData> polydataR1 = vtkSmartPointer<vtkPolyData>::New();polydataR1->SetPoints(pointsR1);
-      vtkSmartPointer<vtkGlyph3D> glyph3DR1 = vtkSmartPointer<vtkGlyph3D>::New();glyph3DR1->SetSource(polygonSource1->GetOutput());glyph3DR1->SetInput(polydataR1);
+      vtkSmartPointer<vtkGlyph3D> glyph3DR1 = vtkSmartPointer<vtkGlyph3D>::New();glyph3DR1->SetSourceData(polygonSource1->GetOutput());glyph3DR1->SetInputData(polydataR1);
       glyph3DR1->GeneratePointIdsOn();
       vtkSmartPointer<vtkPolyDataMapper> mapperR1 = vtkSmartPointer<vtkPolyDataMapper>::New();mapperR1->SetInputConnection(glyph3DR1->GetOutputPort());
       vtkSmartPointer<vtkActor> actorR1 = vtkSmartPointer<vtkActor>::New();actorR1->SetMapper(mapperR1);actorR1->GetProperty()->SetOpacity(opacity);
       actorR1->GetProperty()->SetColor(1,1,1);actors.push_back(actorR1);
       vtkSmartPointer<vtkPolyData> polydataR2 = vtkSmartPointer<vtkPolyData>::New();polydataR2->SetPoints(pointsR2);
-      vtkSmartPointer<vtkGlyph3D> glyph3DR2 = vtkSmartPointer<vtkGlyph3D>::New();glyph3DR2->SetSource(polygonSource2->GetOutput());glyph3DR2->SetInput(polydataR2);
+      vtkSmartPointer<vtkGlyph3D> glyph3DR2 = vtkSmartPointer<vtkGlyph3D>::New();glyph3DR2->SetSourceData(polygonSource2->GetOutput());glyph3DR2->SetInputData(polydataR2);
       glyph3DR2->GeneratePointIdsOn();
       vtkSmartPointer<vtkPolyDataMapper> mapperR2 = vtkSmartPointer<vtkPolyDataMapper>::New();mapperR2->SetInputConnection(glyph3DR2->GetOutputPort());
       vtkSmartPointer<vtkActor> actorR2 = vtkSmartPointer<vtkActor>::New();actorR2->SetMapper(mapperR2);actorR2->GetProperty()->SetOpacity(opacity);
       actorR2->GetProperty()->SetColor(1,1,1);actors.push_back(actorR2);
       vtkSmartPointer<vtkPolyData> polydataR3 = vtkSmartPointer<vtkPolyData>::New();polydataR3->SetPoints(pointsR3);
-      vtkSmartPointer<vtkGlyph3D> glyph3DR3 = vtkSmartPointer<vtkGlyph3D>::New();glyph3DR3->SetSource(polygonSource3->GetOutput());glyph3DR3->SetInput(polydataR3);
+      vtkSmartPointer<vtkGlyph3D> glyph3DR3 = vtkSmartPointer<vtkGlyph3D>::New();glyph3DR3->SetSourceData(polygonSource3->GetOutput());glyph3DR3->SetInputData(polydataR3);
       glyph3DR3->GeneratePointIdsOn();
       vtkSmartPointer<vtkPolyDataMapper> mapperR3 = vtkSmartPointer<vtkPolyDataMapper>::New();mapperR3->SetInputConnection(glyph3DR3->GetOutputPort());
       vtkSmartPointer<vtkActor> actorR3 = vtkSmartPointer<vtkActor>::New();actorR3->SetMapper(mapperR3);actorR3->GetProperty()->SetOpacity(opacity);
       actorR3->GetProperty()->SetColor(1,1,1);actors.push_back(actorR3);
       vtkSmartPointer<vtkPolyData> polydataR4 = vtkSmartPointer<vtkPolyData>::New();polydataR4->SetPoints(pointsR4);
-      vtkSmartPointer<vtkGlyph3D> glyph3DR4 = vtkSmartPointer<vtkGlyph3D>::New();glyph3DR4->SetSource(polygonSource4->GetOutput());glyph3DR4->SetInput(polydataR4);
+      vtkSmartPointer<vtkGlyph3D> glyph3DR4 = vtkSmartPointer<vtkGlyph3D>::New();glyph3DR4->SetSourceData(polygonSource4->GetOutput());glyph3DR4->SetInputData(polydataR4);
       glyph3DR4->GeneratePointIdsOn();
       vtkSmartPointer<vtkPolyDataMapper> mapperR4 = vtkSmartPointer<vtkPolyDataMapper>::New();mapperR4->SetInputConnection(glyph3DR4->GetOutputPort());
       vtkSmartPointer<vtkActor> actorR4 = vtkSmartPointer<vtkActor>::New();actorR4->SetMapper(mapperR4);actorR4->GetProperty()->SetOpacity(opacity);
       actorR4->GetProperty()->SetColor(1,1,1);actors.push_back(actorR4);
       vtkSmartPointer<vtkPolyData> polydataR5 = vtkSmartPointer<vtkPolyData>::New();polydataR5->SetPoints(pointsR5);
-      vtkSmartPointer<vtkGlyph3D> glyph3DR5 = vtkSmartPointer<vtkGlyph3D>::New();glyph3DR5->SetSource(polygonSource5->GetOutput());glyph3DR5->SetInput(polydataR5);
+      vtkSmartPointer<vtkGlyph3D> glyph3DR5 = vtkSmartPointer<vtkGlyph3D>::New();glyph3DR5->SetSourceData(polygonSource5->GetOutput());glyph3DR5->SetInputData(polydataR5);
       glyph3DR5->GeneratePointIdsOn();
       vtkSmartPointer<vtkPolyDataMapper> mapperR5 = vtkSmartPointer<vtkPolyDataMapper>::New();mapperR5->SetInputConnection(glyph3DR5->GetOutputPort());
       vtkSmartPointer<vtkActor> actorR5 = vtkSmartPointer<vtkActor>::New();actorR5->SetMapper(mapperR5);actorR5->GetProperty()->SetOpacity(opacity);
       actorR5->GetProperty()->SetColor(1,1,1);actors.push_back(actorR5);
       vtkSmartPointer<vtkPolyData> polydataR6 = vtkSmartPointer<vtkPolyData>::New();polydataR6->SetPoints(pointsR6);
-      vtkSmartPointer<vtkGlyph3D> glyph3DR6 = vtkSmartPointer<vtkGlyph3D>::New();glyph3DR6->SetSource(polygonSource6->GetOutput());glyph3DR6->SetInput(polydataR6);
+      vtkSmartPointer<vtkGlyph3D> glyph3DR6 = vtkSmartPointer<vtkGlyph3D>::New();glyph3DR6->SetSourceData(polygonSource6->GetOutput());glyph3DR6->SetInputData(polydataR6);
       glyph3DR6->GeneratePointIdsOn();
       vtkSmartPointer<vtkPolyDataMapper> mapperR6 = vtkSmartPointer<vtkPolyDataMapper>::New();mapperR6->SetInputConnection(glyph3DR6->GetOutputPort());
       vtkSmartPointer<vtkActor> actorR6 = vtkSmartPointer<vtkActor>::New();actorR6->SetMapper(mapperR6);actorR6->GetProperty()->SetOpacity(opacity);
       actorR6->GetProperty()->SetColor(1,1,1);actors.push_back(actorR6);
       vtkSmartPointer<vtkPolyData> polydataR7 = vtkSmartPointer<vtkPolyData>::New();polydataR7->SetPoints(pointsR7);
-      vtkSmartPointer<vtkGlyph3D> glyph3DR7 = vtkSmartPointer<vtkGlyph3D>::New();glyph3DR7->SetSource(polygonSource7->GetOutput());glyph3DR7->SetInput(polydataR7);
+      vtkSmartPointer<vtkGlyph3D> glyph3DR7 = vtkSmartPointer<vtkGlyph3D>::New();glyph3DR7->SetSourceData(polygonSource7->GetOutput());glyph3DR7->SetInputData(polydataR7);
       glyph3DR7->GeneratePointIdsOn();
       vtkSmartPointer<vtkPolyDataMapper> mapperR7 = vtkSmartPointer<vtkPolyDataMapper>::New();mapperR7->SetInputConnection(glyph3DR7->GetOutputPort());
       vtkSmartPointer<vtkActor> actorR7 = vtkSmartPointer<vtkActor>::New();actorR7->SetMapper(mapperR7);actorR7->GetProperty()->SetOpacity(opacity);
       actorR7->GetProperty()->SetColor(1,1,1);actors.push_back(actorR7);
       vtkSmartPointer<vtkPolyData> polydataR8 = vtkSmartPointer<vtkPolyData>::New();polydataR8->SetPoints(pointsR8);
-      vtkSmartPointer<vtkGlyph3D> glyph3DR8 = vtkSmartPointer<vtkGlyph3D>::New();glyph3DR8->SetSource(polygonSource8->GetOutput());glyph3DR8->SetInput(polydataR8);
+      vtkSmartPointer<vtkGlyph3D> glyph3DR8 = vtkSmartPointer<vtkGlyph3D>::New();glyph3DR8->SetSourceData(polygonSource8->GetOutput());glyph3DR8->SetInputData(polydataR8);
       glyph3DR8->GeneratePointIdsOn();
       vtkSmartPointer<vtkPolyDataMapper> mapperR8 = vtkSmartPointer<vtkPolyDataMapper>::New();mapperR8->SetInputConnection(glyph3DR8->GetOutputPort());
       vtkSmartPointer<vtkActor> actorR8 = vtkSmartPointer<vtkActor>::New();actorR8->SetMapper(mapperR8);actorR8->GetProperty()->SetOpacity(opacity);
       actorR8->GetProperty()->SetColor(1,1,1);actors.push_back(actorR8);
       vtkSmartPointer<vtkPolyData> polydataR9 = vtkSmartPointer<vtkPolyData>::New();polydataR9->SetPoints(pointsR9);
-      vtkSmartPointer<vtkGlyph3D> glyph3DR9 = vtkSmartPointer<vtkGlyph3D>::New();glyph3DR9->SetSource(polygonSource9->GetOutput());glyph3DR9->SetInput(polydataR9);
+      vtkSmartPointer<vtkGlyph3D> glyph3DR9 = vtkSmartPointer<vtkGlyph3D>::New();glyph3DR9->SetSourceData(polygonSource9->GetOutput());glyph3DR9->SetInputData(polydataR9);
       glyph3DR9->GeneratePointIdsOn();
       vtkSmartPointer<vtkPolyDataMapper> mapperR9 = vtkSmartPointer<vtkPolyDataMapper>::New();mapperR9->SetInputConnection(glyph3DR9->GetOutputPort());
       vtkSmartPointer<vtkActor> actorR9 = vtkSmartPointer<vtkActor>::New();actorR9->SetMapper(mapperR9);actorR9->GetProperty()->SetOpacity(opacity);
       actorR9->GetProperty()->SetColor(1,1,1);actors.push_back(actorR9);
       vtkSmartPointer<vtkPolyData> polydataR10 = vtkSmartPointer<vtkPolyData>::New();polydataR10->SetPoints(pointsR10);
-      vtkSmartPointer<vtkGlyph3D> glyph3DR10 = vtkSmartPointer<vtkGlyph3D>::New();glyph3DR10->SetSource(polygonSource10->GetOutput());glyph3DR10->SetInput(polydataR10);
+      vtkSmartPointer<vtkGlyph3D> glyph3DR10 = vtkSmartPointer<vtkGlyph3D>::New();glyph3DR10->SetSourceData(polygonSource10->GetOutput());glyph3DR10->SetInputData(polydataR10);
       glyph3DR10->GeneratePointIdsOn();
       vtkSmartPointer<vtkPolyDataMapper> mapperR10 = vtkSmartPointer<vtkPolyDataMapper>::New();mapperR10->SetInputConnection(glyph3DR10->GetOutputPort());
       vtkSmartPointer<vtkActor> actorR10 = vtkSmartPointer<vtkActor>::New();actorR10->SetMapper(mapperR10);actorR10->GetProperty()->SetOpacity(opacity);
       actorR10->GetProperty()->SetColor(1,1,1);actors.push_back(actorR10);
       vtkSmartPointer<vtkPolyData> polydataR11 = vtkSmartPointer<vtkPolyData>::New();polydataR11->SetPoints(pointsR11);
-      vtkSmartPointer<vtkGlyph3D> glyph3DR11 = vtkSmartPointer<vtkGlyph3D>::New();glyph3DR11->SetSource(polygonSource11->GetOutput());glyph3DR11->SetInput(polydataR11);
+      vtkSmartPointer<vtkGlyph3D> glyph3DR11 = vtkSmartPointer<vtkGlyph3D>::New();glyph3DR11->SetSourceData(polygonSource11->GetOutput());glyph3DR11->SetInputData(polydataR11);
       glyph3DR11->GeneratePointIdsOn();
       vtkSmartPointer<vtkPolyDataMapper> mapperR11 = vtkSmartPointer<vtkPolyDataMapper>::New();mapperR11->SetInputConnection(glyph3DR11->GetOutputPort());
       vtkSmartPointer<vtkActor> actorR11 = vtkSmartPointer<vtkActor>::New();actorR11->SetMapper(mapperR11);actorR11->GetProperty()->SetOpacity(opacity);
       actorR11->GetProperty()->SetColor(1,1,1);actors.push_back(actorR11);
       vtkSmartPointer<vtkPolyData> polydataR12 = vtkSmartPointer<vtkPolyData>::New();polydataR12->SetPoints(pointsR12);
-      vtkSmartPointer<vtkGlyph3D> glyph3DR12 = vtkSmartPointer<vtkGlyph3D>::New();glyph3DR12->SetSource(polygonSource12->GetOutput());glyph3DR12->SetInput(polydataR12);
+      vtkSmartPointer<vtkGlyph3D> glyph3DR12 = vtkSmartPointer<vtkGlyph3D>::New();glyph3DR12->SetSourceData(polygonSource12->GetOutput());glyph3DR12->SetInputData(polydataR12);
       glyph3DR12->GeneratePointIdsOn();
       vtkSmartPointer<vtkPolyDataMapper> mapperR12 = vtkSmartPointer<vtkPolyDataMapper>::New();mapperR12->SetInputConnection(glyph3DR12->GetOutputPort());
       vtkSmartPointer<vtkActor> actorR12 = vtkSmartPointer<vtkActor>::New();actorR12->SetMapper(mapperR12);actorR12->GetProperty()->SetOpacity(opacity);
       actorR12->GetProperty()->SetColor(1,1,1);actors.push_back(actorR12);
       vtkSmartPointer<vtkPolyData> polydataR13 = vtkSmartPointer<vtkPolyData>::New();polydataR13->SetPoints(pointsR13);
-      vtkSmartPointer<vtkGlyph3D> glyph3DR13 = vtkSmartPointer<vtkGlyph3D>::New();glyph3DR13->SetSource(polygonSource13->GetOutput());glyph3DR13->SetInput(polydataR13);
+      vtkSmartPointer<vtkGlyph3D> glyph3DR13 = vtkSmartPointer<vtkGlyph3D>::New();glyph3DR13->SetSourceData(polygonSource13->GetOutput());glyph3DR13->SetInputData(polydataR13);
       glyph3DR13->GeneratePointIdsOn();
       vtkSmartPointer<vtkPolyDataMapper> mapperR13 = vtkSmartPointer<vtkPolyDataMapper>::New();mapperR13->SetInputConnection(glyph3DR13->GetOutputPort());
       vtkSmartPointer<vtkActor> actorR13 = vtkSmartPointer<vtkActor>::New();actorR13->SetMapper(mapperR13);actorR13->GetProperty()->SetOpacity(opacity);
       actorR13->GetProperty()->SetColor(1,1,1);actors.push_back(actorR13);
       vtkSmartPointer<vtkPolyData> polydataR14 = vtkSmartPointer<vtkPolyData>::New();polydataR14->SetPoints(pointsR14);
-      vtkSmartPointer<vtkGlyph3D> glyph3DR14 = vtkSmartPointer<vtkGlyph3D>::New();glyph3DR14->SetSource(polygonSource14->GetOutput());glyph3DR14->SetInput(polydataR14);
+      vtkSmartPointer<vtkGlyph3D> glyph3DR14 = vtkSmartPointer<vtkGlyph3D>::New();glyph3DR14->SetSourceData(polygonSource14->GetOutput());glyph3DR14->SetInputData(polydataR14);
       glyph3DR14->GeneratePointIdsOn();
       vtkSmartPointer<vtkPolyDataMapper> mapperR14 = vtkSmartPointer<vtkPolyDataMapper>::New();mapperR14->SetInputConnection(glyph3DR14->GetOutputPort());
       vtkSmartPointer<vtkActor> actorR14 = vtkSmartPointer<vtkActor>::New();actorR14->SetMapper(mapperR14);actorR14->GetProperty()->SetOpacity(opacity);
       actorR14->GetProperty()->SetColor(1,1,1);actors.push_back(actorR14);
       vtkSmartPointer<vtkPolyData> polydataR15 = vtkSmartPointer<vtkPolyData>::New();polydataR15->SetPoints(pointsR15);
-      vtkSmartPointer<vtkGlyph3D> glyph3DR15 = vtkSmartPointer<vtkGlyph3D>::New();glyph3DR15->SetSource(polygonSource15->GetOutput());glyph3DR15->SetInput(polydataR15);
+      vtkSmartPointer<vtkGlyph3D> glyph3DR15 = vtkSmartPointer<vtkGlyph3D>::New();glyph3DR15->SetSourceData(polygonSource15->GetOutput());glyph3DR15->SetInputData(polydataR15);
       glyph3DR15->GeneratePointIdsOn();
       vtkSmartPointer<vtkPolyDataMapper> mapperR15 = vtkSmartPointer<vtkPolyDataMapper>::New();mapperR15->SetInputConnection(glyph3DR15->GetOutputPort());
       vtkSmartPointer<vtkActor> actorR15 = vtkSmartPointer<vtkActor>::New();actorR15->SetMapper(mapperR15);actorR15->GetProperty()->SetOpacity(opacity);
       actorR15->GetProperty()->SetColor(1,1,1);actors.push_back(actorR15);
       vtkSmartPointer<vtkPolyData> polydataR16 = vtkSmartPointer<vtkPolyData>::New();polydataR16->SetPoints(pointsR16);
-      vtkSmartPointer<vtkGlyph3D> glyph3DR16 = vtkSmartPointer<vtkGlyph3D>::New();glyph3DR16->SetSource(polygonSource16->GetOutput());glyph3DR16->SetInput(polydataR16);
+      vtkSmartPointer<vtkGlyph3D> glyph3DR16 = vtkSmartPointer<vtkGlyph3D>::New();glyph3DR16->SetSourceData(polygonSource16->GetOutput());glyph3DR16->SetInputData(polydataR16);
       glyph3DR16->GeneratePointIdsOn();
       vtkSmartPointer<vtkPolyDataMapper> mapperR16 = vtkSmartPointer<vtkPolyDataMapper>::New();mapperR16->SetInputConnection(glyph3DR16->GetOutputPort());
       vtkSmartPointer<vtkActor> actorR16 = vtkSmartPointer<vtkActor>::New();actorR16->SetMapper(mapperR16);actorR16->GetProperty()->SetOpacity(opacity);
@@ -604,7 +604,7 @@ std::vector< vtkSmartPointer<vtkActor> > TreeRender::returnActors(Tree tree, flo
           vtkSmartPointer<vtkPolyData> tubePolyData = vtkSmartPointer<vtkPolyData>::New();
           tubePolyData = functionSource->GetOutput();
           vtkSmartPointer<vtkPolyDataMapper> lineMapper = vtkSmartPointer<vtkPolyDataMapper>::New();
-          lineMapper->SetInput(tubePolyData);
+          lineMapper->SetInputData(tubePolyData);
           vtkSmartPointer<vtkActor> lineActor = vtkSmartPointer<vtkActor>::New();
           lineActor->SetMapper(lineMapper);
           lineActor->GetProperty()->SetColor(0,0,0);
@@ -654,7 +654,7 @@ std::vector< vtkSmartPointer<vtkActor> > TreeRender::returnActors2(Tree tree, fl
           vtkSmartPointer<vtkPolyData> tubePolyData = vtkSmartPointer<vtkPolyData>::New();
           tubePolyData = functionSource->GetOutput();
           vtkSmartPointer<vtkPolyDataMapper> lineMapper = vtkSmartPointer<vtkPolyDataMapper>::New();
-          lineMapper->SetInput(tubePolyData);
+          lineMapper->SetInputData(tubePolyData);
           vtkSmartPointer<vtkActor> lineActor = vtkSmartPointer<vtkActor>::New();
           lineActor->SetMapper(lineMapper);
           lineActor->GetProperty()->SetColor(0,0,0);

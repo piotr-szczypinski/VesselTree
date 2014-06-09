@@ -23,15 +23,30 @@ RenderIT::RenderIT()
     volume = vtkSmartPointer<vtkVolume>::New();
     renderer = vtkSmartPointer<vtkRenderer>::New();
     renderer->SetBackground(.8, .8, .8);
-    if(renderer->GetRenderWindow() != NULL) renderer->GetRenderWindow()->Render();
+    //if(renderer->GetRenderWindow() != NULL) renderer->GetRenderWindow()->Render();
 }
+
+
+// http://www.vtk.org/Wiki/VTK/ExamplesBoneYard/Cxx/VolumeRendering/itkVtkImageConvert
 void RenderIT::setImage(Image* image)
 {
+//    connector->SetInput(ImageFilters::StructureToItkImage(ImageFilters::rescaleIntensity(image->returnStruct())));
+//    vtkSmartPointer<vtkImageActor> actor = vtkSmartPointer<vtkImageActor>::New();
+//#if VTK_MAJOR_VERSION <= 5
+//    actor->SetInput(connector->GetOutput());
+//#else
+//    connector->Update();
+//    actor->GetMapper()->SetInputData(connector->GetOutput());
+//#endif
+//    renderer->AddActor(actor);
+//    renderer->ResetCamera();
+
+
     connector->SetInput(ImageFilters::StructureToItkImage(ImageFilters::rescaleIntensity(image->returnStruct())));
     connector->Modified();
     connector->Update();
     castFilter->SetOutputScalarTypeToUnsignedShort();
-    castFilter->SetInput(connector->GetOutput());
+    castFilter->SetInputData(connector->GetOutput());
     opticityTransferFunction->AddPoint(0,         0.0);
     opticityTransferFunction->AddPoint(255,       1.0);
     colorTransferFunction->AddRGBPoint(0,   0.0, 0.0, 0.0);
@@ -39,27 +54,26 @@ void RenderIT::setImage(Image* image)
     volumeProperty->SetColor(colorTransferFunction);
     volumeProperty->SetScalarOpacity(opticityTransferFunction);
     volumeMapper->SetVolumeRayCastFunction(compositeFunction);
-    volumeMapper->SetInput(castFilter->GetOutput());
+    volumeMapper->SetInputData(castFilter->GetOutput());
     volume->SetMapper(volumeMapper);
     volume->SetProperty(volumeProperty);
     volume->Update();
     renderer->AddVolume(volume);
     cameraReset();
-    if(renderer->GetRenderWindow() != NULL)
-        renderer->GetRenderWindow()->Render();
+    if(renderer->GetRenderWindow() != NULL) renderer->GetRenderWindow()->Render();
 }
 void RenderIT::updateImage(Image* image)
 {
     connector->SetInput(ImageFilters::StructureToItkImage(ImageFilters::rescaleIntensity(image->returnStruct())));
     connector->Modified();
     connector->Update();
-    if(renderer->GetRenderWindow() != NULL)
-        renderer->GetRenderWindow()->Render();
+//    if(renderer->GetRenderWindow() != NULL)
+//        renderer->GetRenderWindow()->Render();
 }
 void RenderIT::removeImage(void)
 {
     renderer->RemoveVolume(volume);
-    if(renderer->GetRenderWindow() != NULL) renderer->GetRenderWindow()->Render();
+//    if(renderer->GetRenderWindow() != NULL) renderer->GetRenderWindow()->Render();
 }
 int RenderIT::addTree(Tree tree, int mode)
 {
@@ -77,7 +91,7 @@ int RenderIT::addTree(Tree tree, int mode)
     }
     treeActors.push_back(actors);
     cameraReset();
-    if(renderer->GetRenderWindow() != NULL) renderer->GetRenderWindow()->Render();
+//    if(renderer->GetRenderWindow() != NULL) renderer->GetRenderWindow()->Render();
     return treeActors.size()-1;
 }
 int RenderIT::removeTree(int id)
@@ -95,7 +109,7 @@ int RenderIT::removeTree(int id)
             renderer->RemoveActor(treeActors[id][a]);
         }
         treeActors.erase(treeActors.begin() + id);
-        if(renderer->GetRenderWindow() != NULL) renderer->GetRenderWindow()->Render();
+//        if(renderer->GetRenderWindow() != NULL) renderer->GetRenderWindow()->Render();
     }
     return treeActors.size()-1;
 }
@@ -114,13 +128,14 @@ void RenderIT::cameraReset()
     dist = sqrt((p[0]-fp[0])*(p[0]-fp[0]) + (p[1]-fp[1])*(p[1]-fp[1]) + (p[2]-fp[2])*(p[2]-fp[2]));
     renderer->GetActiveCamera()->SetPosition(fp[0], fp[1], fp[2]+dist);
     renderer->GetActiveCamera()->SetViewUp(0.0, 1.0, 0.0);
-    if(renderer->GetRenderWindow() != NULL) renderer->GetRenderWindow()->Render();
+//    if(renderer->GetRenderWindow() != NULL) renderer->GetRenderWindow()->Render();
 
 }
 void RenderIT::setBackgroundColor(float r, float g, float b)
 {
     renderer->SetBackground(r, g, b);
-    renderer->GetRenderWindow()->Render();
+    //renderer->GetRenderWindow()->Render();
+    //renderer->Render();
 }
 void RenderIT::setImageColor(float r, float g, float b, float min, float max)
 {
@@ -161,38 +176,35 @@ void RenderIT::setImageOpacity(float min, float max)
 
 //----------------------------------------------------------------------------------------
 
-RenderITWindow::RenderITWindow(int style):
-    RenderIT()
+RenderITWindow::RenderITWindow(int style):RenderIT()
 {
     this->style = style;
 }
 
 void RenderITWindow::show(void)
 {
-    vtkSmartPointer<vtkRenderWindow> renderWindow =
-      vtkSmartPointer<vtkRenderWindow>::New();
-    vtkSmartPointer<vtkRenderWindowInteractor> renderWindowInteractor =
-      vtkSmartPointer<vtkRenderWindowInteractor>::New();
+    vtkSmartPointer<vtkRenderWindow> renderWindow = vtkSmartPointer<vtkRenderWindow>::New();
     renderWindow->AddRenderer(renderer);
-    renderWindowInteractor->SetRenderWindow(renderWindow);
-    renderWindow->Render();
+    vtkSmartPointer<vtkRenderWindowInteractor> renderWindowInteractor = vtkSmartPointer<vtkRenderWindowInteractor>::New();
 
     switch(style)
     {
     case 1:
     {
-    vtkSmartPointer<vtkInteractorStyleTrackballCamera> style =
-        vtkSmartPointer<vtkInteractorStyleTrackballCamera>::New();
-    renderWindowInteractor->SetInteractorStyle(style);
+    vtkSmartPointer<vtkInteractorStyleTrackballCamera> tstyle = vtkSmartPointer<vtkInteractorStyleTrackballCamera>::New();
+    renderWindowInteractor->SetInteractorStyle(tstyle);
     } break;
 
     case 2:
     {
-    vtkSmartPointer<vtkInteractorStyleSwitch> style =
-          vtkSmartPointer<vtkInteractorStyleSwitch>::New();
-    renderWindowInteractor->SetInteractorStyle(style);
+    vtkSmartPointer<vtkInteractorStyleSwitch> mstyle = vtkSmartPointer<vtkInteractorStyleSwitch>::New();
+    renderWindowInteractor->SetInteractorStyle(mstyle);
     } break;
     }
+
+    renderWindowInteractor->SetRenderWindow(renderWindow);
+    renderWindow->Render();
+    renderWindowInteractor->Initialize();
     renderWindowInteractor->Start();
 }
 

@@ -8,7 +8,7 @@ TEMPLATE = app
 INCLUDEPATH +=  "../" \
                 "../ThirdParty"
 
-INCLUDEPATH +=  "/usr/include/vtk-5.8"
+INCLUDEPATH +=  "/usr/include/vtk-6.0"
 
 INCLUDEPATH +=  "/usr/include/InsightToolkit/Common"\
                 "/usr/include/InsightToolkit"\
@@ -33,6 +33,7 @@ SOURCES += \
     ../buildtree.cpp \
     ../imagefilters.cpp \
     ../renderitqt.cpp
+
 
 unix|win32: LIBS += \
                     -lvtkGraphics\
@@ -70,3 +71,4 @@ unix|win32: LIBS += \
                     -lITKNumerics\
                     -litksys\
                     -lITKAlgorithms
+
