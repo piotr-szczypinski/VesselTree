@@ -12,7 +12,7 @@ ImageStructure ImageFilters::itkImageToStructure(ImageType::Pointer par1)
         tempImage.spacing.push_back(par1->GetSpacing()[i]);
         tempImage.origin.push_back(par1->GetOrigin()[i]);
     }
-    tempImage.fileType = FLOAT32;
+    tempImage.fileType = VFLOAT32;
     float *imgArray = par1->GetPixelContainer()->GetImportPointer();
     tempImage.imageData = imgArray;
     par1->GetPixelContainer()->SetContainerManageMemory(false);
@@ -234,4 +234,32 @@ ImageStructure ImageFilters::HVSalgorithm(ImageStructure par1, int noOfScales, f
     point2.push_back(50); point2.push_back(50); point2.push_back(50);
     img = RegionGrowing(img, FindMaximumValue(img)*thresholdPercent, FindMaximumValue(img), FindSeed(img));
     return img;
+}
+
+
+
+double ImageFilters::maxIntensity(ImageStructure par1, int* x, int* y, int* z)
+{
+    ImageCalculatorFilterType::Pointer imageCalculatorFilter = ImageCalculatorFilterType::New ();
+    imageCalculatorFilter->SetImage(StructureToItkImage(par1));
+    imageCalculatorFilter->Compute();
+    itk::MinimumMaximumImageCalculator <ImageType>::IndexType coords =
+    imageCalculatorFilter->GetIndexOfMaximum();
+    *x = coords.GetElement(0);
+    *y = coords.GetElement(1);
+    *z = coords.GetElement(2);
+    return imageCalculatorFilter->GetMaximum();
+}
+
+double ImageFilters::minIntensity(ImageStructure par1, int* x, int* y, int* z)
+{
+    ImageCalculatorFilterType::Pointer imageCalculatorFilter = ImageCalculatorFilterType::New ();
+    imageCalculatorFilter->SetImage(StructureToItkImage(par1));
+    imageCalculatorFilter->Compute();
+    itk::MinimumMaximumImageCalculator <ImageType>::IndexType coords =
+    imageCalculatorFilter->GetIndexOfMinimum();
+    *x = coords.GetElement(0);
+    *y = coords.GetElement(1);
+    *z = coords.GetElement(2);
+    return imageCalculatorFilter->GetMinimum();
 }

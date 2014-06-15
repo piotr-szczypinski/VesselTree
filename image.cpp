@@ -27,6 +27,7 @@ int Image::dimensionality()
 }
 type Image::getType()
 {
+    /*
     switch(fileType)
     {
        case BOOL1:     std::cout << "bool" << std::endl;     break;
@@ -34,7 +35,7 @@ type Image::getType()
        case INT16:     std::cout << "int16" << std::endl;    break;
        case FLOAT32:   std::cout << "float32" << std::endl;  break;
        case DOUBLE64:  std::cout << "double64" << std::endl; break;
-    }
+    }*/
     return fileType;
 }
 std::string Image::getShortNote()

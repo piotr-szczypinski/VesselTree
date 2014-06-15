@@ -57,7 +57,7 @@ ImageStructure BuildTree::itkImageToStructure(itk::Image< float,3 >::Pointer par
         tempImage.spacing.push_back(par1->GetSpacing()[i]);
         tempImage.origin.push_back(par1->GetOrigin()[i]);
     }
-    tempImage.fileType = FLOAT32;
+    tempImage.fileType = VFLOAT32;
     float *imgArray = par1->GetPixelContainer()->GetImportPointer();
     tempImage.imageData = imgArray;
     par1->GetPixelContainer()->SetContainerManageMemory(false);

@@ -117,6 +117,12 @@ public:
     \return wartość minimalna
     */
     static double FindMinimumValue(ImageStructure par1);
+
+
+    static double minIntensity(ImageStructure par1, int* x, int* y, int* z);
+    static double maxIntensity(ImageStructure par1, int* x, int* y, int* z);
+
+
     //! Zapis obrazu do pliku (.nii, .img, .hdr)
     /*!
     \param par1 obraz wejściowy w postaci struktury

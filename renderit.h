@@ -19,10 +19,10 @@
 #include <vtkRenderWindowInteractor.h>
 #include <vtkCamera.h>
 #include <vtkImageActor.h>
-#include <vtkImageMapper3D.h>
+//#include <vtkImageMapper3D.h>
 
 
-#include <itkImageFileReader.h>
+//#include <itkImageFileReader.h>
 #include "itkImageToVTKImageFilter.h"
 #include <vtkSmartPointer.h>
 #include <vtkGPUVolumeRayCastMapper.h>

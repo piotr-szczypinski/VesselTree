@@ -2,6 +2,11 @@
 #include "treerender.h"
 #include "imagefilters.h"
 
+#if VTK_MAJOR_VERSION <= 5
+#define SetInputData SetInput
+#define SetSourceData SetSource
+#endif
+
 #if defined(WIN32) || defined(_WIN32) || defined(WIN64) || defined(_WIN64)
     #include <windows.h>
 #else
@@ -212,7 +217,7 @@ void RenderITWindow::show(void)
 RenderITWindow* threadPointerRenderITWindow;
 DWORD WINAPI threadFunctionShowRenderITWindow(LPVOID lpParam)
 {
-    threadFunctionRenderITWindow->show();
+    threadPointerRenderITWindow->show();
     return 0;
 }
 void RenderITWindow::showAndGo(void)

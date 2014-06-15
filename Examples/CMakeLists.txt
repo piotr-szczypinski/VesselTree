@@ -1,0 +1,19 @@
+cmake_minimum_required(VERSION 2.8)
+
+PROJECT(vknife)
+
+FIND_PACKAGE(ITK REQUIRED)
+IF(ITK_FOUND)
+  INCLUDE(${ITK_USE_FILE})
+ENDIF(ITK_FOUND)
+
+FIND_PACKAGE(VTK REQUIRED)
+IF(VTK_FOUND)
+  INCLUDE(${VTK_USE_FILE})
+ENDIF(VTK_FOUND)
+
+INCLUDE_DIRECTORIES(../ ../ThirdParty)
+
+ADD_EXECUTABLE(vknife vknife.cpp  ../tree.cpp ../buildtree.cpp ../image.cpp)
+
+TARGET_LINK_LIBRARIES(vknife ${ITK_LIBRARIES} ${VTK_LIBRARIES})

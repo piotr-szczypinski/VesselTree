@@ -1,5 +1,11 @@
 #include "treerender.h"
 
+#if VTK_MAJOR_VERSION <= 5
+#define SetInputData SetInput
+#define SetSourceData SetSource
+#endif
+
+
 //-------------------------------------------------------------------------------------
 bool TreeRender::saveModel (Tree tree, float par1, const char* par2)
 {

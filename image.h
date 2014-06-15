@@ -29,7 +29,7 @@
 /*! Typ danych reprezentujących obraz */
 enum type
 {
-    BOOL1, UCHAR8, INT16, FLOAT32, DOUBLE64
+    VBOOL1, VUCHAR8, VINT16, VFLOAT32, VDOUBLE64
 };
 
 /*!
