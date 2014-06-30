@@ -102,7 +102,7 @@ public:
 
     static ImageStructure wypelnianie (ImageStructure par1, float par2, float par3);
 
-    static ImageStructure pocienianie (ImageStructure par1);
+    //static ImageStructure pocienianie (ImageStructure par1);
 
     static Tree szacowanie_polaczen(ImageStructure par1);
 
@@ -116,5 +116,13 @@ public:
     static Tree szacowanie_srednicy(ImageStructure par1, Tree par2);
 
     static ImageStructure rescaleIntensity( ImageStructure par1, float min = 0, float max = 255 );
+
+    static ImageStructure create2xBiggerImage(ImageStructure input);
+
+    static ImageStructure upscaleForCenteredSkeleton(ImageStructure input);
+
+    static ImageStructure skeletonFromBinary(ImageStructure par1);
+
+
 };
 #endif // BUILDTREE_H

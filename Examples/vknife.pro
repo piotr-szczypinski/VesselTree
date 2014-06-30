@@ -31,7 +31,8 @@ HEADERS += \
     ../tree.h \
     ../image.h \
     ../renderit.h \
-    ../imagefilters.h
+    ../imagefilters.h \
+    ../buildtree.h
 
 SOURCES += \
     ../tree.cpp \

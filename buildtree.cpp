@@ -205,6 +205,7 @@ ImageStructure BuildTree::rozrost (ImageStructure par1, float par2, float par3, 
     connectedThreshold->Update();
     return itkImageToStructure(connectedThreshold->GetOutput());
 }
+
 //----------------------------------------------------------------------------------------
 ImageStructure BuildTree::rozrost_automatyczny (ImageStructure par1, float par2, float par3)
 {
@@ -344,6 +345,7 @@ ImageStructure BuildTree::rozrost_automatyczny (ImageStructure par1, float par2,
 
     return itkImageToStructure(connectedThreshold->GetOutput());
 }
+
 //----------------------------------------------------------------------------------------
 ImageStructure BuildTree::wypelnianie (ImageStructure par1, float par2, float par3)
 {
@@ -363,8 +365,152 @@ ImageStructure BuildTree::wypelnianie (ImageStructure par1, float par2, float pa
     holefilling->Update();
     return itkImageToStructure(holefilling->GetOutput());
 }
+
 //----------------------------------------------------------------------------------------
-ImageStructure BuildTree::pocienianie (ImageStructure par1)
+ImageStructure BuildTree::create2xBiggerImage(ImageStructure input)
+{
+    ImageType::Pointer inputKImage = StructureToItkImage(input);
+    ImageType::SizeType size;
+    ImageType::SpacingType spacing;
+    for(int i = 0; i<inputKImage->GetLargestPossibleRegion().GetImageDimension(); i++)
+    {
+        size[i] = inputKImage->GetLargestPossibleRegion().GetSize()[i] * 2;
+        spacing[i] = inputKImage->GetSpacing()[i] / 2.0;
+    }
+
+    itk::Index<3> start; start.Fill(0);
+    ImageType::Pointer image = ImageType::New();
+    ImageType::RegionType region(start, size);
+    image->SetRegions(region);
+    image->SetSpacing(spacing);
+    image->Allocate();
+    image->FillBuffer(0);
+    return itkImageToStructure(image);
+}
+
+//----------------------------------------------------------------------------------------
+ImageStructure BuildTree::upscaleForCenteredSkeleton(ImageStructure input)
+{
+    //ImageStructure output = create2xBiggerImage(input);
+    ImageType::Pointer inputitk = StructureToItkImage(input);
+
+    ImageType::SizeType size;
+    ImageType::SpacingType spacing;
+    for(int i = 0; i<inputitk->GetLargestPossibleRegion().GetImageDimension(); i++)
+    {
+        size[i] = inputitk->GetLargestPossibleRegion().GetSize()[i] * 2;
+        spacing[i] = inputitk->GetSpacing()[i] / 2.0;
+    }
+
+    itk::Index<3> start; start.Fill(0);
+    ImageType::Pointer outputitk = ImageType::New();
+    ImageType::RegionType region(start, size);
+    outputitk->SetRegions(region);
+    outputitk->SetSpacing(spacing);
+    outputitk->Allocate();
+    outputitk->FillBuffer(0);
+
+    int maxx, maxy, maxz;
+
+    ImageType::IndexType pixelIndex;
+    ImageType::IndexType opixelIndex;
+    maxx = inputitk->GetLargestPossibleRegion().GetSize()[0];
+    maxy = inputitk->GetLargestPossibleRegion().GetSize()[1];
+    maxz = inputitk->GetLargestPossibleRegion().GetSize()[2];
+
+    for(pixelIndex[2] = 0; pixelIndex[2] < maxz; pixelIndex[2]++)
+    {
+        opixelIndex[2] = pixelIndex[2]*2;
+        for(pixelIndex[1] = 0; pixelIndex[1] < maxz; pixelIndex[1]++)
+        {
+            opixelIndex[1] = pixelIndex[1]*2;
+            for(pixelIndex[0] = 0; pixelIndex[0] < maxz; pixelIndex[0]++)
+            {
+                opixelIndex[0] = pixelIndex[0]*2;
+
+                char pixel = inputitk->GetPixel(pixelIndex);
+                outputitk->SetPixel(opixelIndex, pixel);
+            }
+        }
+    }
+
+    maxz *= 2;
+    maxy *= 2;
+    maxx *= 2;
+
+    for(pixelIndex[2] = 0; pixelIndex[2] < maxz; pixelIndex[2]+=2)
+    {
+        opixelIndex[2] = pixelIndex[2];
+        for(pixelIndex[1] = 0; pixelIndex[1] < maxz; pixelIndex[1]+=2)
+        {
+            opixelIndex[1] = pixelIndex[1];
+            for(pixelIndex[0] = 1; pixelIndex[0] < maxz; pixelIndex[0]+=2)
+            {
+                opixelIndex[0] = pixelIndex[0]-1;
+                char pixel = outputitk->GetPixel(opixelIndex);
+                if(pixel)
+                {
+                    opixelIndex[0] -= 2;
+                    pixel = outputitk->GetPixel(opixelIndex);
+                    if(pixel)
+                    {
+                        outputitk->SetPixel(pixelIndex, pixel);
+                    }
+                }
+            }
+        }
+    }
+
+    for(pixelIndex[2] = 0; pixelIndex[2] < maxz; pixelIndex[2]+=2)
+    {
+        opixelIndex[2] = pixelIndex[2];
+        for(pixelIndex[0] = 0; pixelIndex[0] < maxx; pixelIndex[0]++)
+        {
+            opixelIndex[0] = pixelIndex[0];
+            for(pixelIndex[1] = 1; pixelIndex[1] < maxy; pixelIndex[1]+=2)
+            {
+                opixelIndex[1] = pixelIndex[1]-1;
+                char pixel = outputitk->GetPixel(opixelIndex);
+                if(pixel)
+                {
+                    opixelIndex[1] -= 2;
+                    pixel = outputitk->GetPixel(opixelIndex);
+                    if(pixel)
+                    {
+                        outputitk->SetPixel(pixelIndex, pixel);
+                    }
+                }
+            }
+        }
+    }
+
+    for(pixelIndex[1] = 0; pixelIndex[1] < maxy; pixelIndex[1]++)
+    {
+        opixelIndex[1] = pixelIndex[1];
+        for(pixelIndex[0] = 0; pixelIndex[0] < maxx; pixelIndex[0]++)
+        {
+            opixelIndex[0] = pixelIndex[0];
+            for(pixelIndex[2] = 1; pixelIndex[2] < maxz; pixelIndex[2]+=2)
+            {
+                opixelIndex[2] = pixelIndex[2]-1;
+                char pixel = outputitk->GetPixel(opixelIndex);
+                if(pixel)
+                {
+                    opixelIndex[2] -= 2;
+                    pixel = outputitk->GetPixel(opixelIndex);
+                    if(pixel)
+                    {
+                        outputitk->SetPixel(pixelIndex, pixel);
+                    }
+                }
+            }
+        }
+    }
+    return itkImageToStructure(outputitk);
+}
+
+//----------------------------------------------------------------------------------------
+ImageStructure BuildTree::skeletonFromBinary(ImageStructure par1)
 {
     ThinningFilterType::Pointer thinningFilter = ThinningFilterType::New();
     thinningFilter->SetInput( StructureToItkImage(par1) );

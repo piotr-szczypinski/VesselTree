@@ -26,12 +26,12 @@ void printhelp(void)
     printf("Commands:\n");
     printf("  copy s_input s_output\n");
     printf("  rescaleIntensity s_input s_output f_min_intensity f_max_intensity\n");
-    printf("  gaussianFilter s_input s_output f_std\n");
-    printf("  hessianFilter s_input s_output f_std\n");
+    printf("  gaussianFilter s_input s_output f_sigma\n");
+    printf("  hessianFilter s_input s_output f_sigma\n");
     printf("  maxIntensity s_input\n");
     printf("  minIntensity s_input\n");
     printf("  floodFill s_input s_output f_min_intensity f_max_intensity i_x i_y i_z\n");
-    printf("  multiscaleHessian s_input s_output f_std_min f_std_max i_scales\n");
+    printf("  multiscaleHessian s_input s_output f_sigma_min f_sigma_max i_scales\n");
     printf("\n");
     printf("  /? displays help and exits\n\n");
 }
@@ -188,11 +188,17 @@ int main(int argc, char *argv[])
 
 
         else if(strcmp(argv[1], "test") == 0 && argc > 1) test();
-        else std::cout << "Unknown command " << argv[1] << std::endl;
+        else std::cout << "Unknown command " << argv[1] << "or invalid arguments" << std::endl;
 	}
+    catch( itk::ExceptionObject & err )
+    {
+        std::cerr << "ITK exception" << std::endl;
+        std::cerr << err << std::endl;
+        return -2;
+    }
 	catch(...)
 	{
-		std::cout << "Exception in " << argv[1] << " command" << std::endl;
+        std::cerr << "Unknown exception" << std::endl;
 		return -1;
 	}
 
