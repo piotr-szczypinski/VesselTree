@@ -521,6 +521,31 @@ ImageStructure BuildTree::skeletonFromBinary(ImageStructure par1)
 //----------------------------------------------------------------------------------------
 Tree BuildTree::skeletonToTree(ImageStructure image)
 {
+    int i, imax;
+    ImageType::SpacingType spacing;
+    ImageType::Pointer inputitk = StructureToItkImage(image);
+
+    imax = inputitk->GetLargestPossibleRegion().GetImageDimension();
+    for(i = 0; i<imax; i++)
+    {
+        spacing[i] = inputitk->GetSpacing()[i];
+    }
+    Tree tree = skeletonToTreeIntSpace(image);
+    imax = tree.nodeCount();
+    for(i = 0; i<imax; i++)
+    {
+        NodeIn3D n = tree.node(i);
+        n.x *= spacing[0];
+        n.y *= spacing[1];
+        n.z *= spacing[2];
+        tree.setNode(n, i);
+    }
+    return tree;
+}
+
+//----------------------------------------------------------------------------------------
+Tree BuildTree::skeletonToTreeIntSpace(ImageStructure image)
+{
     ImageType::Pointer inputKImage = StructureToItkImage(image);
 
 // Find tip of whatever brunch to start

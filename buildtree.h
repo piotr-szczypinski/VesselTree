@@ -113,6 +113,8 @@ public:
 */
     static Tree skeletonToTree(ImageStructure image);
 
+    static Tree skeletonToTreeIntSpace(ImageStructure image);
+
     static Tree szacowanie_srednicy(ImageStructure par1, Tree par2);
 
     static ImageStructure rescaleIntensity( ImageStructure par1, float min = 0, float max = 255 );

@@ -32,6 +32,12 @@ void printhelp(void)
     printf("  minIntensity s_input\n");
     printf("  floodFill s_input s_output f_min_intensity f_max_intensity i_x i_y i_z\n");
     printf("  multiscaleHessian s_input s_output f_sigma_min f_sigma_max i_scales\n");
+    printf("  upscaleForCenteredSkeleton s_input s_output\n");
+    printf("  skeletonFromBinary s_input s_output\n");
+    printf("  skeletonToTreeIntSpace s_input s_output i_output_format\n");
+    printf("  skeletonToTree s_input s_output i_output_format\n");
+
+
     printf("\n");
     printf("  /? displays help and exits\n\n");
 }
@@ -166,6 +172,41 @@ void multiscaleHessian(char* input, char* output, double stdmin, double stdmax, 
 	BuildTree::saveImage(outimage, output);
 }
 
+void upscaleForCenteredSkeleton(char* input, char* output)
+{
+    Image image;
+    ImageStructure outimage;
+    image.fillStructure(BuildTree::openAnalyzeImage(input));
+    outimage = BuildTree::upscaleForCenteredSkeleton(image.returnStruct());
+    BuildTree::saveImage(outimage, output);
+}
+
+void skeletonFromBinary(char* input, char* output)
+{
+    Image image;
+    ImageStructure outimage;
+    image.fillStructure(BuildTree::openAnalyzeImage(input));
+    outimage = BuildTree::skeletonFromBinary(image.returnStruct());
+    BuildTree::saveImage(outimage, output);
+}
+
+void skeletonToTree(char* input, char* output, unsigned int mode)
+{
+    Image image;
+    Tree outimage;
+    image.fillStructure(BuildTree::openAnalyzeImage(input));
+    outimage = BuildTree::skeletonToTree(image.returnStruct());
+    outimage.saveTree(output, mode%2);
+}
+
+void skeletonToTreeIntSpace(char* input, char* output, unsigned int mode)
+{
+    Image image;
+    Tree outimage;
+    image.fillStructure(BuildTree::openAnalyzeImage(input));
+    outimage = BuildTree::skeletonToTreeIntSpace(image.returnStruct());
+    outimage.saveTree(output, mode%2);
+}
 
 int main(int argc, char *argv[])
 {
@@ -185,6 +226,10 @@ int main(int argc, char *argv[])
 		else if(strcmp(argv[1], "multiscaleHessian") == 0 && argc > 6) multiscaleHessian(argv[2], argv[3], atof(argv[4]), atof(argv[5]), atoi(argv[6]));
 		else if(strcmp(argv[1], "minIntensity") == 0 && argc > 2) minIntensity(argv[2]);
 		else if(strcmp(argv[1], "maxIntensity") == 0 && argc > 2) maxIntensity(argv[2]);
+        else if(strcmp(argv[1], "upscaleForCenteredSkeleton") == 0 && argc > 3) upscaleForCenteredSkeleton(argv[2], argv[3]);
+        else if(strcmp(argv[1], "skeletonFromBinary") == 0 && argc > 3) skeletonFromBinary(argv[2], argv[3]);
+        else if(strcmp(argv[1], "skeletonToTreeIntSpace") == 0 && argc > 4) skeletonToTreeIntSpace(argv[2], argv[3], atoi(argv[4]));
+        else if(strcmp(argv[1], "skeletonToTree") == 0 && argc > 4) skeletonToTree(argv[2], argv[3], atoi(argv[4]));
 
 
         else if(strcmp(argv[1], "test") == 0 && argc > 1) test();
