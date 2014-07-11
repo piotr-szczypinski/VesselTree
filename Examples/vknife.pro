@@ -28,20 +28,22 @@ INCLUDEPATH +=  "/usr/include/ITK-4.5/Common"\
                 "/usr/include/ITK-4.5/Review"
 
 HEADERS += \
-    ../tree.h \
-    ../image.h \
-    ../renderit.h \
     ../imagefilters.h \
-    ../buildtree.h
+#    ../tree.h \
+#    ../image.h \
+#    ../renderit.h \
+#    ../buildtree.h \
+#    ../typedefsti.h
 
 SOURCES += \
-    ../tree.cpp \
-    ../image.cpp \
     vknife.cpp \
-    ../treerender.cpp \
-    ../renderit.cpp \
-    ../buildtree.cpp \
-    ../imagefilters.cpp
+#    ../imagefilters.cpp
+#    ../tree.cpp \
+#    ../image.cpp \
+#    ../treerender.cpp \
+#    ../renderit.cpp \
+#    ../buildtree.cpp \
+#    ../imagefilters.cpp
 
 
 

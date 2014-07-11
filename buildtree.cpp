@@ -26,7 +26,7 @@
 #include <iostream>
 #include <fstream>
 
-
+/*
 typedef itk::Image< float,3 > ImageType;
 typedef itk::ImageFileReader< ImageType > ReaderType;
 typedef itk::ConstantBoundaryCondition< ImageType > BoundaryConditionType;
@@ -45,6 +45,9 @@ typedef itk::ConnectedThresholdImageFilter< ImageType, ImageType > ConnectedFilt
 typedef itk::VotingBinaryIterativeHoleFillingImageFilter<ImageType > HoleFilterType;
 typedef itk::BinaryThinningImageFilter3D< ImageType, ImageType > ThinningFilterType;
 typedef itk::ImageToVTKImageFilter< ImageType > Connector;
+*/
+
+
 //----------------------------------------------------------------------------------------
 ImageStructure BuildTree::itkImageToStructure(itk::Image< float,3 >::Pointer par1)
 {

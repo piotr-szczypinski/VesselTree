@@ -21,6 +21,7 @@
 
 #include "image.h"
 
+
 int Image::dimensionality()
 {
     return size.size();
