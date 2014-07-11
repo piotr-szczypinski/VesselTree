@@ -26,7 +26,7 @@ Tree::Tree(double mindistance)
 }
 
 //-------------------------------------------------------------------------------------
-bool Tree::saveTree(const char *fileName, unsigned int format)
+bool Tree::save(const char *fileName, unsigned int format)
 {
     std::ofstream file;
     file.open(fileName);
@@ -76,7 +76,7 @@ bool Tree::saveTree(const char *fileName, unsigned int format)
 }
 
 //-------------------------------------------------------------------------------------
-bool Tree::loadTree(const char *fileName)
+bool Tree::load(const char *fileName)
 {
     std::ifstream file;
     file.open(fileName);

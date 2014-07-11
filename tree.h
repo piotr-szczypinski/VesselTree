@@ -149,11 +149,11 @@ public:
  * 0 - oddzielnie węzły i indeksy węzłów w gałęziach
  * 1 - gałęzie z pełną informacją o węzłach
 */
-    bool saveTree(const char *fileName, unsigned int format);
+    bool save(const char *fileName, unsigned int format);
 /** Odczytuje dane z pliku
  * \param fileName jest nazwą pliku
 */
-    bool loadTree(const char *fileName);
+    bool load(const char *fileName);
 
 /* Returns count of branches.*/
 /** Liczba gałęzi drzewa.

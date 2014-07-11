@@ -25,6 +25,7 @@
 //#define vtkRenderingCore_AUTOINIT 4(vtkInteractionStyle,vtkRenderingFreeType,vtkRenderingFreeTypeOpenGL,vtkRenderingOpenGL)
 //#define vtkRenderingVolume_AUTOINIT 1(vtkRenderingVolumeOpenGL)
 #include "imagefilters.h"
+#include "buildtree.h"
 
 
 
@@ -36,7 +37,7 @@ void printhelp(void)
 //------------------------------------------------------------------------------------------v
     printf("Usage: vknife command [OPTION]...\n");
     printf("Runs volume (3D image) processing procedures from VesselTree library.\n");
-    printf("Version 2014.06.10 by Piotr M. Szczypinski\n");
+    printf("Version 2014.07.11 by Piotr M. Szczypinski\n");
     printf("Commands:\n");
     printf("  copyU8 s_input s_output\n");
     printf("  copyF32 s_input s_output\n");
@@ -57,16 +58,17 @@ void printhelp(void)
     printf("  blackTopHat s_input s_output f_radius\n");
     printf("  binaryDilate s_input s_output f_radius\n");
     printf("  binaryErode s_input s_output f_radius\n");
-
-    printf("  skeletonToTreeIntSpace s_input s_output i_output_format\n");
-    printf("  skeletonToTree s_input s_output i_output_format\n");
+   // printf("  skeletonToTreeIntSpace s_input s_output\n");
+    printf("  skeletonToTree s_input_image s_output_tree\n");
+    printf("  estimateDiameters s_input_tree s_input_image s_output_tree\n");
     printf("\n");
     printf("  /? displays help and exits\n\n");
 }
 
-void test(void)
+void info(char* name)
 {
-    std::cout << "ITK Version: " <<
+    std::cout << name << " compilation date and time: " << __DATE__ << " " << __TIME__ << std::endl;
+    std::cout << "ITK version: " <<
                  ITK_VERSION_MAJOR << "." <<
                  ITK_VERSION_MINOR << "." <<
                  ITK_VERSION_PATCH << std::endl;
@@ -171,7 +173,7 @@ void threshold(char* input, char* output, double min, double max)
 void multiscaleHessian(char* input, char* output, double stdmin, double stdmax, int scales)
 {
     ImageFilters< float >::save(
-                ImageFilters< float >::multiscaleHessianAlgorithm(
+                ImageFilters< float >::multiscaleHessianAlgorithmG(
                     ImageFilters< float >::open(input),
                     stdmin, stdmax, scales),
                 output);
@@ -254,6 +256,26 @@ void erode(char* input, char* output, double radius)
                 output);
 }
 
+void skeletonToTree(char* input, char* output, int mode)
+{
+    Tree tree = BuildTree< char >::skeletonToTree(ImageFilters< char >::open(input));
+    tree.save(output, mode);
+}
+
+void skeletonToTreeIntSpace(char* input, char* output, int mode)
+{
+    Tree tree = BuildTree< char >::skeletonToTreeIntSpace(ImageFilters< char >::open(input));
+    tree.save(output, mode);
+}
+
+void estimateDiameters(char* input, char* image, char* output, int mode)
+{
+    Tree tree;
+    tree.load(input);
+    BuildTree< char >::estimateDiameters(&tree,  ImageFilters< char >::open(image));
+    tree.save(output, mode);
+}
+
 int main(int argc, char *argv[])
 {
     if(argc < 2)
@@ -264,8 +286,8 @@ int main(int argc, char *argv[])
 
 	try
 	{
-        //if(strcmp(argv[1], "copy") == 0 && argc > 3) copy(argv[2], argv[3], 32);
         if(strcmp(argv[1], "copyU8") == 0 && argc > 3) copy(argv[2], argv[3], 8);
+        else if(strcmp(argv[1], "copyS8") == 0 && argc > 3) copy(argv[2], argv[3], 9);
         else if(strcmp(argv[1], "copyS16") == 0 && argc > 3) copy(argv[2], argv[3], 17);
         else if(strcmp(argv[1], "copyU16") == 0 && argc > 3) copy(argv[2], argv[3], 16);
         else if(strcmp(argv[1], "copyF32") == 0 && argc > 3) copy(argv[2], argv[3], 32);
@@ -287,11 +309,14 @@ int main(int argc, char *argv[])
         else if(strcmp(argv[1], "blackTopHat") == 0 && argc > 4) blackTopHat(argv[2], argv[3], atof(argv[4]));
         else if(strcmp(argv[1], "dilate") == 0 && argc > 4) dilate(argv[2], argv[3], atof(argv[4]));
         else if(strcmp(argv[1], "erode") == 0 && argc > 4) erode(argv[2], argv[3], atof(argv[4]));
+        else if(strcmp(argv[1], "skeletonToTreeIntSpace") == 0 && argc > 4) skeletonToTreeIntSpace(argv[2], argv[3], atoi(argv[4]));
+        else if(strcmp(argv[1], "skeletonToTree") == 0 && argc > 4) skeletonToTree(argv[2], argv[3], atoi(argv[4]));
+        else if(strcmp(argv[1], "estimateDiameters") == 0 && argc > 5) estimateDiameters(argv[2], argv[3], argv[4], atoi(argv[5]));
+        else if(strcmp(argv[1], "skeletonToTreeIntSpace") == 0 && argc > 3) skeletonToTreeIntSpace(argv[2], argv[3], 0);
+        else if(strcmp(argv[1], "skeletonToTree") == 0 && argc > 3) skeletonToTree(argv[2], argv[3], 0);
+        else if(strcmp(argv[1], "estimateDiameters") == 0 && argc > 4) estimateDiameters(argv[2], argv[3], argv[4], 0);
 
-//        else if(strcmp(argv[1], "skeletonToTreeIntSpace") == 0 && argc > 4) skeletonToTreeIntSpace(argv[2], argv[3], atoi(argv[4]));
-//        else if(strcmp(argv[1], "skeletonToTree") == 0 && argc > 4) skeletonToTree(argv[2], argv[3], atoi(argv[4]));
-
-        else if(strcmp(argv[1], "test") == 0 && argc > 1) test();
+        else if(strcmp(argv[1], "info") == 0 && argc > 1) info(argv[0]);
         else std::cout << "Unknown command " << argv[1] << " or invalid arguments" << std::endl;
 	}
     catch( itk::ExceptionObject & err )

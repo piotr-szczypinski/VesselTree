@@ -29,16 +29,17 @@ INCLUDEPATH +=  "/usr/include/ITK-4.5/Common"\
 
 HEADERS += \
     ../imagefilters.h \
-#    ../tree.h \
+    ../tree.h \
+    ../buildtree.h \
 #    ../image.h \
 #    ../renderit.h \
-#    ../buildtree.h \
 #    ../typedefsti.h
+
 
 SOURCES += \
     vknife.cpp \
+    ../tree.cpp \
 #    ../imagefilters.cpp
-#    ../tree.cpp \
 #    ../image.cpp \
 #    ../treerender.cpp \
 #    ../renderit.cpp \

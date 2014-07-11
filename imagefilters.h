@@ -45,21 +45,29 @@
 //TODO: Zrobic/przeniesc dokumentacje zgodna z wymaganiami doxygen
 
 
-
 template <class T> class ImageFilters
 {
 public:
     typedef itk::Image< T, 3 > ImageType;
+    //! Wczytanie obrazu zapisanego w pojedynczym pliku do zadanego obszaru pamięci
+    /*!
+      Funkcja wczytująca obraz z pojedynczego pliku o nazwie podanej jako parametr. Obraz zostaje zapisany w pamięci wskazanej przez drugi parametr.
+    \param file_name nazwa lub pełna ścieżka pliku do wczytania
+    \param *image wskaźnik do adresu pamięci pod którym zostanie przechowany obraz
+    */
     static void open(std::string file_name, typename ImageType::Pointer* image)
     {
         typename itk::ImageFileReader< ImageType >::Pointer reader = itk::ImageFileReader< ImageType >::New();
         reader->SetFileName(file_name);
         reader->Update();
         *image = reader->GetOutput();
-// TODO: Jak zwolnic readera i jednoczesnie zachowac dane, ktore odczytal???
-// Pytanie dotyczy rowniez wszystkich filtrow, ktore nalezy usunac bez usuwania wynikowego obrazu
-//        reader->Delete();
     }
+    //! Wczytanie obrazu zapisanego w pojedynczym pliku
+    /*!
+      Funkcja wczytująca obraz z pojedynczego pliku o nazwie podanej jako parametr i zwraca wskaźnik do pamięci.
+    \param file_name nazwa lub pełna ścieżka pliku do wczytania
+    \return wskaźnik do obrazu
+    */
     static typename ImageType::Pointer open(std::string file_name)
     {
         typename itk::ImageFileReader< ImageType >::Pointer reader = itk::ImageFileReader< ImageType >::New();
@@ -67,6 +75,12 @@ public:
         reader->Update();
         return reader->GetOutput();
     }
+    //! Zapis obrazu do pojedynczego pliku
+    /*!
+      Funkcja umożliwiająca zapis danych obrazowych do pliku
+    \param image wskaźnik do obrazu który ma zostać zapisany
+    \param file_name nazwa lub pełna ścieżka pliku do zapisu
+    */
     static void save(typename ImageType::Pointer image, std::string file_name)
     {
         typename itk::ImageFileWriter< ImageType >::Pointer writer = itk::ImageFileWriter< ImageType >::New();
@@ -74,6 +88,12 @@ public:
         writer->SetInput(image);
         writer->Update();
     }
+    //! Utworzenie kopi pliku na dysku
+    /*!
+      Funkcja umożliwia utworzenie kopi podanego pliku i zapisanie go pod inną nazwą lub w innej lokalizacji
+    \param in_file_name nazwa lub pełna ścieżka pliku do odczytu
+    \param out_file_name nazwa lub pełna ścieżka pliku do zapisu
+    */
     static void copy(std::string in_file_name, std::string out_file_name)
     {
         typename itk::ImageFileReader< ImageType >::Pointer reader = itk::ImageFileReader< ImageType >::New();
@@ -84,7 +104,15 @@ public:
         writer->SetInput(reader->GetOutput());
         writer->Update();
     }
-
+    //! Zmiana zakresu wartości jasności użytych w obrazie ("rozciąganie histogramu")
+    /*!
+      Zastosowanie liniowej transformacji do poziomów jasności w obrazie. Zakres zmian definiowany jest przez użytkownika poprzez podanie
+      wartości minimalnej i maksymalnej jasności w obrazie wyjściowym
+    \param input_image wskaźnik do przetwarzanego obrazu
+    \param min wartość minimalna jasności w obrazie wyjściowym (domyślnie 0)
+    \param max wartość maksymalna jasności w obrazie wyjściowym (domyślnie 255)
+    \return wskaźnik do obrazu
+    */
     static typename ImageType::Pointer rescaleIntensity(typename ImageType::Pointer input_image, float min = 0, float max = 255)
     {
         typedef typename itk::RescaleIntensityImageFilter< ImageType, ImageType > F;
@@ -96,6 +124,13 @@ public:
         filter->Update();
         return filter->GetOutput();
     }
+    //! Filtracja Gaussowska o zadanym poziomie rozmycia
+    /*!
+      Filtracja uśredniająca uzyskana poprzez splot obrazu i funkcji Gaussa
+    \param input_image wskaźnik do przetwarzanego obrazu
+    \param sigma wartość wariancji
+    \return wskaźnik do obrazu
+    */
     static typename ImageType::Pointer gaussianFilter(typename ImageType::Pointer input_image, float sigma)
     {
         typedef typename itk::DiscreteGaussianImageFilter< ImageType, ImageType > F;
@@ -106,6 +141,14 @@ public:
         filter->Update();
         return filter->GetOutput();
     }
+    //! Filtracja Macierzą Hessego i funkcja unnaczynniania Franghiego
+    /*!
+      Funkcja służy do wyeksponowania struktur cylindrycznych w obrazie. Wartość rozmycia
+      (sigma) odpowiada za rozmiar obiektów które zostaną wykryte.
+    \param input_image wskaźnik do przetwarzanego obrazu
+    \param sigma wartość wariancji odpowiedzialna na rozmycie obrazu
+    \return wskaźnik do obrazu
+    */
     static typename ImageType::Pointer hessianFilter(typename ImageType::Pointer input_image, float sigma)
     {
         typedef typename itk::HessianRecursiveGaussianImageFilter< ImageType > F;
@@ -162,9 +205,7 @@ public:
         return filter->GetOutput();
     }
 
-// TODO: Potrzebne sa dwie funkcje multiscaleHessianAlgorithmA i multiscaleHessianAlgorithmG???
-// W jednej sigmy maja sie zmieniac ciagiem arytmetycznym a w drugiej geometrycznym
-    static typename ImageType::Pointer multiscaleHessianAlgorithm(typename ImageType::Pointer input_image, float sigmaMin, float sigmaMax, int noOfScales)
+    static typename ImageType::Pointer multiscaleHessianAlgorithmA(typename ImageType::Pointer input_image, float sigmaMin, float sigmaMax, int noOfScales)
     {
         typename ImageType::Pointer clone = input_image->Clone();
         for(int i = 0; i<noOfScales; i++)
@@ -172,6 +213,22 @@ public:
             float sigma;
             if(noOfScales > 1)  sigma=sigmaMin+(((sigmaMax-sigmaMin)/(sigmaMax-1))*i);
             else                sigma=sigmaMin;
+            clone = mipTwoImages( hessianFilter(input_image, sigma), clone, 1);
+        }
+        return clone;
+    }
+
+    static typename ImageType::Pointer multiscaleHessianAlgorithmG(typename ImageType::Pointer input_image, float sigmaMin, float sigmaMax, int noOfScales)
+    {
+        typename ImageType::Pointer clone = input_image->Clone();
+
+        double q;
+        q = pow(sigmaMax/sigmaMin,(1/double(noOfScales-1)));
+
+        for(int i = 0; i<noOfScales; i++)
+        {
+            float sigma;
+            sigma=sigmaMin*pow(q, i);
             clone = mipTwoImages( hessianFilter(input_image, sigma), clone, 1);
         }
         return clone;
@@ -202,7 +259,7 @@ public:
     static typename ImageType::Pointer hvsAlgorithm(typename ImageType::Pointer input_image, int noOfScales, float thresholdPercent)
     {
         typename ImageType::Pointer clone;
-        clone = multiscaleHessianAlgorithm(input_image, 0.1, 2.0, noOfScales);
+        clone = multiscaleHessianAlgorithmG(input_image, 0.1, 2.0, noOfScales);
         typename ImageType::IndexType coords;
         double maximum = FindMaximumValue(clone, &coords);
         clone = regionGrowing(clone, maximum*thresholdPercent, maximum, coords);
