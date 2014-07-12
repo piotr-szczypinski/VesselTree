@@ -223,12 +223,12 @@ public:
         typename ImageType::Pointer clone = input_image->Clone();
 
         double q;
-        q = pow(sigmaMax/sigmaMin,(1/double(noOfScales-1)));
+        q = pow((double)sigmaMax/sigmaMin,(1.0/double(noOfScales-1)));
 
         for(int i = 0; i<noOfScales; i++)
         {
             float sigma;
-            sigma=sigmaMin*pow(q, i);
+            sigma=sigmaMin*pow(q, (double)i);
             clone = mipTwoImages( hessianFilter(input_image, sigma), clone, 1);
         }
         return clone;
