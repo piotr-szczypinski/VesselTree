@@ -61,6 +61,9 @@ public:
         reader->SetFileName(file_name);
         reader->Update();
         *image = reader->GetOutput();
+
+//        (*image)->SetReleaseDataFlag(false);
+//        reader->Delete();
     }
     //! Wczytanie obrazu zapisanego w pojedynczym pliku
     /*!
@@ -73,6 +76,13 @@ public:
         typename itk::ImageFileReader< ImageType >::Pointer reader = itk::ImageFileReader< ImageType >::New();
         reader->SetFileName(file_name);
         reader->Update();
+
+//        typename ImageType::Pointer image;
+//        image = reader->GetOutput();
+//        image->SetReleaseDataFlag(false);
+//        reader->Delete();
+//        return image;
+
         return reader->GetOutput();
     }
     //! Zapis obrazu do pojedynczego pliku
@@ -165,6 +175,20 @@ public:
         return filter2->GetOutput();
     }
 
+    //! Rzutowanie dwóch trójwymiarowych obrazów metodą MIP (Maximum intensity projection)
+        /*!
+          W przyadku filtracji wieloskalowych (filtracja hessego) konieczne jest sumowanie kolejnych
+          efektów filtracji. Funkcja ta porównuje wartości jasności wokseli obu obrazach wejściowych.
+          Do obrazu wynikowego trafia więkasza wartość z każdej pary punktów. Obrazy wejściowe muszą być tych samych rozmiarów.
+          Przy pomocy parametru multiplier możliwa jest zmiana wag obu obrazów (wartości obrazu nr 2 zostają mnożone przez wartość współczynnika).
+          Jeśli multiplier = 1 to wagi jasności obu obrazów są jednakowe.
+          Jeśli multiplier > 1 to wartości jasności obrazu nr 2 mają większą wagę
+          Jeśli multiplier < 1 to wartości jasności obrazu nr 2 mają mniejszą wagę
+        \param mip_image wskaĹşnik do przetwarzanego obrazu nr 1
+        \param input_image wskaĹşnik do przetwarzanego obrazu nr 2
+        \param multiplier współczynnik wagowy
+        \return wskaĹşnik do obrazu
+        */
     static typename ImageType::Pointer mipTwoImages(typename ImageType::Pointer mip_image, typename ImageType::Pointer input_image, float multiplier)
     {
         typedef typename itk::ImageRegionConstIterator< ImageType > ConstIteratorType;
@@ -178,6 +202,16 @@ public:
         return mip_image;
     }
 
+    //! Rozrost obszaru od zarodka
+        /*!
+          Rozrost obszaru od danego punktu obrazu. Metoda iteracyjna polegająca na dołączaniu do obszaru sąsiednich punktów
+          których wartości jasności są w przedziale (min, max).
+        \param input_image wskaźnik do przetwarzanego obrazu
+        \param min próg dolny
+        \param max próg górny
+        \param coords współrzędne punktu startu rozrostu obszaru
+        \return wskażnik do obrazu
+        */
     static typename ImageType::Pointer regionGrowing(typename ImageType::Pointer input_image, float min, float max, typename ImageType::IndexType coords)
     {
         typedef itk::ConnectedThresholdImageFilter< ImageType, ImageType > ConnectedFilterType;
@@ -191,6 +225,16 @@ public:
         return ct->GetOutput();
     }
 
+    //! Progowanie obrazu z progiem globalnym
+        /*!
+          Zamiana obrazu wejściowego na obraz binary. Wokselom których wartość jasności znajduje się
+          w przedziale (min, max) przypisana zostaje wartość 255. Punkty które nie spełniają kryterium
+          otrzymują wartości zerowe.
+        \param input_image wskaźnik do przetwarzanego obrazu
+        \param min próg dolny
+        \param max próg górny
+        \return wskaźnik do obrazu
+        */
     static typename ImageType::Pointer thresholdFilter(typename ImageType::Pointer input_image, float min, float max)
     {
         typedef typename itk::BinaryThresholdImageFilter< ImageType, ImageType > F;
@@ -204,7 +248,18 @@ public:
         filter->Update();
         return filter->GetOutput();
     }
-
+    //! Wieloskalowa filtracja Hessego (ciąg arytmetyczny)
+     /*!
+       Funkcja "hessianFilter" wykonywana wielokrotnie, a wyniki poszczególnych iteracji są sumowane przy
+       pomocy funkcji "mipTwoImages". Użytkownik podaje minimalną (sigmaMin) i maksymalną (sigmaMax) wartość rozmycia
+       oraz ilość filtracji macierzą Hessego które chce wykonać (noOfScales). Brakujące wartości skal zostają dobrane zgodnie z zasadami
+       ciągu arytmetycznego.
+     \param input_image wskaźnik do przetwarzanego obrazu
+     \param sigmaMin wartość minimalna rozmycia
+     \param sigmaMax wartość maksymalna rozmycia
+     \param noOfScales ilość iteracji filtracji
+     \return wskaźnik do obrazu
+     */
     static typename ImageType::Pointer multiscaleHessianAlgorithmA(typename ImageType::Pointer input_image, float sigmaMin, float sigmaMax, int noOfScales)
     {
         typename ImageType::Pointer clone = input_image->Clone();
@@ -217,7 +272,18 @@ public:
         }
         return clone;
     }
-
+    //! Wieloskalowa filtracja Hessego (ciąg geometryczny)
+     /*!
+       Funkcja "hessianFilter" wykonywana wielokrotnie, a wyniki poszczególnych iteracji są sumowane przy
+       pomocy funkcji "mipTwoImages". Użytkownik podaje minimalną (sigmaMin) i maksymalną (sigmaMax) wartość rozmycia
+       oraz ilość filtracji macierzą Hessego które chce wykonać (noOfScales). Brakujące wartości skal zostają dobrane zgodnie z zasadami
+       ciągu geometrycznego.
+     \param input_image wskaźnik do przetwarzanego obrazu
+     \param sigmaMin wartość minimalna rozmycia
+     \param sigmaMax wartość maksymalna rozmycia
+     \param noOfScales ilość iteracji filtracji
+     \return wskaźnik do obrazu
+     */
     static typename ImageType::Pointer multiscaleHessianAlgorithmG(typename ImageType::Pointer input_image, float sigmaMin, float sigmaMax, int noOfScales)
     {
         typename ImageType::Pointer clone = input_image->Clone();
@@ -233,7 +299,13 @@ public:
         }
         return clone;
     }
-
+    //! Wartość minimalna jasności obrazu
+        /*!
+          Funkcja zwraca minimalną wartość jasności w obrazie
+        \param input_image wskaźnik do przetwarzanego obrazu
+        \param *coords wskaźnik do współrzędnych znalezionej wartości minimalnej
+        \return wartość minimalna
+        */
     static double minIntensity(typename ImageType::Pointer input_image, typename ImageType::IndexType * coords = NULL)
     {
         typedef typename itk::MinimumMaximumImageCalculator < ImageType > F;
@@ -244,7 +316,13 @@ public:
         if(coords != NULL) *coords = filter->GetIndexOfMinimum();
         return filter->GetMinimum();
     }
-
+    //! Wartość maksymalna jasności obrazu
+        /*!
+          Funkcja zwraca maksymalną wartość jasności w obrazie
+        \param input_image wskaźnik do przetwarzanego obrazu
+        \param *coords wskaźnik do współrzędnych znalezionej wartości maksymalnej
+        \return wartość maksymalna
+        */
     static double maxIntensity(typename ImageType::Pointer input_image, typename ImageType::IndexType * coords = NULL)
     {
         typedef typename itk::MinimumMaximumImageCalculator < ImageType > F;
@@ -255,7 +333,15 @@ public:
         if(coords != NULL) *coords = filter->GetIndexOfMaximum();
         return filter->GetMaximum();
     }
-
+    //! Algorytm znajdowania naczyń krwionośnych w obrazach Time of Flight
+    /*!
+      Funkcja wykonuje wielokrotną filtrację hessego, oraz przeprowadza segmentację od automatycznie znalezionego
+      punktu rozrostu obszaru.
+    \param input_image wskaźnik do przetwarzanego obrazu
+    \param noOfScales ilość iteracji filtracji hessego
+    \param thresholdPercent wartość progu wyrażona procentowo (gdzie 1.0 to wrtość maksymalna obrazu)
+    \return wskaźnik do obrazu
+    */
     static typename ImageType::Pointer hvsAlgorithm(typename ImageType::Pointer input_image, int noOfScales, float thresholdPercent)
     {
         typename ImageType::Pointer clone;

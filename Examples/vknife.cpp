@@ -84,21 +84,23 @@ void info(char* name)
 
 void copy(char* input, char* output, int type)
 {
-    switch(type)
-    {
-    case 8: ImageFilters< u_int8_t >::copy(input, output); break;
-    case 9: ImageFilters< int8_t >::copy(input, output); break;
-    case 16: ImageFilters< u_int16_t >::copy(input, output); break;
-    case 17: ImageFilters< int16_t >::copy(input, output); break;
-    case 32: ImageFilters< float >::copy(input, output); break;
-    case 64: ImageFilters< double >::copy(input, output); break;
-    default: ImageFilters< float >::copy(input, output);
-    }
+//    switch(type)
+//    {
+//    case 8: ImageFilters< u_int8_t >::copy(input, output); break;
+//    case 9: ImageFilters< int8_t >::copy(input, output); break;
+//    case 16: ImageFilters< u_int16_t >::copy(input, output); break;
+//    case 17: ImageFilters< int16_t >::copy(input, output); break;
+//    case 32: ImageFilters< float >::copy(input, output); break;
+//    case 64: ImageFilters< double >::copy(input, output); break;
+//    default: ImageFilters< float >::copy(input, output);
+//    }
+
 //    ImageFilters< float >::ImageType::Pointer image;
 //    ImageFilters< float >::open(input, &image);
-//    ImageFilters< float >::ImageType::Pointer image =
-//    ImageFilters< float >::open(input);
-//    ImageFilters< float >::save(image, output);
+
+    ImageFilters< float >::ImageType::Pointer image =
+    ImageFilters< float >::open(input);
+    ImageFilters< float >::save(image, output);
 }
 
 void rescaleIntensity(char* input, char* output, double min, double max)
