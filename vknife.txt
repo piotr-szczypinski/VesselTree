@@ -1,0 +1,64 @@
+Program vknife służy do przetwarzania i analizy trójwymiarowych obrazów rastrowych, w szczególności obrazów angiograficznych. Program uruchamia się z konsoli podając jako argumenty nazwę komendy oraz odpowiedni zestaw parametrów. Lista komend oraz ich parametrów jest następująca:
+
+copyU8 s_input s_output
+Kopiuje plik z obrazem 3D. Zapisuje go kodując jasność woksela liczbą całkowitą w zakresie 0 – 255. Parametr s_input to nazwa pliku obrazu wejściowego. Parametr s_output to nazwa pliku, do którego kopiowany jest obraz.
+
+copyF32 s_input s_output
+Kopiuje plik z obrazem 3D. Zapisuje go kodując jasność woksela liczbą zmiennoprzecinkową 32.bitową. Parametr s_input to nazwa pliku obrazu wejściowego. Parametr s_output to nazwa pliku, do którego kopiowany jest obraz.
+
+rescaleIntensity s_input s_output f_min_intensity f_max_intensity
+Zmienia zakres jasności w obrazie na nowy. Parametr s_output to nazwa pliku, do którego kopiowany jest obraz. Operuje na danych zmiennoprzecinkowych 32.bitowych.
+
+gaussianFilter s_input s_output f_sigma
+Filtuje obraz filtrem gaussowskim o odchyleniu standardowym f_sigma..Parametr s_output to nazwa pliku, do którego kopiowany jest obraz. Operuje na danych zmiennoprzecinkowych 32.bitowych.
+
+hessianFilter s_input s_output f_sigma
+Oblicza funkcję unaczynienia z wykorzystaniem transformaty Hessego z parametrem f_sigma. Parametr s_output to nazwa pliku, do którego kopiowany jest obraz. Operuje na danych zmiennoprzecinkowych 32.bitowych.
+
+maxIntensity s_input
+Znajduje maksimum jasności obrazu. Podaje tekstowo współrzędne woksela i jasność. Operuje na danych zmiennoprzecinkowych 32.bitowych.
+
+minIntensity s_input
+Znajduje maksimum jasności obrazu. Podaje tekstowo współrzędne woksela i jasność. Operuje na danych zmiennoprzecinkowych 32.bitowych.
+
+floodFill s_input s_output f_min_intensity f_max_intensity i_x i_y i_z
+Wypełnia w obrazie jednospójną objętość o wokselach z zakresu od f_min_intensity do f_max_intensity, rozpoczynając wypełnianie od punktu o indeksach  i_x i_y i_z. Operuje na danych całkowitych 8.bitowych.
+
+threshold s_input s_output f_min_intensity f_max_intensity
+Progowanie obrazu. Woksele z zakresu f_min_intensity f_max_intensity uzyskują wartość 255 pozostałę są zerowane.
+
+multiscaleHessian s_input s_output f_sigma_min f_sigma_max i_scales
+Oblicza funkcję unaczynienia dla i_scales liczby skal z zakresu f_sigma_min f_sigma_max. Obraz wynikowy przedstawia maksima obrazów wynikowych poszczególnych filtracji.
+
+skeletonFromBinary s_input s_output
+Wyznacza linie szkieletowe obrau. Obraz wejściowy powninien być zbinaryzowany, woksele obiektu oznaczone wartością dodatnią a tło zerami. Parametr s_input to nazwa pliku obrazu wejściowego. Parametr s_output to nazwa pliku, do którego kopiowany jest obraz. Operuje na danych całkowitych 8.bitowych.
+
+centeredSkeleton s_input s_output
+Powiększa obraz binarny dwukrotnie w każdym kierunku i wyznacza na jego podstawie linie szkieletowe. Obraz wejściowy powninien być zbinaryzowany, woksele obiektu oznaczone wartością dodatnią a tło zerami.Parametr s_input to nazwa pliku obrazu wejściowego. Parametr s_output to nazwa pliku, do którego kopiowany jest obraz.Operuje na danych całkowitych 8.bitowych.
+
+whiteForegroundHoleFill s_input s_output
+Wypełnianie dziur w jasnych obszarach obrazu binarnego. Parametr s_input to nazwa pliku obrazu wejściowego. Parametr s_output to nazwa pliku, do którego kopiowany jest obraz. Operuje na danych całkowitych 8.bitowych.
+
+blackForegroundHoleFill s_input s_output
+Wypełnianie dziur w ciemnych obszarach obrazu binarnego. Parametr s_input to nazwa pliku obrazu wejściowego. Parametr s_output to nazwa pliku, do którego kopiowany jest obraz. Operuje na danych całkowitych 8.bitowych.
+
+whiteTopHat s_input s_output f_radius
+Transformacja top-hat (dla jasnych fragmentów) obrazu z obiektem strukturującym o kształcie kuli z promieniem f_radius.  Parametr s_output to nazwa pliku, do którego kopiowany jest obraz. Operuje na danych zmiennoprzecinkowych 32.bitowych.
+
+blackTopHat s_input s_output f_radius
+Transformacja top-hat (dla ciemnych fragmentów) obrazu z obiektem strukturującym o kształcie kuli z promieniem f_radius.  Parametr s_output to nazwa pliku, do którego kopiowany jest obraz. Operuje na danych zmiennoprzecinkowych 32.bitowych.
+
+binaryDilate s_input s_output f_radius
+Dylatacja morfologiczna obrazu z obiektem strukturującym o kształcie kuli z promieniem f_radius.  Parametr s_output to nazwa pliku, do którego kopiowany jest obraz. Operuje na danych całkowitych 8.bitowych.
+
+binaryErode s_input s_output f_radius
+Erozja morfologiczna obrazu z obiektem strukturującym o kształcie kuli z promieniem f_radius.  Parametr s_output to nazwa pliku, do którego kopiowany jest obraz. Operuje na danych całkowitych 8.bitowych.
+
+skeletonToTree s_input_image s_output_tree
+Na podstawie obrazu rastrowego przedstawiającego szkielet tworzy wektorowy opis linii środkowych gałęzi drzewa. Woksele szkieletu muszą być większe od zera, woksele tła powinny być wyzerowane. Parametr s_input to nazwa pliku obrazu wejściowego. Parametr s_output_tree to nazwa pliku, do którego zapisywane jest drzewo. Operuje na danych całkowitych 8.bitowych.
+
+estimateDiameters s_input_tree s_input_image s_output_tree
+Na podstawie binarnego obrazu rastrowego przedstawiającego wysegmentowane drzewo szacowane są średnice gałęzi drzewa. Drzewo to musi być wcześniej utworzone komendą skeletonToTree.  Promienie gałęzi są szacowane na podstawie minimalnej odległości węzłów drzewa od tła. Parametr s_input_tree to nazwa pliku z drzewem, s_input_image to nazwa pliku obrazu wejściowego. Parametr s_output_tree to nazwa pliku, do którego zapisywane jest drzewo z uzupełnioną informacją o średnicach.. Operuje na danych całkowitych 8.bitowych.
+
+info
+Wyświetla datę i czas kompilacji programu, wersje wykorzystanych bibliotek oraz listę dostępnych formatów plików obrazowych.
