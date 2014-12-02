@@ -130,6 +130,14 @@ void hessianFilter(char* input, char* output, double std)
                 output);
 }
 
+void tensorHessianFilter(char* input, char* output, double std)
+{
+
+    ImageFilters< float >::tensorHessianFilter(
+        ImageFilters< float >::open(input),
+        std, output);
+}
+
 void maxIntensity(char* input)
 {
     ImageFilters< float >::ImageType::IndexType coords;
@@ -297,6 +305,7 @@ int main(int argc, char *argv[])
         else if(strcmp(argv[1], "rescaleIntensity") == 0 && argc > 5) rescaleIntensity(argv[2], argv[3], atof(argv[4]), atof(argv[5]));
         else if(strcmp(argv[1], "gaussianFilter") == 0 && argc > 4) gaussianFilter(argv[2], argv[3], atof(argv[4]));
         else if(strcmp(argv[1], "hessianFilter") == 0 && argc > 4) hessianFilter(argv[2], argv[3], atof(argv[4]));
+        else if(strcmp(argv[1], "tensorHessianFilter") == 0 && argc > 4) hessianFilter(argv[2], argv[3], atof(argv[4]));
         else if(strcmp(argv[1], "floodFill") == 0 && argc > 8) floodFill(argv[2], argv[3], atof(argv[4]), atof(argv[5]), atoi(argv[6]), atoi(argv[7]), atoi(argv[8]));
         else if(strcmp(argv[1], "threshold") == 0 && argc > 5) threshold(argv[2], argv[3], atof(argv[4]), atof(argv[5]));
         else if(strcmp(argv[1], "multiscaleHessian") == 0 && argc > 6) multiscaleHessian(argv[2], argv[3], atof(argv[4]), atof(argv[5]), atoi(argv[6]));

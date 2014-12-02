@@ -41,6 +41,8 @@
 #include <itkBinaryFillholeImageFilter.h>
 #include <itkBinaryThresholdImageFilter.h>
 
+#include <itkSymmetricSecondRankTensor.h>
+
 
 //TODO: Zrobic/przeniesc dokumentacje zgodna z wymaganiami doxygen
 
@@ -173,6 +175,24 @@ public:
         filter2->SetInput(filter->GetOutput());
         filter2->Update();
         return filter2->GetOutput();
+    }
+
+
+
+
+    static void tensorHessianFilter(typename ImageType::Pointer input_image, float sigma, char* filename)
+    {
+        typedef typename itk::HessianRecursiveGaussianImageFilter< ImageType > F;
+        typedef typename F::Pointer P;
+        P filter = F::New();
+        filter->SetInput(input_image);
+        filter->SetSigma(sigma);
+
+        typedef itk::Image<itk::SymmetricSecondRankTensor<double, 3>, 3> TensorImageType;
+        typename itk::ImageFileWriter< TensorImageType >::Pointer writer = itk::ImageFileWriter< TensorImageType >::New();
+        writer->SetFileName(filename);
+        writer->SetInput(filter->GetOutput());
+        writer->Update();
     }
 
     //! Rzutowanie dwóch trójwymiarowych obrazów metodą MIP (Maximum intensity projection)
